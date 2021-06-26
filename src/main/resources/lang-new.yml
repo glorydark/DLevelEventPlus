@@ -1,0 +1,76 @@
+Version: 20210626
+OnEnable: DGameRulePlus onEnable
+
+#tips translations
+AntiTouchFlame: 您所在世界禁止触碰展示框！
+AntiTrampleFarmland: 您所在世界禁止破坏耕地！
+AntiUseFishingRod: 您所在世界禁止使用钓鱼竿！
+AntiUseFlintAndSteel: 您所在世界禁止使用打火石！
+AntiUseChest: '您所在世界禁止使用该箱子 %position% ！'
+AntiTeleport: '%s 世界禁止传送！'
+AntiSneak: 世界禁止潜行
+AntiSprint: 世界禁止冲刺
+AntiSwim: 世界禁止游泳
+AntiFly: 世界禁止飞行
+AntiGlide: 世界禁止滑行
+AntiJump: 世界禁止跳跃
+AntiPickUpItem: 世界禁止捡东西
+AntiConsumeItem: 世界禁止消耗物品
+AntiBedEnter: 世界禁止上床
+AntiDropItem: 世界禁止丢物品
+AntiCommand: 世界禁止使用该指令
+AntiAllCommand: 世界禁止使用指令
+AntiChangeGamemode: 世界禁止更换模式
+AntiMove: 世界禁止移动
+AntiEat: 世界禁止吃食物
+AntiTntExplode: 本插件已阻止一次TNT爆炸事件
+AntiAllExplode: 本插件已阻止一次全类型爆炸事件
+AntiPvp: 本区域禁止进行PVP
+AntiPortalEnter: 本世界禁止进入传送门
+AntiVehicleEnter: 本世界禁止使用载具
+AntiPlaceBlock: 您所在世界禁止放置方块！
+AntiBreakBlock: 您所在世界禁止破坏方块!
+AntiDestroyFlameBlock: '%s 世界禁止破坏展示框！'
+AntiChangeSignText: '%s 世界禁止修改告示牌！'
+
+#gui text translations
+FarmProtect: 耕地踩踏保护
+AllExplodes: 全部类型爆炸
+TntExplodes: TNT爆炸
+Pvp: PVP
+KeepInventory: 死亡不掉落物品
+KeepXp: 死亡不掉落经验
+AllowOpenChest: 允许打开箱子
+CanUseFishingHook: 可使用鱼竿
+AllowInteractFrameBlock: 与物品框交互
+AllowUseFlintAndSteel: 使用打火石
+Sneak: 潜行
+Sprint: 冲刺
+Fly: 飞行
+Swim: 游泳
+Glide: 滑翔
+Jump: 跳跃
+Pick: 捡东西
+ConsumeItem: 消耗物品
+DropItem: 扔物品
+BedEnter: 进入床
+Move: 移动
+EatFood: 吃食物
+CommandPreprocess: 执行指令
+GameModeChange: 改变游戏模式
+Explosion: 实体爆炸
+PortalEnter: 进入传送门
+AllowPlaceBlock: 放置方块
+AllowBreakBlock: 破坏方块
+Burn: 方块燃烧
+Ignite: 方块发光
+Fall: 方块掉落
+Grow: 方块生长
+Spread: 方块蔓延
+Form: 方块自动生成
+DoorToggle: 打开门
+LeavesDecay: 树叶凋零
+LiquidFlow: 液体流动
+ItemFrameDropItem: 物品框掉落物品
+SignChange: 改变告示牌
+BlockRedstone: 红石
