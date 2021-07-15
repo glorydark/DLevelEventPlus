@@ -24,7 +24,7 @@ import java.util.List;
 public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent event) {
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         Level level = event.getBlock().getLevel();
         Block block = event.getBlock();
         if (block.getId() == Block.ITEM_FRAME_BLOCK) {
@@ -85,10 +85,12 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerTeleportEvent(PlayerTeleportEvent event){
-        if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.AntiTeleport") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
-        if(Config.isWhiteListed(event.getPlayer())){ return;}
+        if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.AntiTeleport") == null){
+            return;
+        }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         Level level = event.getTo().getLevel();
+        if(Config.isWhiteListed(event.getPlayer(),level)){ return;}
         if(event.getFrom().getLevel() == event.getTo().getLevel()) {
             if (MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.AntiTeleport")) {
                 event.getPlayer().sendActionBar(Config.getLang("AntiTeleport").replace("%s", level.getName()));
@@ -102,7 +104,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerBlockPickEvent(PlayerBlockPickEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Pick") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Pick")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiPickUpItem"));
             event.setCancelled(true);
@@ -112,7 +114,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerItemConsumeEvent(PlayerItemConsumeEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.ConsumeItem") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.ConsumeItem")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiConsumeItem"));
             event.setCancelled(true);
@@ -122,7 +124,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerBedEnterEvent(PlayerBedEnterEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.BedEnter") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.BedEnter")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiBedEnter"));
             event.setCancelled(true);
@@ -132,7 +134,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerDropItemEvent(PlayerDropItemEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.DropItem") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.DropItem")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiDropItem"));
             event.setCancelled(true);
@@ -142,7 +144,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.CommandPreprocess") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if(!(event.getPlayer() instanceof Player)){
             return;
         }
@@ -179,7 +181,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.GameModeChange") == null){return;}
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.GameModeChange")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiChangeGamemode"));
@@ -189,7 +191,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent event) {
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Move") == null){return;}
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Move")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiMove"));
@@ -200,7 +202,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerEatFoodEvent(PlayerEatFoodEvent event) {
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.EatFood") == null){return;}
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.EatFood")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiEat"));
@@ -211,6 +213,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event){
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Jump") == null){return;}
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if(event.getPacket() instanceof PlayerActionPacket){
             PlayerActionPacket pk = (PlayerActionPacket) event.getPacket();
             if((pk).action == PlayerActionPacket.ACTION_JUMP){
@@ -226,7 +229,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerToggleFlightEvent(PlayerToggleFlightEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Fly") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Fly")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiFly"));
             event.getPlayer().setPosition(event.getPlayer().getPosition());
@@ -239,7 +242,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerFoodLevelChangeEvent(PlayerFoodLevelChangeEvent event){
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.HungerChange") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.HungerChange")) {
             event.setCancelled(true);
         }
@@ -247,19 +250,25 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerDeathEvent(PlayerDeathEvent event){
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"Player.KeepXp") == null){return;}
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"Player.KeepInventory") == null){return;}
-        if(Config.isOperateListed(event.getEntity())){ return; }
-        Boolean keepXp = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Player.KeepXp");
-        Boolean keepInv = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Player.KeepInventory");
+        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.KeepXp") == null){
+            event.setKeepExperience(true);
+            return;
+        }
+        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.KeepInventory") == null){
+            event.setKeepInventory(true);
+            return;
+        }
+        Boolean keepXp = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.KeepXp");
+        Boolean keepInv = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.KeepInventory");
         event.setKeepExperience(keepXp);
         event.setKeepInventory(keepInv);
+        event.setDrops(new Item[0]);
     }
 
     @EventHandler
     public void PlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Sneak") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Sneak")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiSneak"));
             event.getPlayer().setSneaking(false);
@@ -270,7 +279,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerToggleSprintEvent(PlayerToggleSprintEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Sprint") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Sprint")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiSprint"));
             event.getPlayer().setSprinting(false);
@@ -282,7 +291,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerToggleSwimEvent(PlayerToggleSwimEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Swim") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Swim")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiSwim"));
             event.getPlayer().setSwimming(false);
@@ -293,7 +302,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerToggleGlideEvent(PlayerToggleGlideEvent event) {
         if(MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player.Glide") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player.Glide")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiGlide"));
             event.setCancelled(true);

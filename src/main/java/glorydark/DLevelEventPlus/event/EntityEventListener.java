@@ -19,15 +19,17 @@ public class EntityEventListener implements Listener {
         //实体导致耕地踩踏
         Entity entity = event.getEntity();
         if (event.getBlock().getId() == Block.FARMLAND && !(entity instanceof Player)) {
-            if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.FarmProtect") == null){return;}
-            if (MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"World.FarmProtect")) {
+            Boolean test = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.FarmProtect");
+            if (test != null && test) {
                 event.setCancelled(true);
             }
         }
 
-        if (event.getBlock().getId() == Block.ITEM_FRAME_BLOCK) {
+
+        if (event.getBlock().getId() == Block.ITEM_FRAME_BLOCK && !(entity instanceof Player)) {
             if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.AllowInteractFrameBlock") == null){return;}
-            if (!MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Player.AllowInteractFrameBlock")) {
+            Boolean test = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Player.AllowInteractFrameBlock");
+            if (test != null && test) {
                 event.setCancelled(true);
             }
         }
@@ -37,16 +39,18 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityExplodeEvent(EntityExplodeEvent event){
         Entity entity = event.getEntity();
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.TntExplodes") == null){return;}
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.AllExplodes") == null){return;}
+        Boolean test1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.TntExplodes");
+        Boolean test2 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.AllExplodes");
+        if(test1 == null){return;}
+        if(test2 == null){return;}
         if(entity instanceof EntityMinecartTNT || entity instanceof EntityPrimedTNT) {
-            if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.TntExplodes")) {
+            if (!test1) {
                 entity.despawnFromAll();
                 MainClass.server.getLogger().info(Config.getLang("AntiTntExplode"));
                 event.setCancelled(true);
             }
         }
-        if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.AllExplodes")) {
+        if (!test2) {
             entity.despawnFromAll();
             MainClass.server.getLogger().info(Config.getLang("AntiAllExplode"));
             event.setCancelled(true);
@@ -55,20 +59,24 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityExplosionPrimeEvent(EntityExplosionPrimeEvent event){
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.AllExplodes") == null){return;}
-        if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.AllExplodes")) {
-            MainClass.server.getLogger().info(Config.getLang("AntiTouchFlame"));
+        Boolean test1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.AllExplodes");
+        if(test1 == null){return;}
+        if (!test1) {
+            MainClass.server.getLogger().info(Config.getLang("AntiTntExplode"));
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void EntityDamageByEntityEvent(EntityDamageByEntityEvent event){
-        if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.Pvp") == null){return;}
+        Boolean test1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World.Pvp");
+        if(test1 == null){return;}
         Entity entity = event.getEntity();
-        if(entity instanceof Player) {
-            if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World.Pvp")) {
+        if(entity instanceof Player && event.getDamager() instanceof Player) {
+            if(Config.isOperateListed((Player) event.getEntity(), event.getEntity().getLevel())){ return; }
+            if (!test1) {
                 ((Player) entity).sendActionBar(Config.getLang("AntiPvp"));
+                ((Player) event.getDamager()).sendActionBar(Config.getLang("AntiPvp"));
                 event.setCancelled(true);
             }
         }
@@ -79,6 +87,7 @@ public class EntityEventListener implements Listener {
         if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"Entity.PortalEnter") == null){return;}
         Entity entity = event.getEntity();
         if(entity instanceof Player) {
+            if(Config.isOperateListed((Player) event.getEntity(), event.getEntity().getLevel())){ return; }
             if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity.PortalEnter")) {
                 ((Player) entity).sendActionBar(Config.getLang("AntiPortalEnter"));
                 event.setCancelled(true);
@@ -91,6 +100,7 @@ public class EntityEventListener implements Listener {
         if(MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"Entity.VehicleEnter") == null){return;}
         Entity entity = event.getEntity();
         if(entity instanceof Player) {
+            if(Config.isOperateListed((Player) event.getEntity(), event.getEntity().getLevel())){ return; }
             if (!MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity.VehicleEnter")) {
                 ((Player) entity).sendActionBar(Config.getLang("AntiVehicleEnter"));
                 event.setCancelled(true);
@@ -101,10 +111,10 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityLevelChangeEvent(EntityLevelChangeEvent event){
         if(!(event.getEntity() instanceof Player)){return;}
+        if(Config.isOperateListed((Player) event.getEntity(), event.getEntity().getLevel())){ return; }
         Player p = (Player) event.getEntity();
-        if(Config.isOperateListed(p)){ return; }
-        if(Config.isWhiteListed(p)){ return;}
         Level level = event.getTarget();
+        if(Config.isWhiteListed(p,level)){ return;}
         p.sendActionBar(Config.getLang("AntiTeleport").replace("%s",level.getName()));
         event.setCancelled(true);
     }

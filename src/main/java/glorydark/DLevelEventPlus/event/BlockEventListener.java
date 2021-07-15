@@ -14,6 +14,7 @@ public class BlockEventListener implements Listener {
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event){
         if(MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.AllowPlaceBlock") == null){return;}
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.AllowPlaceBlock")) {
             if(event.getPlayer().isOnline()) {
                 event.getPlayer().sendActionBar(Config.getLang("AntiPlaceBlock"));
@@ -26,6 +27,7 @@ public class BlockEventListener implements Listener {
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event){
         if(MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.AllowBreakBlock") == null){return;}
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.AllowBreakBlock")) {
             if(event.getPlayer().isOnline()) {
                 event.getPlayer().sendActionBar(Config.getLang("AntiBreakBlock"));
@@ -84,8 +86,8 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void DoorToggleEvent(DoorToggleEvent event){
-        if(Config.isOperateListed(event.getPlayer())){ return; }
         if(MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.DoorToggle") == null){return;}
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         if (!MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.DoorToggle")) {
             event.setCancelled(true);
         }
@@ -126,7 +128,7 @@ public class BlockEventListener implements Listener {
     @EventHandler
     public void ItemFrameDropItemEvent(ItemFrameDropItemEvent event){
         if(MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.ItemFrameDropItem") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         Level level = event.getPlayer().getLevel();
         if (!MainClass.getLevelBooleanInit(level.getName(),"Block.ItemFrameDropItem")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiDestroyFlameBlock").replace("%s",level.getName()));
@@ -137,7 +139,7 @@ public class BlockEventListener implements Listener {
     @EventHandler
     public void SignChangeEvent(SignChangeEvent event){
         if(MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block.SignChange") == null){return;}
-        if(Config.isOperateListed(event.getPlayer())){ return; }
+        if(Config.isOperateListed(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         Level level = event.getPlayer().getLevel();
         if (!MainClass.getLevelBooleanInit(level.getName(),"Block.SignChange")) {
             event.getPlayer().sendActionBar(Config.getLang("AntiChangeSignText").replace("%s",level.getName()));
