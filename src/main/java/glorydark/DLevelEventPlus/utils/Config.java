@@ -22,11 +22,6 @@ public class Config {
                 worldcfg.set("World.AllExplodes", true);
                 worldcfg.set("World.TntExplodes", true);
                 worldcfg.set("World.Pvp", true);
-                List<String> arrayList = new ArrayList<>();
-                arrayList.add("All");
-                worldcfg.set("World.WhiteList", arrayList);
-                worldcfg.set("World.OperatorList", new ArrayList<>());
-                worldcfg.set("World.CommandPreprocess", true);
                 worldcfg.set("World.KeepInventory", true);
                 worldcfg.set("World.KeepXp", true);
             }
@@ -64,6 +59,8 @@ public class Config {
             if (!worldcfg.exists("Block")) {
                 worldcfg.set("Block.AllowPlaceBlock", true);
                 worldcfg.set("Block.AllowBreakBlock", true);
+                worldcfg.set("Block.AntiPlaceBlocks", new ArrayList<>());
+                worldcfg.set("Block.AntiBreakBlocks", new ArrayList<>());
                 worldcfg.set("Block.Burn", true);
                 worldcfg.set("Block.Ignite", true);
                 worldcfg.set("Block.Fall", true);
@@ -84,116 +81,162 @@ public class Config {
         return false;
     }
 
-    public static boolean WhiteList(int type,String name,String levelname){
-        File file = new File(MainClass.path+"/worlds/"+levelname+".yml");
-        if(file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/worlds/" + levelname + ".yml", cn.nukkit.utils.Config.YAML);
-            switch (type) {
-                case 0:
-                    if (worldcfg.exists("World.WhiteList")) {
-                        List<String> arrayList = new ArrayList<>(worldcfg.getStringList("World.WhiteList"));
-                        if (!arrayList.contains(name)) {
-                            arrayList.add(name);
-                            worldcfg.set("World.WhiteList", arrayList);
-                            worldcfg.save();
-                            return true;
-                        }
-                    } else {
-                        List<String> arrayList = new ArrayList<>();
+    public static boolean whiteList(int type, String name, String levelname){
+        cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/whitelists.yml", cn.nukkit.utils.Config.YAML);
+        switch (type) {
+            case 0:
+                if (worldcfg.exists(levelname)) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+                    if (!arrayList.contains(name)) {
                         arrayList.add(name);
-                        worldcfg.set("World.WhiteList", arrayList);
+                        worldcfg.set(levelname, arrayList);
                         worldcfg.save();
                         return true;
                     }
-                case 1:
-                    if (worldcfg.exists("World.WhiteList")) {
-                        List<String> arrayList = new ArrayList<>(worldcfg.getStringList("World.WhiteList"));
-                        if (arrayList.contains(name)) {
-                            arrayList.remove(name);
-                            worldcfg.set("World.WhiteList", arrayList);
-                            worldcfg.save();
-                            return true;
-                        }
-                    }
-                default:
-                    MainClass.fixConfig(worldcfg);
-                    break;
-            }
-        }
-        return false;
-    }
-
-    public static boolean OperatorList(int type,String name,String levelname){
-        File file = new File(MainClass.path+"/worlds/"+levelname+".yml");
-        if(file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/worlds/" + levelname + ".yml", cn.nukkit.utils.Config.YAML);
-            switch (type) {
-                case 0:
-                    if (worldcfg.exists("World.OperatorList")) {
-                        List<String> arrayList = new ArrayList<>(worldcfg.getStringList("World.OperatorList"));
-                        if (!arrayList.contains(name)) {
-                            arrayList.add(name);
-                            worldcfg.set("World.OperatorList", arrayList);
-                            worldcfg.save();
-                            return true;
-                        }
-                    } else {
-                        List<String> arrayList = new ArrayList<>();
-                        worldcfg.set("World.OperatorList", arrayList.add(name));
-                        worldcfg.save();
-                        return true;
-                    }
-                case 1:
-                    if (worldcfg.exists("World.OperatorList")) {
-                        List<String> arrayList = new ArrayList<>(worldcfg.getStringList("World.OperatorList"));
-                        if (arrayList.contains(name)) {
-                            arrayList.remove(name);
-                            worldcfg.set("World.OperatorList", arrayList);
-                            worldcfg.save();
-                            return true;
-                        }
-                    }
-                default:
-                    MainClass.fixConfig(worldcfg);
-                    break;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isOperateListed(Player p, Level level) {
-        File file = new File(MainClass.path + "/worlds/" + level.getName() + ".yml");
-        if (file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/worlds/" + level.getName() + ".yml", cn.nukkit.utils.Config.YAML);
-            if (worldcfg.get("World.OperatorList") != null) {
-                if (worldcfg.getStringList("World.OperatorList").contains(p.getName())) {
-                    return true;
                 } else {
-                    return false;
+                    List<String> arrayList = new ArrayList<>();
+                    arrayList.add(name);
+                    worldcfg.set(levelname, arrayList);
+                    worldcfg.save();
+                    return true;
+                }
+            case 1:
+                if (worldcfg.exists(levelname)) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+                    if (arrayList.contains(name)) {
+                        arrayList.remove(name);
+                        worldcfg.set(levelname, arrayList);
+                        worldcfg.save();
+                        return true;
+                    }
+                }
+            default:
+                MainClass.fixConfig(worldcfg);
+                break;
+        }
+        return false;
+    }
+
+    public static boolean adminList(int type, String name){
+        cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/admins.yml", cn.nukkit.utils.Config.YAML);
+        switch (type) {
+            case 0:
+                if (worldcfg.exists("list")) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList("list"));
+                    if (!arrayList.contains(name)) {
+                        arrayList.add(name);
+                        worldcfg.set("list", arrayList);
+                        worldcfg.save();
+                        return true;
+                    }
+                } else {
+                    List<String> arrayList = new ArrayList<>();
+                    arrayList.add(name);
+                    worldcfg.set("list", arrayList);
+                    worldcfg.save();
+                    return true;
+                }
+            case 1:
+                if (worldcfg.exists("list")) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList("list"));
+                    if (arrayList.contains(name)) {
+                        arrayList.remove(name);
+                        worldcfg.set("list", arrayList);
+                        worldcfg.save();
+                        return true;
+                    }
+                }
+            default:
+                MainClass.fixConfig(worldcfg);
+                break;
+        }
+        return false;
+    }
+
+    public static boolean operatorList(int type, String name, String levelname){
+        cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/operators.yml", cn.nukkit.utils.Config.YAML);
+        switch (type) {
+            case 0:
+                if (worldcfg.exists(levelname)) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+                    if (!arrayList.contains(name)) {
+                        arrayList.add(name);
+                        worldcfg.set(levelname, arrayList);
+                        worldcfg.save();
+                        return true;
+                    }
+                } else {
+                    List<String> arrayList = new ArrayList<>();
+                    arrayList.add(name);
+                    worldcfg.set(levelname, arrayList);
+                    worldcfg.save();
+                    return true;
+                }
+            case 1:
+                if (worldcfg.exists(levelname)) {
+                    List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+                    if (arrayList.contains(name)) {
+                        arrayList.remove(name);
+                        worldcfg.set(levelname, arrayList);
+                        worldcfg.save();
+                        return true;
+                    }
+                }
+            default:
+                MainClass.fixConfig(worldcfg);
+                break;
+        }
+        return false;
+    }
+
+    public static boolean isAdmin(Player p) {
+        File file = new File(MainClass.path + "/admins.yml");
+        if (file.exists()) {
+            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/admins.yml", cn.nukkit.utils.Config.YAML);
+            if(worldcfg.exists("list")){
+                if(worldcfg.getStringList("list").contains(p.getName())){
+                    return true;
                 }
             }
         }
         return false;
+    }
 
+    public static boolean isOperator(Player p, Level level) {
+        File file = new File(MainClass.path + "/operators.yml");
+        if (file.exists()) {
+            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/operators.yml", cn.nukkit.utils.Config.YAML);
+            if (worldcfg.get(level.getName()) != null) {
+                return worldcfg.getStringList(level.getName()).contains(p.getName());
+            }
+        }
+        return false;
     }
 
     public static boolean isWhiteListed(Player p, Level level){
-        File file = new File(MainClass.path+"/worlds/"+level.getName()+".yml");
+        File file = new File(MainClass.path+"/whitelists.yml");
         if(file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/worlds/" + level.getName() + ".yml", cn.nukkit.utils.Config.YAML);
-            if (worldcfg.exists("World.WhiteList")) {
-                if (worldcfg.getStringList("World.WhiteList").contains(p.getName()) || worldcfg.getStringList("World.WhiteList").contains("All")) {
-                    return true;
-                } else {
-                    return false;
-                }
+            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/whitelists.yml", cn.nukkit.utils.Config.YAML);
+            if (worldcfg.exists(level.getName())) {
+                return worldcfg.getStringList(level.getName()).contains(p.getName()) || worldcfg.getStringList(level.getName()).contains("All");
             }
         }
         return true;
     }
 
     public static String getLang(String text){
-        cn.nukkit.utils.Config langcfg = new cn.nukkit.utils.Config(MainClass.path + "/lang-new.yml", cn.nukkit.utils.Config.YAML);
-        return langcfg.getString(text);
+        if(MainClass.langConfig.containsKey(text)) {
+            return (String) MainClass.langConfig.get(text);
+        }else{
+            return "Translation Not Found!";
+        }
+    }
+
+    public static List<String> getLangList(String text){
+        if(MainClass.langConfig.containsKey(text)) {
+            return (List<String>) MainClass.langConfig.get(text);
+        }else{
+            return new ArrayList<>();
+        }
     }
 }

@@ -9,31 +9,49 @@ import glorydark.DLevelEventPlus.event.EntityEventListener;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class MainClass extends PluginBase implements Listener{
     public static Server server;
     public static String path;
+    public static MainClass plugin;
+    public static HashMap<String, LinkedHashMap<String, Object>> configCache = new HashMap<>();
+    public static Map<String, Object> langConfig = new TreeMap<>();
 
     @Override
     public void onEnable(){
         server = this.getServer();
         path = this.getDataFolder().getPath();
-        this.getServer().getLogger().info("DGameRulePlus onEnable");
+        plugin = this;
+        this.getServer().getLogger().info("DLevelEventPlus onEnable");
         this.saveResource("lang-new.yml",false);
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        this.getServer().getCommandMap().register("",new command("dwp"));
-        File file = new File(this.getDataFolder().getPath()+"/worlds/");
-        for(File file1:file.listFiles()){
-            Config config = new Config(file1);
-            fixConfig(config);
+        this.getServer().getCommandMap().register("",new Command("dwp"));
+        File file = new File(path+"/worlds/");
+        file.mkdir();
+        File[] listFiles = file.listFiles();
+        if(listFiles != null) {
+            for (File file1 : listFiles) {
+                Config config = new Config(file1);
+                fixConfig(config);
+            }
         }
+        UpdateEngine.updateConfig();
+        //加载配置
+        loadLang();
+        loadAllLevelConfig();
+    }
+
+    @Override
+    public void onDisable() {
+        saveAllLevelConfig();
+        configCache.clear();
     }
 
     public static void fixConfig(Config config){
+        if(config == null){ return;}
         if (!config.exists("World.FarmProtect")) {
             config.set("World.FarmProtect", true);
         }
@@ -45,17 +63,6 @@ public class MainClass extends PluginBase implements Listener{
         }
         if (!config.exists("World.Pvp")) {
             config.set("World.Pvp", true);
-        }
-        if (!config.exists("World.WhiteList")) {
-            List<String> strings = new ArrayList<>();
-            strings.add("All");
-            config.set("World.WhiteList", strings);
-        }
-        if (!config.exists("World.OperatorList")) {
-            config.set("World.OperatorList", new ArrayList<>());
-        }
-        if (!config.exists("World.CommandPreprocess")) {
-            config.set("World.CommandPreprocess", true);
         }
         if (!config.exists("World.KeepInventory")) {
             config.set("World.KeepInventory", true);
@@ -144,6 +151,12 @@ public class MainClass extends PluginBase implements Listener{
         if (!config.exists("Block.AllowBreakBlock")) {
             config.set("Block.AllowBreakBlock", true);
         }
+        if (!config.exists("Block.AntiPlaceBlocks")) {
+            config.set("Block.AntiPlaceBlocks", new ArrayList<>());
+        }
+        if (!config.exists("Block.AntiBreakBlocks")) {
+            config.set("Block.AntiBreakBlocks", new ArrayList<>());
+        }
         if (!config.exists("Block.Burn")) {
             config.set("Block.Burn", true);
         }
@@ -183,59 +196,104 @@ public class MainClass extends PluginBase implements Listener{
         config.save();
     }
 
+    public static void loadAllLevelConfig(){
+        configCache.clear();
+        File file = new File(path+"/worlds/");
+        File[] listFiles = file.listFiles();
+        plugin.getLogger().info("开始加载地图配置");
+        if(listFiles != null) {
+            for (File file1 : listFiles) {
+                Config config = new Config(file1);
+                String levelName = file1.getName().split("\\.")[0];
+                plugin.getLogger().info("加载世界【"+levelName+"】配置成功");
+                configCache.put(levelName,(LinkedHashMap<String, Object>) config.getAll());
+            }
+        }
+        plugin.getLogger().info("加载地图配置完成！");
+    }
+
+    public static void loadLang(){
+        plugin.getLogger().info("开始加载语言配置");
+        langConfig.clear();
+        cn.nukkit.utils.Config langCfg = new cn.nukkit.utils.Config(MainClass.path + "/lang-new.yml", cn.nukkit.utils.Config.YAML);
+        langConfig = langCfg.getAll();
+        plugin.getLogger().info("加载语言完成！");
+    }
+
+    public static void saveAllLevelConfig(){
+        File file = new File(path+"/worlds/");
+        File[] listFiles = file.listFiles();
+        plugin.getLogger().alert("开始保存配置");
+        if(listFiles != null) {
+            for (File file1 : listFiles) {
+                Config config = new Config(file1);
+                String levelName = file1.getName().split("\\.")[0];
+                plugin.getLogger().alert("保存世界【"+levelName+"】配置成功");
+                config.setAll(configCache.get(levelName));
+                config.save();
+            }
+        }
+        plugin.getLogger().alert("保存完成！");
+    }
+
     // 获取世界的配置，无则返回null
-    public static Boolean getLevelBooleanInit(String LevelName, String Key){
-        File file = new File(path+"/worlds/"+LevelName+".yml");
-        if(file.exists()) {
-            Config LevelInit = new Config(path + "/worlds/" + LevelName + ".yml", Config.YAML);
-            if (LevelInit.exists(Key)) {
-                if (LevelInit.get(Key) == "") {
-                    return null;
+    public static Boolean getLevelBooleanInit(String LevelName, String key, String subKey){
+        if(configCache.containsKey(LevelName)){
+            Map<String, Object> map = configCache.get(LevelName);
+            if(map.containsKey(key)){
+                Map<String, Object> keyMap = (Map<String, Object>) map.get(key);
+                if(keyMap.containsKey(subKey)) {
+                    return (Boolean) keyMap.get(subKey);
                 }
-                return LevelInit.getBoolean(Key);
-            } else {
-                return null;
             }
         }
         return null;
     }
 
-    public static Boolean getLevelSettingBooleanInit(String LevelName, String Key){
-        File file = new File(path+"/worlds/"+LevelName+".yml");
-        if(file.exists()) {
-            Config LevelInit = new Config(path + "/worlds/" + LevelName + ".yml", Config.YAML);
-            if (LevelInit.exists(Key)) {
-                if (LevelInit.get(Key) == "") {
-                    return false;
+    public static Boolean getLevelSettingBooleanInit(String LevelName, String key, String subKey){
+        if(configCache.containsKey(LevelName)){
+            Map<String, Object> map = configCache.get(LevelName); // world的全部配置
+            if(map.containsKey(key)){
+                Map<String, Object> keyMap = (Map<String, Object>) map.get(key); //键下的所有配置
+                if(keyMap.containsKey(subKey)) {
+                    return (Boolean) keyMap.get(subKey);
                 }
-                return LevelInit.getBoolean(Key);
-            } else {
-                return false;
             }
         }
         return false;
     }
 
-    public static void setLevelBooleanInit(String LevelName, String Key, Boolean value){
-        Config LevelInit = new Config(path+"/worlds/"+LevelName+".yml",Config.YAML);
-        LevelInit.set(Key,value);
-        LevelInit.save();
-        fixConfig(LevelInit);
+    public static void setLevelBooleanInit(String LevelName, String key, String subKey, Boolean value){
+        Map<String, Object> map;
+        if(configCache.containsKey(LevelName)){
+            map = configCache.get(LevelName);
+            Map<String, Object> keyMap;
+            if(map.containsKey(key)){
+                keyMap = (Map<String, Object>) map.get(key);
+            }else{
+                keyMap = new TreeMap<>();
+            }
+            keyMap.put(subKey, value);
+            map.put(key, keyMap);
+        }else{
+            map = new TreeMap<>();
+            Map<String, Object> keyMap = new TreeMap<>();
+            keyMap.put(subKey,value);
+            map.put(key,keyMap);
+        }
+        configCache.put(LevelName,(LinkedHashMap<String, Object>) map);
     }
 
-    public static List<String> getLevelStringlistInit(String LevelName, String Key){
-        File file = new File(path+"/worlds/"+LevelName+".yml");
-        if(file.exists()) {
-            Config LevelInit = new Config(path + "/worlds/" + LevelName + ".yml", Config.YAML);
-            if (LevelInit.exists(Key)) {
-                if (LevelInit.get(Key) == "") {
-                    return null;
+    public static List<String> getLevelStringListInit(String LevelName, String key, String subKey){
+        if(configCache.containsKey(LevelName)){
+            Map<String, Object> map = configCache.get(LevelName); // world的全部配置
+            if(map.containsKey(key)){
+                Map<String, Object> keyMap = (Map<String, Object>) map.get(key); //键下的所有配置
+                if(keyMap.containsKey(subKey)) {
+                    return (List<String>) keyMap.get(subKey);
                 }
-                return new ArrayList<>(LevelInit.getStringList(Key));
-            } else {
-                return null;
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 }
