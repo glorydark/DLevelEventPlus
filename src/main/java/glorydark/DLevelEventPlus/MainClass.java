@@ -1,5 +1,6 @@
 package glorydark.DLevelEventPlus;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.PluginBase;
@@ -16,7 +17,8 @@ public class MainClass extends PluginBase implements Listener{
     public static String path;
     public static MainClass plugin;
     public static HashMap<String, LinkedHashMap<String, Object>> configCache = new HashMap<>();
-    public static Map<String, Object> langConfig = new TreeMap<>();
+    public static Map<String, Object> langConfig = new LinkedHashMap<>();
+    public static LinkedHashMap<Player, String> selectCache = new LinkedHashMap<>();
 
     @Override
     public void onEnable(){
@@ -24,7 +26,7 @@ public class MainClass extends PluginBase implements Listener{
         path = this.getDataFolder().getPath();
         plugin = this;
         this.getServer().getLogger().info("DLevelEventPlus onEnable");
-        this.saveResource("lang-new.yml",false);
+        this.saveResource("lang.yml",false);
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
@@ -34,19 +36,25 @@ public class MainClass extends PluginBase implements Listener{
         File[] listFiles = file.listFiles();
         if(listFiles != null) {
             for (File file1 : listFiles) {
-                Config config = new Config(file1);
-                fixConfig(config);
+                if(UpdateEngine.isYaml(file1.getName())){
+                    Config config = new Config(file1);
+                    fixConfig(config);
+                }
             }
         }
+
+        File folder1 = new File(path+"/templates/");
+        folder1.mkdir();
         UpdateEngine.updateConfig();
         //加载配置
         loadLang();
         loadAllLevelConfig();
+        loadTemplateConfig();
     }
 
     @Override
     public void onDisable() {
-        saveAllLevelConfig();
+        saveAllConfig();
         configCache.clear();
     }
 
@@ -203,35 +211,59 @@ public class MainClass extends PluginBase implements Listener{
         plugin.getLogger().info("开始加载地图配置");
         if(listFiles != null) {
             for (File file1 : listFiles) {
-                Config config = new Config(file1);
-                String levelName = file1.getName().split("\\.")[0];
-                plugin.getLogger().info("加载世界【"+levelName+"】配置成功");
-                configCache.put(levelName,(LinkedHashMap<String, Object>) config.getAll());
+                if(UpdateEngine.isYaml(file1.getName())) {
+                    Config config = new Config(file1);
+                    String levelName = file1.getName().split("\\.")[0];
+                    plugin.getLogger().info("加载世界【" + levelName + "】配置成功");
+                    configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
+                }
             }
         }
         plugin.getLogger().info("加载地图配置完成！");
     }
 
+    public static void loadTemplateConfig(){
+        glorydark.DLevelEventPlus.utils.Config.TemplateCache.clear();
+        File file = new File(path+"/templates/");
+        File[] listFiles = file.listFiles();
+        plugin.getLogger().info("开始加载模板配置");
+        if(listFiles != null) {
+            for (File file1 : listFiles) {
+                if(UpdateEngine.isYaml(file1.getName())) {
+                    Config config = new Config(file1);
+                    String templateName = file1.getName().split("\\.")[0];
+                    plugin.getLogger().info("加载模板【" + templateName + "】配置成功");
+                    glorydark.DLevelEventPlus.utils.Config.TemplateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
+                }
+            }
+        }
+        plugin.getLogger().info("加载模板配置完成！");
+    }
+
     public static void loadLang(){
         plugin.getLogger().info("开始加载语言配置");
         langConfig.clear();
-        cn.nukkit.utils.Config langCfg = new cn.nukkit.utils.Config(MainClass.path + "/lang-new.yml", cn.nukkit.utils.Config.YAML);
+        cn.nukkit.utils.Config langCfg = new cn.nukkit.utils.Config(MainClass.path + "/lang.yml", cn.nukkit.utils.Config.YAML);
         langConfig = langCfg.getAll();
         plugin.getLogger().info("加载语言完成！");
     }
 
-    public static void saveAllLevelConfig(){
-        File file = new File(path+"/worlds/");
-        File[] listFiles = file.listFiles();
+    public static void saveAllConfig(){
         plugin.getLogger().alert("开始保存配置");
-        if(listFiles != null) {
-            for (File file1 : listFiles) {
-                Config config = new Config(file1);
-                String levelName = file1.getName().split("\\.")[0];
-                plugin.getLogger().alert("保存世界【"+levelName+"】配置成功");
-                config.setAll(configCache.get(levelName));
-                config.save();
-            }
+        for(String s:MainClass.configCache.keySet()){
+            Config config = new Config(path+"/worlds/"+s+".yml",Config.YAML);
+            config.setAll(MainClass.configCache.get(s));
+            config.save();
+            fixConfig(config);
+            plugin.getLogger().info("保存世界【"+s+"】配置成功");
+        }
+
+        for(String s: glorydark.DLevelEventPlus.utils.Config.TemplateCache.keySet()){
+            Config config = new Config(path+"/templates/"+s+".yml",Config.YAML);
+            config.setAll(MainClass.configCache.get(s));
+            config.save();
+            fixConfig(config);
+            plugin.getLogger().info("保存模板【"+s+"】配置成功");
         }
         plugin.getLogger().alert("保存完成！");
     }
@@ -264,24 +296,24 @@ public class MainClass extends PluginBase implements Listener{
     }
 
     public static void setLevelBooleanInit(String LevelName, String key, String subKey, Boolean value){
-        Map<String, Object> map;
+        LinkedHashMap<String, Object> map;
         if(configCache.containsKey(LevelName)){
             map = configCache.get(LevelName);
-            Map<String, Object> keyMap;
+            LinkedHashMap<String, Object> keyMap;
             if(map.containsKey(key)){
-                keyMap = (Map<String, Object>) map.get(key);
+                keyMap = (LinkedHashMap<String, Object>) map.get(key);
             }else{
-                keyMap = new TreeMap<>();
+                keyMap = new LinkedHashMap<>();
             }
             keyMap.put(subKey, value);
             map.put(key, keyMap);
         }else{
-            map = new TreeMap<>();
-            Map<String, Object> keyMap = new TreeMap<>();
+            map = new LinkedHashMap<>();
+            LinkedHashMap<String, Object> keyMap = new LinkedHashMap<>();
             keyMap.put(subKey,value);
             map.put(key,keyMap);
         }
-        configCache.put(LevelName,(LinkedHashMap<String, Object>) map);
+        configCache.put(LevelName, map);
     }
 
     public static List<String> getLevelStringListInit(String LevelName, String key, String subKey){

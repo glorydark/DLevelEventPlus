@@ -1,4 +1,6 @@
-#Old Config.yml
+Version: 2022010101
+
+#tips translations
 AntiTouchFlame: 您所在世界禁止触碰展示框！
 AntiTrampleFarmland: 您所在世界禁止破坏耕地！
 AntiUseFishingRod: 您所在世界禁止使用钓鱼竿！
@@ -27,13 +29,79 @@ AntiPortalEnter: 本世界禁止进入传送门
 AntiVehicleEnter: 本世界禁止使用载具
 AntiPlaceBlock: 您所在世界禁止放置方块！
 AntiBreakBlock: 您所在世界禁止破坏方块!
+AntiPlaceSpecificBlock: 您所在世界禁止放置该方块！
+AntiBreakSpecificBlock: 您所在世界禁止破坏该方块!
 AntiDestroyFlameBlock: '%s 世界禁止破坏展示框！'
 AntiChangeSignText: '%s 世界禁止修改告示牌！'
+
+#gui text translations
 FarmProtect: 耕地踩踏保护
 AllExplodes: 全部类型爆炸
 TntExplodes: TNT爆炸
 Pvp: PVP
+KeepInventory: 死亡不掉落物品
+KeepXp: 死亡不掉落经验
 AllowOpenChest: 允许打开箱子
 CanUseFishingHook: 可使用鱼竿
 AllowInteractFrameBlock: 与物品框交互
 AllowUseFlintAndSteel: 使用打火石
+Sneak: 潜行
+Sprint: 冲刺
+Fly: 飞行
+Swim: 游泳
+Glide: 滑翔
+Jump: 跳跃
+Pick: 捡东西
+ConsumeItem: 消耗物品
+DropItem: 扔物品
+BedEnter: 进入床
+Move: 移动
+EatFood: 吃食物
+CommandPreprocess: 执行指令
+GameModeChange: 改变游戏模式
+BanTeleport: 本世界使用传送
+Explosion: 实体爆炸
+PortalEnter: 进入传送门
+AllowPlaceBlock: 放置方块
+AllowBreakBlock: 破坏方块
+Burn: 方块燃烧
+Ignite: 方块发光
+Fall: 方块掉落
+Grow: 方块生长
+Spread: 方块蔓延
+Form: 方块自动生成
+DoorToggle: 打开门
+LeavesDecay: 树叶凋零
+LiquidFlow: 液体流动
+ItemFrameDropItem: 物品框掉落物品
+SignChange: 改变告示牌
+BlockRedstone: 红石
+
+#AddedGuiTitle&Content
+TipsTitle: 提示
+SelectWorld: 选择世界
+SelectWorldContent: 请选择您要编辑的世界！
+SaveSuccess: 操作成功！
+SaveFailed: 操作失败！
+EditWorld: 编辑世界
+ReturnButton: 返回
+QuitButton: 退出
+SelectTemplate: 选择模板
+SelectTemplateContent: 选择模板
+EditTemplate: 设置模板
+TemplateSystem: 模板系统
+TemplateSystemContent: 模板系统
+AddTemplate: 添加模板
+TemplateName: 模板名称
+
+Help:
+  - 'DLevelEventPlus 使用指南'
+  - '新增世界配置文件 /dwp addworld world'
+  - '新增管理员 /dwp admin add/del player world'
+  - '新增操作员 /dwp operatorlist add/del player world'
+  - '新增白名单 /dwp whitelist add/del player world'
+  - '打开编辑配置菜单 /dwp edit'
+  - '保存配置(不包含语言文件) /dwp save'
+  - '重载世界配置(包含语言文件) /dwp reload'
+
+#TemplateSetting

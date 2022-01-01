@@ -2,14 +2,17 @@ package glorydark.DLevelEventPlus.utils;
 
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.level.Level;
+import cn.nukkit.utils.TextFormat;
+import com.sun.istack.internal.NotNull;
 import glorydark.DLevelEventPlus.MainClass;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Config {
+    public static HashMap<String, LinkedHashMap<String, Object>> TemplateCache = new HashMap<>();
     public static boolean createWorldConfig(String world){
         File file = new File(MainClass.path+"/worlds/"+world+".yml");
         if(!file.exists()) {
@@ -190,6 +193,7 @@ public class Config {
     }
 
     public static boolean isAdmin(Player p) {
+        if(p == null){ return false; }
         File file = new File(MainClass.path + "/admins.yml");
         if (file.exists()) {
             cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/admins.yml", cn.nukkit.utils.Config.YAML);
@@ -203,6 +207,8 @@ public class Config {
     }
 
     public static boolean isOperator(Player p, Level level) {
+        if(p == null){ return false; }
+        if(level == null){ return false; }
         File file = new File(MainClass.path + "/operators.yml");
         if (file.exists()) {
             cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/operators.yml", cn.nukkit.utils.Config.YAML);
@@ -214,14 +220,19 @@ public class Config {
     }
 
     public static boolean isWhiteListed(Player p, Level level){
+        if(p == null){ return false; }
+        if(level == null){ return false; }
         File file = new File(MainClass.path+"/whitelists.yml");
         if(file.exists()) {
             cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/whitelists.yml", cn.nukkit.utils.Config.YAML);
             if (worldcfg.exists(level.getName())) {
-                return worldcfg.getStringList(level.getName()).contains(p.getName()) || worldcfg.getStringList(level.getName()).contains("All");
+                return worldcfg.getStringList(level.getName()).contains(p.getName());
+            }else{
+                return true;
             }
+        }else{
+            return true;
         }
-        return true;
     }
 
     public static String getLang(String text){
@@ -238,5 +249,49 @@ public class Config {
         }else{
             return new ArrayList<>();
         }
+    }
+
+    public static void setTemplateBooleanInit(String ConfigName, String key, String subKey, Boolean value){
+        if(TemplateCache.containsKey(ConfigName)) {
+            Map<String, Object> keyMap = TemplateCache.get(ConfigName);
+            if(keyMap != null && keyMap.containsKey(key)) {
+                Map<String, Object> obj = (Map<String, Object>) keyMap.get(key);
+                if (obj != null) {
+                    obj.put(subKey, value);
+                    keyMap.put(key, obj);
+                    TemplateCache.put(ConfigName, (LinkedHashMap<String, Object>) keyMap);
+                } else {
+                    MainClass.plugin.getLogger().warning("保存配置错误，错误原因: TemplateCache hasn't got a key called: " + subKey);
+                }
+            }
+        }
+    }
+
+    @NotNull
+    public static Boolean getTemplateBooleanInit(String ConfigName, String key, String subKey){
+        if(TemplateCache.containsKey(ConfigName)){
+            Map<String, Object> keyMap = TemplateCache.get(ConfigName);
+            if(keyMap != null && keyMap.containsKey(key)){
+                Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
+                if(subkeyMap.containsKey(subKey)) {
+                    return (Boolean) subkeyMap.get(subKey);
+                }
+            }
+        }
+        return false;
+    }
+
+    @NotNull
+    public static List<String> getTemplateListInit(String ConfigName, String key, String subKey){
+        if(TemplateCache.containsKey(ConfigName)){
+            Map<String, Object> keyMap = TemplateCache.get(ConfigName);
+            if(keyMap != null && keyMap.containsKey(key)){
+                Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
+                if(subkeyMap.containsKey(subKey)) {
+                    return (List<String>) subkeyMap.get(subKey);
+                }
+            }
+        }
+        return new ArrayList<>();
     }
 }

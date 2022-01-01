@@ -1,6 +1,7 @@
 package glorydark.DLevelEventPlus.event;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.Server;
+import cn.nukkit.block.*;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.*;
@@ -114,17 +115,6 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void DoorToggleEvent(DoorToggleEvent event){
-        Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","DoorToggle");
-        if(bool == null){return;}
-        if(Config.isAdmin(event.getPlayer())){ return; }
-        if(Config.isOperator(event.getPlayer(), event.getPlayer().getLevel())){ return; }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void LeavesDecayEvent(LeavesDecayEvent event){
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","LeavesDecay");
         if(bool == null){return;}
@@ -144,11 +134,13 @@ public class BlockEventListener implements Listener {
 
 
     @EventHandler
-    public void RedstoneUpdateEvent(RedstoneUpdateEvent event){
+    public void RedstoneUpdateEvent(BlockUpdateEvent event){
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","BlockRedstone");
         if(bool == null){return;}
         if (!bool) {
-            event.setCancelled(true);
+            if(event.getBlock().isPowerSource()) {
+                event.setCancelled(true);
+            }
         }
     }
 

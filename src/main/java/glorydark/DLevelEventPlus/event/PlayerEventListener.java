@@ -2,10 +2,12 @@ package glorydark.DLevelEventPlus.event;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDoor;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.form.element.ElementToggle;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
@@ -17,9 +19,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.PlayerActionPacket;
-import glorydark.DLevelEventPlus.Command;
+import glorydark.DLevelEventPlus.gui.GuiType;
 import glorydark.DLevelEventPlus.MainClass;
+import glorydark.DLevelEventPlus.gui.GuiMain;
 import glorydark.DLevelEventPlus.utils.Config;
+import glorydark.DLevelEventPlus.utils.LiquidItem;
 
 import java.util.*;
 
@@ -30,6 +34,23 @@ public class PlayerEventListener implements Listener {
     }
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent event) {
+        /*
+        if(event.getPlayer().getInventory().getItemInHand().getId() == Item.BUCKET){
+            ItemBucket item = (ItemBucket) event.getPlayer().getInventory().getItemInHand();
+            if(item.getDamage() == 0) {
+                if(event.getBlock() instanceof BlockWater) {
+                    Server.getInstance().broadcastMessage("检测收回" + event.getBlock().getLocation().toString());
+                }
+            }
+            if(item.getDamage() != 0) {
+                if(!(event.getBlock() instanceof BlockWater) && !(event.getBlock() instanceof BlockAir)) {
+                    Server.getInstance().broadcastMessage("检测放置" + event.getBlock().getLocation().toString());
+                }
+            }
+        }
+        
+         */
+
         if(Config.isAdmin(event.getPlayer())){ return; }
         if(Config.isOperator(event.getPlayer(), event.getPlayer().getLevel())){ return; }
         Level level = event.getBlock().getLevel();
@@ -93,17 +114,17 @@ public class PlayerEventListener implements Listener {
                 }
             }
         }
-        List<Integer> list = new ArrayList<>();
-        list.add(Item.WATER);
-        list.add(Item.WATER_LILY);
-        list.add(Item.STILL_WATER);
-        list.add(Item.LAVA);
-        list.add(Item.STILL_LAVA);
-        list.add(Item.BUCKET);
-        if(list.contains(event.getPlayer().getInventory().getItemInHand().getId())){
+
+        if(block instanceof BlockDoor){
+            Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","DoorToggle");
+            if(bool == null){return;}
+            if (bool) { return; }
+            event.setCancelled(true);
+        }
+
+        if(LiquidItem.isLiquidItem(event.getPlayer().getInventory().getItemInHand())){
             Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","AllowPlaceBlock");
             if(bool == null){return;}
-            if(Config.isOperator(event.getPlayer(), event.getPlayer().getLevel())){ return; }
             if (bool) { return; }
             if(event.getPlayer().isOnline()) {
                 event.getPlayer().sendActionBar(Config.getLang("AntiPlaceBlock"));
@@ -196,8 +217,7 @@ public class PlayerEventListener implements Listener {
                 String commandtext = event.getMessage();
                 commandtext.replace("/","");
                 String[] commandsplit = commandtext.split(" ");
-                List<String> bancommands = strings;
-                for (String str : Objects.requireNonNull(bancommands)){
+                for (String str : Objects.requireNonNull(strings)){
                     String[] bancommandsplit = str.split(" ");
                     for(int i =1 ; i<=bancommandsplit.length; i++){
                         if(bancommandsplit[i-1].equals(commandsplit[i-1])){
@@ -395,42 +415,83 @@ public class PlayerEventListener implements Listener {
             case ADMIN_Main:
                 switch (window.getResponse().getClickedButtonId()){
                     case 0:
-                        Command.showChooseWorldMenu(p);
+                        GuiMain.showSettingChooseWorldMenu(p);
                         break;
                     case 1:
-                        Command.showPowerMainMenu(p);
+                        GuiMain.showPowerMainMenu(p);
                         break;
                     case 2:
-                        MainClass.saveAllLevelConfig();
-                        Command.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                        MainClass.saveAllConfig();
+                        GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
                         break;
                     case 3:
                         MainClass.loadAllLevelConfig();
                         MainClass.loadLang();
-                        Command.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                        GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                        break;
+                    case 4:
+                        GuiMain.showTemplateMainMenu(p);
                         break;
                 }
                 break;
             case Power_Main:
                 switch (window.getResponse().getClickedButtonId()){
                     case 0:
-                        Command.showPowerAddMenu(p);
+                        GuiMain.showPowerAddMenu(p);
                         break;
                     case 1:
-                        Command.showPowerDeleteMenu(p);
+                        GuiMain.showPowerDeleteMenu(p);
                         break;
                     case 2:
-                        Command.showMainMenu(p);
+                        GuiMain.showMainMenu(p);
                         break;
                 }
                 break;
             case Edit_ChooseWorld:
-                if (!window.getResponse().getClickedButton().getText().equals("")) {
-                    if(!window.getResponse().getClickedButton().getText().equals("返回")) {
-                        Command.showEditMenu(p, window.getResponse().getClickedButton().getText());
+                String text = window.getResponse().getClickedButton().getText();
+                if (!text.equals("")) {
+                    if(!text.equals("返回")) {
+                        String worldName = window.getResponse().getClickedButton().getText();
+                        if(MainClass.configCache.containsKey(text)){
+                            GuiMain.showEditMenu(p, worldName);
+                        }else{
+                            GuiMain.showSettingChooseTemplateMenu(p, GuiType.Template_ChooseTemplateForNewConfig);
+                        }
+                        MainClass.selectCache.put(p, text);
                     }else{
-                        Command.showMainMenu(p);
+                        GuiMain.showMainMenu(p);
                     }
+                }
+                break;
+            case Template_ChooseTemplateForEdit:
+                text = window.getResponse().getClickedButton().getText();
+                if (!text.equals("")) {
+                    if(!text.equals("返回")) {
+                        GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_EditProcess);
+                        MainClass.selectCache.put(p, text);
+                    }else{
+                        GuiMain.showMainMenu(p);
+                    }
+                }
+                break;
+            case Template_ChooseTemplateForNewConfig:
+                text = window.getResponse().getClickedButton().getText();
+                if (!text.equals("")) {
+                    if(!text.equals("返回")) {
+                        GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_CreateConfigProcess);
+                    }else{
+                        GuiMain.showMainMenu(p);
+                    }
+                }
+                break;
+            case Template_Main:
+                switch (window.getResponse().getClickedButtonId()){
+                    case 0:
+                        GuiMain.showTemplateAddMenu(p);
+                        break;
+                    case 1:
+                        GuiMain.showSettingChooseTemplateMenu(p, GuiType.Template_ChooseTemplateForEdit);
+                        break;
                 }
                 break;
         }
@@ -438,22 +499,26 @@ public class PlayerEventListener implements Listener {
 
     private void formWindowCustomOnClick(Player p, FormWindowCustom window, GuiType guiType) {
         if(window.getResponse() == null){return;}
-        switch (guiType){
+        FormResponseCustom responses = window.getResponse();
+        switch (guiType) {
             case Edit_Process:
-                String[] strings = window.getTitle().split("【");
-                if (strings.length < 2) {
+            case Template_CreateConfigProcess:
+                String levelname = MainClass.selectCache.get(p);
+                if(levelname == null){
+                    MainClass.plugin.getLogger().warning("Error: Can not find "+ p.getName() +"'s selected world.");
                     return;
                 }
-                String levelname = strings[1].replace("】", "");
-                FormResponseCustom responses = window.getResponse();
+                if(!MainClass.configCache.containsKey(levelname)){
+                    MainClass.configCache.put(levelname, new LinkedHashMap<String, Object>());
+                }
                 MainClass.setLevelBooleanInit(levelname, "World", "FarmProtect", responses.getToggleResponse(0));
                 MainClass.setLevelBooleanInit(levelname, "World", "AllExplodes", responses.getToggleResponse(1));
                 MainClass.setLevelBooleanInit(levelname, "World", "TntExplodes", responses.getToggleResponse(2));
-                MainClass.setLevelBooleanInit(levelname, "World", "Pvp", responses.getToggleResponse(3));
+                MainClass.setLevelBooleanInit(levelname, "World", "PVP", responses.getToggleResponse(3));
                 MainClass.setLevelBooleanInit(levelname, "World", "KeepInventory", responses.getToggleResponse(4));
                 MainClass.setLevelBooleanInit(levelname, "World", "KeepXp", responses.getToggleResponse(5));
-                MainClass.setLevelBooleanInit(levelname, "Player", "AllowOpenChest", responses.getToggleResponse(6));
-                MainClass.setLevelBooleanInit(levelname, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
+                MainClass.setLevelBooleanInit(levelname, "World", "AllowOpenChest", responses.getToggleResponse(6));
+                MainClass.setLevelBooleanInit(levelname, "World", "CanUseFishingHook", responses.getToggleResponse(7));
                 MainClass.setLevelBooleanInit(levelname, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
                 MainClass.setLevelBooleanInit(levelname, "Player", "AllowUseFlintAndSteel", responses.getToggleResponse(9));
                 MainClass.setLevelBooleanInit(levelname, "Player", "Sneak", responses.getToggleResponse(10));
@@ -487,28 +552,146 @@ public class PlayerEventListener implements Listener {
                 MainClass.setLevelBooleanInit(levelname, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
                 MainClass.setLevelBooleanInit(levelname, "Block", "SignChange", responses.getToggleResponse(39));
                 MainClass.setLevelBooleanInit(levelname, "Block", "BlockRedstone", responses.getToggleResponse(40));
-                Command.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                break;
+            case Template_EditProcess:
+                responses = window.getResponse();
+                String select = MainClass.selectCache.get(p);
+                Config.setTemplateBooleanInit(select, "World", "FarmProtect", responses.getToggleResponse(0));
+                Config.setTemplateBooleanInit(select, "World", "AllExplodes", responses.getToggleResponse(1));
+                Config.setTemplateBooleanInit(select, "World", "TntExplodes", responses.getToggleResponse(2));
+                Config.setTemplateBooleanInit(select, "World", "PVP", responses.getToggleResponse(3));
+                Config.setTemplateBooleanInit(select, "World", "KeepInventory", responses.getToggleResponse(4));
+                Config.setTemplateBooleanInit(select, "World", "KeepXp", responses.getToggleResponse(5));
+                Config.setTemplateBooleanInit(select, "World", "AllowOpenChest", responses.getToggleResponse(6));
+                Config.setTemplateBooleanInit(select, "World", "CanUseFishingHook", responses.getToggleResponse(7));
+                Config.setTemplateBooleanInit(select, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
+                Config.setTemplateBooleanInit(select, "Player", "AllowUseFlintAndSteel", responses.getToggleResponse(9));
+                Config.setTemplateBooleanInit(select, "Player", "Sneak", responses.getToggleResponse(10));
+                Config.setTemplateBooleanInit(select, "Player", "Fly", responses.getToggleResponse(11));
+                Config.setTemplateBooleanInit(select, "Player", "Swim", responses.getToggleResponse(12));
+                Config.setTemplateBooleanInit(select, "Player", "Glide", responses.getToggleResponse(13));
+                Config.setTemplateBooleanInit(select, "Player", "Jump", responses.getToggleResponse(14));
+                Config.setTemplateBooleanInit(select, "Player", "Sprint", responses.getToggleResponse(15));
+                Config.setTemplateBooleanInit(select, "Player", "Pick", responses.getToggleResponse(16));
+                Config.setTemplateBooleanInit(select, "Player", "ConsumeItem", responses.getToggleResponse(17));
+                Config.setTemplateBooleanInit(select, "Player", "DropItem", responses.getToggleResponse(18));
+                Config.setTemplateBooleanInit(select, "Player", "BedEnter", responses.getToggleResponse(19));
+                Config.setTemplateBooleanInit(select, "Player", "Move", responses.getToggleResponse(20));
+                Config.setTemplateBooleanInit(select, "Player", "EatFood", responses.getToggleResponse(21));
+                Config.setTemplateBooleanInit(select, "Player", "CommandPreprocess", responses.getToggleResponse(22));
+                Config.setTemplateBooleanInit(select, "Player", "GameModeChange", responses.getToggleResponse(23));
+                Config.setTemplateBooleanInit(select, "Player", "AntiTeleport", responses.getToggleResponse(24));
+                Config.setTemplateBooleanInit(select, "Entity", "Explosion", responses.getToggleResponse(25));
+                Config.setTemplateBooleanInit(select, "Entity", "PortalEnter", responses.getToggleResponse(26));
+                Config.setTemplateBooleanInit(select, "Block", "AllowPlaceBlock", responses.getToggleResponse(27));
+                Config.setTemplateBooleanInit(select, "Block", "AllowBreakBlock", responses.getToggleResponse(28));
+                Config.setTemplateBooleanInit(select, "Block", "Burn", responses.getToggleResponse(29));
+                Config.setTemplateBooleanInit(select, "Block", "Ignite", responses.getToggleResponse(30));
+                Config.setTemplateBooleanInit(select, "Block", "Fall", responses.getToggleResponse(31));
+                Config.setTemplateBooleanInit(select, "Block", "Grow", responses.getToggleResponse(32));
+                Config.setTemplateBooleanInit(select, "Block", "Spread", responses.getToggleResponse(33));
+                Config.setTemplateBooleanInit(select, "Block", "Form", responses.getToggleResponse(34));
+                Config.setTemplateBooleanInit(select, "Block", "DoorToggle", responses.getToggleResponse(35));
+                Config.setTemplateBooleanInit(select, "Block", "LeavesDecay", responses.getToggleResponse(36));
+                Config.setTemplateBooleanInit(select, "Block", "LiquidFlow", responses.getToggleResponse(37));
+                Config.setTemplateBooleanInit(select, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
+                Config.setTemplateBooleanInit(select, "Block", "SignChange", responses.getToggleResponse(39));
+                Config.setTemplateBooleanInit(select, "Block", "BlockRedstone", responses.getToggleResponse(40));
+                GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                break;
+            case Template_Add:
+                String text = responses.getInputResponse(0);
+                if(!text.replace(" ","").equals("")){
+                    if(!Config.TemplateCache.containsKey(text)){
+                        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                        //World
+                        Map<String, Object> typeWorldSetting = new HashMap<>();
+                        typeWorldSetting.put("FarmProtect", true);
+                        typeWorldSetting.put("AllExplodes", true);
+                        typeWorldSetting.put("TntExplodes", true);
+                        typeWorldSetting.put("Pvp", true);
+                        typeWorldSetting.put("KeepInventory", true);
+                        typeWorldSetting.put("KeepXp", true);
+                        //Player
+                        Map<String, Object> typePlayerSetting = new HashMap<>();
+                        typePlayerSetting.put("AllowOpenChest", true);
+                        typePlayerSetting.put("ChestTrustList", new ArrayList<>());
+                        typePlayerSetting.put("CanUseFishingHook", true);
+                        typePlayerSetting.put("AllowInteractFrameBlock", true);
+                        typePlayerSetting.put("AllowUseFlintAndSteel", true);
+                        typePlayerSetting.put("Sneak", true);
+                        typePlayerSetting.put("Sprint", true);
+                        typePlayerSetting.put("Fly", true);
+                        typePlayerSetting.put("Swim", true);
+                        typePlayerSetting.put("Glide", true);
+                        typePlayerSetting.put("Jump", true);
+                        typePlayerSetting.put("Pick", true);
+                        typePlayerSetting.put("ConsumeItem", true);
+                        typePlayerSetting.put("DropItem", true);
+                        typePlayerSetting.put("BedEnter", true);
+                        typePlayerSetting.put("Move", true);
+                        typePlayerSetting.put("EatFood", true);
+                        typePlayerSetting.put("CommandPreprocess", true);
+                        typePlayerSetting.put("BanCommands", new ArrayList<>());
+                        typePlayerSetting.put("GameModeChange", true);
+                        typePlayerSetting.put("HungerChange", false);
+                        typePlayerSetting.put("AntiTeleport", false);
+                        //Entity
+                        Map<String, Object> typeEntitySetting = new HashMap<>();
+                        typePlayerSetting.put("Explosion", false);
+                        typePlayerSetting.put("PortalEnter", false);
+
+                        //Block
+                        Map<String, Object> typeBlockSetting = new HashMap<>();
+                        typeBlockSetting.put("AllowPlaceBlock", true);
+                        typeBlockSetting.put("AllowBreakBlock", true);
+                        typeBlockSetting.put("AntiPlaceBlocks", new ArrayList<>());
+                        typeBlockSetting.put("AntiBreakBlocks", new ArrayList<>());
+                        typeBlockSetting.put("Burn", true);
+                        typeBlockSetting.put("Ignite", true);
+                        typeBlockSetting.put("Fall", true);
+                        typeBlockSetting.put("Grow", true);
+                        typeBlockSetting.put("Spread", true);
+                        typeBlockSetting.put("Form", true);
+                        typeBlockSetting.put("DoorToggle", true);
+                        typeBlockSetting.put("LeavesDecay", true);
+                        typeBlockSetting.put("LiquidFlow", true);
+                        typeBlockSetting.put("ItemFrameDropItem", true);
+                        typeBlockSetting.put("SignChange", true);
+                        typeBlockSetting.put("BlockRedstone", true);
+
+                        map.put("World", typeWorldSetting);
+                        map.put("Block", typeBlockSetting);
+                        map.put("Entity", typeEntitySetting);
+                        map.put("Player", typePlayerSetting);
+                        Config.TemplateCache.put(text, map);
+                        GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                    }else{
+                        GuiMain.showReturnWindow(p,false,GuiType.Return_toMainMenu);
+                    }
+                }
                 break;
             case Power_Add:
                 responses = window.getResponse();
-                String select = responses.getDropdownResponse(0).getElementContent();
+                select = responses.getDropdownResponse(0).getElementContent();
                 String player = responses.getInputResponse(1);
                 String world = responses.getInputResponse(2);
                 boolean b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
                 switch (select){
                     case "管理员":
                         if(player != null && !player.replace(" ","").equals("")) {
-                            Command.showReturnWindow(p,Config.adminList(0, player),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.adminList(0, player),GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
                         if(b) {
-                            Command.showReturnWindow(p,Config.operatorList(0, player,world),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.operatorList(0, player,world),GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "白名单":
                         if(b) {
-                            Command.showReturnWindow(p,Config.whiteList(0, player,world),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.whiteList(0, player,world),GuiType.Return_toPowerMenu);
                         }
                         break;
                 }
@@ -522,17 +705,17 @@ public class PlayerEventListener implements Listener {
                 switch (select){
                     case "管理员":
                         if(player != null && !player.replace(" ","").equals("")) {
-                            Command.showReturnWindow(p,Config.adminList(1, player),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.adminList(1, player),GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
                         if(b) {
-                            Command.showReturnWindow(p,Config.operatorList(1, player,world),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.operatorList(1, player,world),GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "白名单":
                         if(b) {
-                            Command.showReturnWindow(p,Config.whiteList(1, player,world),GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p,Config.whiteList(1, player,world),GuiType.Return_toPowerMenu);
                         }
                         break;
                 }
@@ -546,14 +729,14 @@ public class PlayerEventListener implements Listener {
             case Return_toMainMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
                     if(Config.isAdmin(p)) {
-                        Command.showMainMenu(p);
+                        GuiMain.showMainMenu(p);
                     }
                 }
                 break;
             case Return_toPowerMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
                     if(Config.isAdmin(p)) {
-                        Command.showPowerMainMenu(p);
+                        GuiMain.showPowerMainMenu(p);
                     }
                 }
                 break;

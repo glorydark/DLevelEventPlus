@@ -125,10 +125,10 @@ public class EntityEventListener implements Listener {
         if(!(event.getEntity() instanceof Player)){return;}
         Player p = ((Player) event.getEntity()).getPlayer();
         Level level = event.getTarget();
-        boolean bool = Config.isWhiteListed(p,level);
-        if(!bool){return;}
         if(Config.isAdmin(p)){ return; }
         if(Config.isOperator(p, level)){ return; }
+        boolean bool = Config.isWhiteListed(p,level);
+        if(bool){return;}
         p.sendActionBar(Config.getLang("AntiTeleport").replace("%s",level.getName()));
         event.setCancelled(true);
     }
