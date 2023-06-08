@@ -34,8 +34,6 @@ public class BlockEventListener implements Listener {
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
                 }
                 event.setCancelled(true);
-            }else{
-                event.getPlayer().setAllowModifyWorld(true);
             }
         }
     }
