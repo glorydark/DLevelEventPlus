@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="nk_#947">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Server/DevelopmentPluginBase/nk_#947.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../dependences/nukkit-1.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
