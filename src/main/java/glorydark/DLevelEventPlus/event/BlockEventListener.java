@@ -20,7 +20,6 @@ public class BlockEventListener implements Listener {
         if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())){return;}
 
         if (!bool) {
-            event.getPlayer().setAllowModifyWorld(false);
             if(MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
             }
@@ -30,7 +29,6 @@ public class BlockEventListener implements Listener {
             String blockString = block.getId()+":"+block.getDamage();
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiPlaceBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanPlaceBlocks").contains(blockString)){
                 if(MainClass.show_actionbar_text) {
-                    event.getPlayer().setAllowModifyWorld(false);
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
                 }
                 event.setCancelled(true);
