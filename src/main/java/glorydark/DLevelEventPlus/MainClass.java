@@ -2,9 +2,7 @@ package glorydark.DLevelEventPlus;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
-import cn.nukkit.plugin.MethodEventExecutor;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.BlockEventListener;
@@ -164,7 +162,20 @@ public class MainClass extends PluginBase implements Listener{
         return false;
     }
 
-    public static void setLevelBooleanInit(String LevelName, String key, String subKey, Boolean value){
+    public static Object getLevelSettingInit(String LevelName, String key, String subKey){
+        if(configCache.containsKey(LevelName)){
+            Map<String, Object> map = configCache.get(LevelName); // world的全部配置
+            if(map.containsKey(key)){
+                Map<String, Object> keyMap = (Map<String, Object>) map.get(key); //键下的所有配置
+                if(keyMap.containsKey(subKey)) {
+                    return keyMap.get(subKey);
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void setLevelInit(String LevelName, String key, String subKey, Object value){
         LinkedHashMap<String, Object> map;
         if(configCache.containsKey(LevelName)){
             map = configCache.get(LevelName);

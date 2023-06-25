@@ -132,7 +132,8 @@ public class GuiMain {
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockFade"), MainClass.getLevelSettingBooleanInit(level,"Block","Fade")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockPistonChange"), MainClass.getLevelSettingBooleanInit(level,"Block","PistonChange")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockFromToEvent"), MainClass.getLevelSettingBooleanInit(level,"Block","FromToEvent")));
-
+        formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "AntiVoid"), MainClass.getLevelSettingBooleanInit(level, "World", "AntiVoid")));
+        formWindowCustom.addElement(new ElementInput(ConfigUtil.getLang("EditWindow", "VoidHeight"), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight")), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight"))));
         PlayerEventListener.showFormWindow(player,formWindowCustom, GuiType.Edit_Process);
     }
 
@@ -223,6 +224,9 @@ public class GuiMain {
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockFade"), ConfigUtil.getTemplateBooleanInit(TemplateName,"Block","Fade")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockPistonChange"), ConfigUtil.getTemplateBooleanInit(TemplateName,"Block","PistonChange")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","BlockFromToEvent"), ConfigUtil.getTemplateBooleanInit(TemplateName,"Block","FromToEvent")));
+        formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "AntiVoid"), ConfigUtil.getTemplateBooleanInit(TemplateName, "World", "AntiVoid")));
+        formWindowCustom.addElement(new ElementInput(ConfigUtil.getLang("EditWindow", "VoidHeight"), String.valueOf(ConfigUtil.getTemplateInit(TemplateName, "World", "VoidHeight")),  String.valueOf(ConfigUtil.getTemplateInit(TemplateName, "World", "VoidHeight"))));
+
         PlayerEventListener.showFormWindow(player,formWindowCustom, type);
     }
 }

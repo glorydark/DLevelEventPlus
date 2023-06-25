@@ -271,23 +271,42 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
         Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(),"Player","Move");
-        if(bool == null){return;}
-        if(ConfigUtil.isAdmin(player)){ return; }
-        if(ConfigUtil.isOperator(player, player.getLevel())){ return; }
-        if (!bool) {
-            if(MainClass.show_actionbar_text) {
-                player.sendActionBar(ConfigUtil.getLang("Tips", "AntiMove"));
+        if(bool != null) {
+            if (!bool) {
+                if (MainClass.show_actionbar_text) {
+                    player.sendActionBar(ConfigUtil.getLang("Tips", "AntiMove"));
+                }
+                event.setCancelled(true);
             }
-            event.setCancelled(true);
+        }
+
+        Boolean bool1 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "World", "AntiVoid");
+        if(bool1 != null) {
+            if (bool1) {
+                Object o = MainClass.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight");
+                if (o != null) {
+                    int voidHeight = Integer.parseInt((String) MainClass.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight"));
+                    if(event.getTo().getFloorY() <= voidHeight){
+                        player.sendActionBar(ConfigUtil.getLang("Tips","AntiVoid"));
+                        event.setTo(player.getLevel().getSpawnLocation().getLocation());
+                    }
+                }
+            }
         }
 
         if(MainClass.experimental) {
-            Boolean bool1 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
-            if (bool1 == null) {
+            Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
+            if (bool2 == null) {
                 return;
             }
-            if (!bool1) {
+            if (!bool2) {
                 Location location = player.getLocation();
                 boolean isFlying = true;
                 for (int i = 1; i <= 4; i++) {
@@ -475,49 +494,55 @@ public class PlayerEventListener implements Listener {
                 if(!MainClass.configCache.containsKey(levelname)){
                     MainClass.configCache.put(levelname, new LinkedHashMap<>());
                 }
-                MainClass.setLevelBooleanInit(levelname, "World", "FarmProtect", responses.getToggleResponse(0));
-                MainClass.setLevelBooleanInit(levelname, "World", "AllExplodes", responses.getToggleResponse(1));
-                MainClass.setLevelBooleanInit(levelname, "World", "TntExplodes", responses.getToggleResponse(2));
-                MainClass.setLevelBooleanInit(levelname, "World", "PVP", responses.getToggleResponse(3));
-                MainClass.setLevelBooleanInit(levelname, "World", "KeepInventory", responses.getToggleResponse(4));
-                MainClass.setLevelBooleanInit(levelname, "World", "KeepXp", responses.getToggleResponse(5));
-                MainClass.setLevelBooleanInit(levelname, "Player", "AllowOpenChest", responses.getToggleResponse(6));
-                MainClass.setLevelBooleanInit(levelname, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
-                MainClass.setLevelBooleanInit(levelname, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Sneak", responses.getToggleResponse(9));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Fly", responses.getToggleResponse(10));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Swim", responses.getToggleResponse(11));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Glide", responses.getToggleResponse(12));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Jump", responses.getToggleResponse(13));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Sprint", responses.getToggleResponse(14));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Pick", responses.getToggleResponse(15));
-                MainClass.setLevelBooleanInit(levelname, "Player", "ConsumeItem", responses.getToggleResponse(16));
-                MainClass.setLevelBooleanInit(levelname, "Player", "DropItem", responses.getToggleResponse(17));
-                MainClass.setLevelBooleanInit(levelname, "Player", "BedEnter", responses.getToggleResponse(18));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Move", responses.getToggleResponse(19));
-                MainClass.setLevelBooleanInit(levelname, "Player", "EatFood", responses.getToggleResponse(20));
-                MainClass.setLevelBooleanInit(levelname, "Player", "CommandPreprocess", responses.getToggleResponse(21));
-                MainClass.setLevelBooleanInit(levelname, "Player", "GameModeChange", responses.getToggleResponse(22));
-                MainClass.setLevelBooleanInit(levelname, "Player", "AntiTeleport", responses.getToggleResponse(23));
-                MainClass.setLevelBooleanInit(levelname, "Player", "Interact", responses.getToggleResponse(24));
-                MainClass.setLevelBooleanInit(levelname, "Player", "NoFallDamage", responses.getToggleResponse(25));
-                MainClass.setLevelBooleanInit(levelname, "Entity", "Explosion", responses.getToggleResponse(26));
-                MainClass.setLevelBooleanInit(levelname, "Entity", "PortalEnter", responses.getToggleResponse(27));
-                MainClass.setLevelBooleanInit(levelname, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
-                MainClass.setLevelBooleanInit(levelname, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Burn", responses.getToggleResponse(30));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Ignite", responses.getToggleResponse(31));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Fall", responses.getToggleResponse(32));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Grow", responses.getToggleResponse(33));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Spread", responses.getToggleResponse(34));
-                MainClass.setLevelBooleanInit(levelname, "Block", "Form", responses.getToggleResponse(35));
-                MainClass.setLevelBooleanInit(levelname, "Block", "LeavesDecay", responses.getToggleResponse(36));
-                MainClass.setLevelBooleanInit(levelname, "Block", "LiquidFlow", responses.getToggleResponse(37));
-                MainClass.setLevelBooleanInit(levelname, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
-                MainClass.setLevelBooleanInit(levelname, "Block", "SignChange", responses.getToggleResponse(39));
-                MainClass.setLevelBooleanInit(levelname, "Block", "BlockRedstone", responses.getToggleResponse(40));
-                MainClass.setLevelBooleanInit(levelname, "Block", "DropItem", responses.getToggleResponse(41));
-                MainClass.setLevelBooleanInit(levelname, "Block", "DropExp", responses.getToggleResponse(42));
+                MainClass.setLevelInit(levelname, "World", "FarmProtect", responses.getToggleResponse(0));
+                MainClass.setLevelInit(levelname, "World", "AllExplodes", responses.getToggleResponse(1));
+                MainClass.setLevelInit(levelname, "World", "TntExplodes", responses.getToggleResponse(2));
+                MainClass.setLevelInit(levelname, "World", "PVP", responses.getToggleResponse(3));
+                MainClass.setLevelInit(levelname, "World", "KeepInventory", responses.getToggleResponse(4));
+                MainClass.setLevelInit(levelname, "World", "KeepXp", responses.getToggleResponse(5));
+                MainClass.setLevelInit(levelname, "Player", "AllowOpenChest", responses.getToggleResponse(6));
+                MainClass.setLevelInit(levelname, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
+                MainClass.setLevelInit(levelname, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
+                MainClass.setLevelInit(levelname, "Player", "Sneak", responses.getToggleResponse(9));
+                MainClass.setLevelInit(levelname, "Player", "Fly", responses.getToggleResponse(10));
+                MainClass.setLevelInit(levelname, "Player", "Swim", responses.getToggleResponse(11));
+                MainClass.setLevelInit(levelname, "Player", "Glide", responses.getToggleResponse(12));
+                MainClass.setLevelInit(levelname, "Player", "Jump", responses.getToggleResponse(13));
+                MainClass.setLevelInit(levelname, "Player", "Sprint", responses.getToggleResponse(14));
+                MainClass.setLevelInit(levelname, "Player", "Pick", responses.getToggleResponse(15));
+                MainClass.setLevelInit(levelname, "Player", "ConsumeItem", responses.getToggleResponse(16));
+                MainClass.setLevelInit(levelname, "Player", "DropItem", responses.getToggleResponse(17));
+                MainClass.setLevelInit(levelname, "Player", "BedEnter", responses.getToggleResponse(18));
+                MainClass.setLevelInit(levelname, "Player", "Move", responses.getToggleResponse(19));
+                MainClass.setLevelInit(levelname, "Player", "EatFood", responses.getToggleResponse(20));
+                MainClass.setLevelInit(levelname, "Player", "CommandPreprocess", responses.getToggleResponse(21));
+                MainClass.setLevelInit(levelname, "Player", "GameModeChange", responses.getToggleResponse(22));
+                MainClass.setLevelInit(levelname, "Player", "AntiTeleport", responses.getToggleResponse(23));
+                MainClass.setLevelInit(levelname, "Player", "Interact", responses.getToggleResponse(24));
+                MainClass.setLevelInit(levelname, "Player", "NoFallDamage", responses.getToggleResponse(25));
+                MainClass.setLevelInit(levelname, "Entity", "Explosion", responses.getToggleResponse(26));
+                MainClass.setLevelInit(levelname, "Entity", "PortalEnter", responses.getToggleResponse(27));
+                MainClass.setLevelInit(levelname, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
+                MainClass.setLevelInit(levelname, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
+                MainClass.setLevelInit(levelname, "Block", "Burn", responses.getToggleResponse(30));
+                MainClass.setLevelInit(levelname, "Block", "Ignite", responses.getToggleResponse(31));
+                MainClass.setLevelInit(levelname, "Block", "Fall", responses.getToggleResponse(32));
+                MainClass.setLevelInit(levelname, "Block", "Grow", responses.getToggleResponse(33));
+                MainClass.setLevelInit(levelname, "Block", "Spread", responses.getToggleResponse(34));
+                MainClass.setLevelInit(levelname, "Block", "Form", responses.getToggleResponse(35));
+                MainClass.setLevelInit(levelname, "Block", "LeavesDecay", responses.getToggleResponse(36));
+                MainClass.setLevelInit(levelname, "Block", "LiquidFlow", responses.getToggleResponse(37));
+                MainClass.setLevelInit(levelname, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
+                MainClass.setLevelInit(levelname, "Block", "SignChange", responses.getToggleResponse(39));
+                MainClass.setLevelInit(levelname, "Block", "BlockRedstone", responses.getToggleResponse(40));
+                MainClass.setLevelInit(levelname, "Block", "DropItem", responses.getToggleResponse(41));
+                MainClass.setLevelInit(levelname, "Block", "DropExp", responses.getToggleResponse(42));
+                MainClass.setLevelInit(levelname, "Block", "Update", responses.getToggleResponse(43));
+                MainClass.setLevelInit(levelname, "Block", "Fade", responses.getToggleResponse(44));
+                MainClass.setLevelInit(levelname, "Block", "PistonChange", responses.getToggleResponse(45));
+                MainClass.setLevelInit(levelname, "Block", "FromToEvent", responses.getToggleResponse(46));
+                MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
+                MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
                 cn.nukkit.utils.Config config = new cn.nukkit.utils.Config(MainClass.path+"/worlds/"+levelname+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(MainClass.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
                 config.save();
@@ -526,53 +551,55 @@ public class PlayerEventListener implements Listener {
             case Template_EditProcess:
                 responses = window.getResponse();
                 String select = MainClass.selectCache.get(p);
-                ConfigUtil.setTemplateBooleanInit(select, "World", "FarmProtect", responses.getToggleResponse(0));
-                ConfigUtil.setTemplateBooleanInit(select, "World", "AllExplodes", responses.getToggleResponse(1));
-                ConfigUtil.setTemplateBooleanInit(select, "World", "TntExplodes", responses.getToggleResponse(2));
-                ConfigUtil.setTemplateBooleanInit(select, "World", "PVP", responses.getToggleResponse(3));
-                ConfigUtil.setTemplateBooleanInit(select, "World", "KeepInventory", responses.getToggleResponse(4));
-                ConfigUtil.setTemplateBooleanInit(select, "World", "KeepXp", responses.getToggleResponse(5));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "AllowOpenChest", responses.getToggleResponse(6));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Sneak", responses.getToggleResponse(9));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Fly", responses.getToggleResponse(10));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Swim", responses.getToggleResponse(11));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Glide", responses.getToggleResponse(12));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Jump", responses.getToggleResponse(13));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Sprint", responses.getToggleResponse(14));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Pick", responses.getToggleResponse(15));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "ConsumeItem", responses.getToggleResponse(16));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "DropItem", responses.getToggleResponse(17));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "BedEnter", responses.getToggleResponse(18));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Move", responses.getToggleResponse(19));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "EatFood", responses.getToggleResponse(20));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "CommandPreprocess", responses.getToggleResponse(21));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "GameModeChange", responses.getToggleResponse(22));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "AntiTeleport", responses.getToggleResponse(23));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "Interact", responses.getToggleResponse(24));
-                ConfigUtil.setTemplateBooleanInit(select, "Player", "NoFallDamage", responses.getToggleResponse(25));
-                ConfigUtil.setTemplateBooleanInit(select, "Entity", "Explosion", responses.getToggleResponse(26));
-                ConfigUtil.setTemplateBooleanInit(select, "Entity", "PortalEnter", responses.getToggleResponse(27));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Burn", responses.getToggleResponse(30));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Ignite", responses.getToggleResponse(31));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Fall", responses.getToggleResponse(32));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Grow", responses.getToggleResponse(33));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Spread", responses.getToggleResponse(34));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Form", responses.getToggleResponse(35));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "LeavesDecay", responses.getToggleResponse(36));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "LiquidFlow", responses.getToggleResponse(37));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "SignChange", responses.getToggleResponse(39));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "BlockRedstone", responses.getToggleResponse(40));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "DropItem", responses.getToggleResponse(41));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "DropExp", responses.getToggleResponse(42));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Update", responses.getToggleResponse(42));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "Fade", responses.getToggleResponse(42));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "PistonChange", responses.getToggleResponse(42));
-                ConfigUtil.setTemplateBooleanInit(select, "Block", "FromToEvent", responses.getToggleResponse(42));
+                ConfigUtil.setTemplateInit(select, "World", "FarmProtect", responses.getToggleResponse(0));
+                ConfigUtil.setTemplateInit(select, "World", "AllExplodes", responses.getToggleResponse(1));
+                ConfigUtil.setTemplateInit(select, "World", "TntExplodes", responses.getToggleResponse(2));
+                ConfigUtil.setTemplateInit(select, "World", "PVP", responses.getToggleResponse(3));
+                ConfigUtil.setTemplateInit(select, "World", "KeepInventory", responses.getToggleResponse(4));
+                ConfigUtil.setTemplateInit(select, "World", "KeepXp", responses.getToggleResponse(5));
+                ConfigUtil.setTemplateInit(select, "Player", "AllowOpenChest", responses.getToggleResponse(6));
+                ConfigUtil.setTemplateInit(select, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
+                ConfigUtil.setTemplateInit(select, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
+                ConfigUtil.setTemplateInit(select, "Player", "Sneak", responses.getToggleResponse(9));
+                ConfigUtil.setTemplateInit(select, "Player", "Fly", responses.getToggleResponse(10));
+                ConfigUtil.setTemplateInit(select, "Player", "Swim", responses.getToggleResponse(11));
+                ConfigUtil.setTemplateInit(select, "Player", "Glide", responses.getToggleResponse(12));
+                ConfigUtil.setTemplateInit(select, "Player", "Jump", responses.getToggleResponse(13));
+                ConfigUtil.setTemplateInit(select, "Player", "Sprint", responses.getToggleResponse(14));
+                ConfigUtil.setTemplateInit(select, "Player", "Pick", responses.getToggleResponse(15));
+                ConfigUtil.setTemplateInit(select, "Player", "ConsumeItem", responses.getToggleResponse(16));
+                ConfigUtil.setTemplateInit(select, "Player", "DropItem", responses.getToggleResponse(17));
+                ConfigUtil.setTemplateInit(select, "Player", "BedEnter", responses.getToggleResponse(18));
+                ConfigUtil.setTemplateInit(select, "Player", "Move", responses.getToggleResponse(19));
+                ConfigUtil.setTemplateInit(select, "Player", "EatFood", responses.getToggleResponse(20));
+                ConfigUtil.setTemplateInit(select, "Player", "CommandPreprocess", responses.getToggleResponse(21));
+                ConfigUtil.setTemplateInit(select, "Player", "GameModeChange", responses.getToggleResponse(22));
+                ConfigUtil.setTemplateInit(select, "Player", "AntiTeleport", responses.getToggleResponse(23));
+                ConfigUtil.setTemplateInit(select, "Player", "Interact", responses.getToggleResponse(24));
+                ConfigUtil.setTemplateInit(select, "Player", "NoFallDamage", responses.getToggleResponse(25));
+                ConfigUtil.setTemplateInit(select, "Entity", "Explosion", responses.getToggleResponse(26));
+                ConfigUtil.setTemplateInit(select, "Entity", "PortalEnter", responses.getToggleResponse(27));
+                ConfigUtil.setTemplateInit(select, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
+                ConfigUtil.setTemplateInit(select, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
+                ConfigUtil.setTemplateInit(select, "Block", "Burn", responses.getToggleResponse(30));
+                ConfigUtil.setTemplateInit(select, "Block", "Ignite", responses.getToggleResponse(31));
+                ConfigUtil.setTemplateInit(select, "Block", "Fall", responses.getToggleResponse(32));
+                ConfigUtil.setTemplateInit(select, "Block", "Grow", responses.getToggleResponse(33));
+                ConfigUtil.setTemplateInit(select, "Block", "Spread", responses.getToggleResponse(34));
+                ConfigUtil.setTemplateInit(select, "Block", "Form", responses.getToggleResponse(35));
+                ConfigUtil.setTemplateInit(select, "Block", "LeavesDecay", responses.getToggleResponse(36));
+                ConfigUtil.setTemplateInit(select, "Block", "LiquidFlow", responses.getToggleResponse(37));
+                ConfigUtil.setTemplateInit(select, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
+                ConfigUtil.setTemplateInit(select, "Block", "SignChange", responses.getToggleResponse(39));
+                ConfigUtil.setTemplateInit(select, "Block", "BlockRedstone", responses.getToggleResponse(40));
+                ConfigUtil.setTemplateInit(select, "Block", "DropItem", responses.getToggleResponse(41));
+                ConfigUtil.setTemplateInit(select, "Block", "DropExp", responses.getToggleResponse(42));
+                ConfigUtil.setTemplateInit(select, "Block", "Update", responses.getToggleResponse(43));
+                ConfigUtil.setTemplateInit(select, "Block", "Fade", responses.getToggleResponse(44));
+                ConfigUtil.setTemplateInit(select, "Block", "PistonChange", responses.getToggleResponse(45));
+                ConfigUtil.setTemplateInit(select, "Block", "FromToEvent", responses.getToggleResponse(46));
+                ConfigUtil.setTemplateInit(select, "World", "AntiVoid", responses.getToggleResponse(47));
+                ConfigUtil.setTemplateInit(select, "World", "VoidHeight", responses.getInputResponse(48));
                 config = new cn.nukkit.utils.Config(MainClass.path+"/templates/"+select+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(ConfigUtil.TemplateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();

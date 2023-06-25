@@ -13,7 +13,7 @@ import java.io.File;
 
 public class Command extends cn.nukkit.command.Command {
     public Command(String name) {
-        super(name,"§e世界保护插件","/dwp");
+        super(name,"§eDLevelEventPlus","/dwp");
     }
 
     @Override

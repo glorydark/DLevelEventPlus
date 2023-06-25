@@ -34,6 +34,7 @@ Tips:
   AntiDestroyFlameBlock: '%s 世界禁止破坏展示框！'
   AntiChangeSignText: '%s 世界禁止修改告示牌！'
   AntiInteract: 您所在世界禁止交互！
+  AntiVoid: 该世界启用了虚空保护，已将您tp回出生点
   ItemBanned: 该物品已被禁用
   BlockInteractBanned: 该方块禁止交互
 
@@ -88,6 +89,8 @@ EditWindow:
   BlockFade: 方块褪色
   BlockPistonChange: 活塞变化
   BlockFromToEvent: 方块变化
+  AntiVoid: 虚空保护
+  VoidHeight: 虚空高度
 #AddedGuiTitle&Content
 SettingChooseWorldMenu:
   SelectWorld: 选择世界

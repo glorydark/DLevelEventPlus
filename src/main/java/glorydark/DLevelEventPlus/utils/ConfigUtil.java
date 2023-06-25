@@ -197,7 +197,7 @@ public class ConfigUtil {
         }
     }
 
-    public static void setTemplateBooleanInit(String ConfigName, String key, String subKey, Boolean value){
+    public static void setTemplateInit(String ConfigName, String key, String subKey, Object value){
         if(TemplateCache.containsKey(ConfigName)) {
             LinkedHashMap<String, Object> keyMap = TemplateCache.get(ConfigName);
             if(keyMap != null && keyMap.containsKey(key)) {
@@ -211,6 +211,20 @@ public class ConfigUtil {
                 }
             }
         }
+    }
+
+    @NotNull
+    public static Object getTemplateInit(String ConfigName, String key, String subKey){
+        if(TemplateCache.containsKey(ConfigName)){
+            Map<String, Object> keyMap = TemplateCache.get(ConfigName);
+            if(keyMap != null && keyMap.containsKey(key)){
+                Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
+                if(subkeyMap.containsKey(subKey)) {
+                    return subkeyMap.get(subKey);
+                }
+            }
+        }
+        return false;
     }
 
     @NotNull
