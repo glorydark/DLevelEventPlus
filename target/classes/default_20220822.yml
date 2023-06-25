@@ -6,6 +6,8 @@ World:
   PVP: true
   KeepInventory: true
   KeepXp: true
+  AntiVoid: false
+  VoidHeight: 0
 Player:
   CanUseFishingHook: true
   AllowInteractFrameBlock: true
@@ -15,7 +17,7 @@ Player:
   Glide: true
   Jump: true
   Sprint: true
-  Pick: false
+  Pick: true
   ConsumeItem: true
   DropItem: true
   BedEnter: true

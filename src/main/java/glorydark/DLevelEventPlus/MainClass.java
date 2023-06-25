@@ -3,6 +3,8 @@ package glorydark.DLevelEventPlus;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.Listener;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.BlockEventListener;
@@ -83,8 +85,37 @@ public class MainClass extends PluginBase implements Listener{
                 if(DefaultConfigUtils.isYaml(file1.getName())) {
                     Config config = new Config(file1);
                     String levelName = file1.getName().split("\\.")[0];
-                    plugin.getLogger().info("加载世界【" + levelName + "】配置成功");
+                    plugin.getLogger().info("开始加载世界【" + levelName + "】");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
+
+                    LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
+                    if(gamerules.size() > 0){
+                        Level level = Server.getInstance().getLevelByName(levelName);
+                        if(level == null){
+                            plugin.getLogger().warning(levelName+"的世界规则加载失败，原因：找不到世界！");
+                            continue;
+                        }
+                        for(String item: gamerules.keySet()){
+                            Optional<GameRule> options = GameRule.parseString(item);
+                            if(options.isPresent()){
+                                Object object = gamerules.get(item);
+                                if(object instanceof Boolean){
+                                    level.getGameRules().setGameRule(options.get(), (Boolean) object);
+                                }else if (object instanceof Integer){
+                                    level.getGameRules().setGameRule(options.get(), (Integer) object);
+                                }else if (object instanceof Float){
+                                    level.getGameRules().setGameRule(options.get(), (Float) object);
+                                }
+                                plugin.getLogger().info("§aSetting gamerule §e"+item+"§a to §e"+ object.toString() +"§a!");
+                            }else{
+                                plugin.getLogger().info("§aSetting gamerule §e"+item+"§a failed. Caused by wrong format of gamerule name!");
+                            }
+                        }
+                        plugin.getLogger().info("§aSuccessfully loaded all gamerule!");
+                    }else{
+                        plugin.getLogger().info("§aSuccessfully loaded §e0§a gamerule!");
+                    }
+                    plugin.getLogger().info("加载世界【" + levelName + "】配置成功");
                 }
             }
         }
