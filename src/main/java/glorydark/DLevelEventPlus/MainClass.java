@@ -8,12 +8,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.BlockEventListener;
-import glorydark.DLevelEventPlus.event.BlockEventListenerPM1E;
 import glorydark.DLevelEventPlus.event.EntityEventListener;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
-import glorydark.DLevelEventPlus.utils.NukkitTypeUtils;
 
 import java.io.File;
 import java.util.*;
@@ -60,13 +58,9 @@ public class MainClass extends PluginBase implements Listener{
         //注册监听器、指令
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        if(NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.PM1E || NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT){
-            this.getServer().getPluginManager().registerEvents(new BlockEventListenerPM1E(), this);
-        }else{
-            this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        }
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
         this.getServer().getCommandMap().register("",new Command("dwp"));
-        this.getServer().getLogger().info("DLevelEventPlus onEnable");
+        this.getLogger().info("DLevelEventPlus onEnable");
     }
 
     @Override

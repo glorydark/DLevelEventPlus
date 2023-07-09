@@ -26,7 +26,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.getId()+":"+block.getDamage();
+            String blockString = block.toItem().getNamespaceId();
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiPlaceBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanPlaceBlocks").contains(blockString)){
                 if(MainClass.show_actionbar_text) {
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
@@ -50,7 +50,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.getId()+":"+block.getDamage();
+            String blockString = block.toItem().getNamespaceId();
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiBreakBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanBreakBlocks").contains(blockString)){
                 if(MainClass.show_actionbar_text) {
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiBreakSpecificBlock"));
@@ -70,7 +70,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropItem(Level level, Block block){
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropItem");
         if(bool != null && !bool){
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(block.getId() + ":" + block.getDamage());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(block.toItem().getNamespaceId());
         }
         return true;
     }
@@ -78,7 +78,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropExp(Level level, Block block){
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropExp");
         if(bool != null && !bool){
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(block.getId() + ":" + block.getDamage());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(block.toItem().getNamespaceId());
         }
         return true;
     }
@@ -168,7 +168,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void ItemFrameDropItemEvent(ItemFrameDropItemEvent event){
+    public void ItemFrameDropItemEvent(ItemFrameUseEvent event){
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","ItemFrameDropItem");
         if(bool == null){return;}
         if(ConfigUtil.isAdmin(event.getPlayer())){ return; }
@@ -216,7 +216,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockPistonChangeEvent(BlockPistonChangeEvent event){
+    public void BlockPistonChangeEvent(BlockPistonEvent event){
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","PistonChange");
         if(bool == null){return;}
         if (!bool) {

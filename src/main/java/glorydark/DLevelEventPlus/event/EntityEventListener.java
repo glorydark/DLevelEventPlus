@@ -1,7 +1,6 @@
 package glorydark.DLevelEventPlus.event;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartTNT;
@@ -48,7 +47,7 @@ public class EntityEventListener implements Listener {
             if (!bool1) {
                 entity.despawnFromAll();
                 if(MainClass.show_actionbar_text) {
-                    MainClass.server.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
+                    MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
                 }
                 event.setCancelled(true);
             }
@@ -56,7 +55,7 @@ public class EntityEventListener implements Listener {
         if (!bool2) {
             entity.despawnFromAll();
             if(MainClass.show_actionbar_text) {
-                MainClass.server.getLogger().info(ConfigUtil.getLang("Tips", "AntiAllExplode"));
+                MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiAllExplode"));
             }
             event.setCancelled(true);
         }
@@ -68,7 +67,7 @@ public class EntityEventListener implements Listener {
         if(bool == null){return;}
         if (!bool) {
             if(MainClass.show_actionbar_text) {
-                MainClass.server.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
+                MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
             }
             event.setCancelled(true);
         }

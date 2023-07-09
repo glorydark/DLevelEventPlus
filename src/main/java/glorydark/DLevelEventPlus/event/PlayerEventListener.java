@@ -57,57 +57,69 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        if (block.getId() == Block.ITEM_FRAME_BLOCK || block.getId() == -339) {
-            Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowInteractFrameBlock");
-            if (bool != null && !bool) {
-                if(MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTouchFlame"));
+        if(block != null){
+            if (block.getId() == 389 || block.getId() == -339) {
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowInteractFrameBlock");
+                if (bool != null && !bool) {
+                    if(MainClass.show_actionbar_text) {
+                        player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTouchFlame"));
+                    }
+                    event.setCancelled(true);
+                }
+            }
+
+            //玩家导致耕地踩踏
+            if (block.getId() == Block.FARMLAND) {
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"World","FarmProtect");
+                if(bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL){
+                    if (bool) {
+                        if(MainClass.show_actionbar_text) {
+                            player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTrampleFarmland"));
+                        }
+                        event.setCancelled(true);
+                    }
+                }
+            }
+
+            if(block.getId() == Block.CHEST) {
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowOpenChest");
+                if(bool != null && !bool) {
+                    if(MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList") == null){return;}
+                    List<String> list = MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList");
+                    List<Position> positionArrayList = new ArrayList<>();
+                    for(String str: Objects.requireNonNull(list)){
+                        List<String> strspl = Arrays.asList(str.split(":"));
+                        if(strspl.size() == 3){
+                            positionArrayList.add(new Position(Double.parseDouble(strspl.get(0)),Double.parseDouble(strspl.get(1)),Double.parseDouble(strspl.get(2))));
+                        }
+                    }
+                    if(!positionArrayList.contains(block.getLocation())) {
+                        if(MainClass.show_actionbar_text) {
+                            String title = ConfigUtil.getLang("Tips","AntiUseChest").replace("%position%",String.valueOf(block.getLocation()));
+                            player.sendActionBar(title);
+                        }
+                        event.setCancelled(true);
+                    }
+                }
+            }
+
+            List<String> strings1 = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks");
+            if (strings1.contains(block.toItem().getNamespaceId())) {
+                if (MainClass.show_actionbar_text) {
+                    player.sendActionBar(ConfigUtil.getLang("Tips", "BlockInteractBanned"));
                 }
                 event.setCancelled(true);
             }
-        }
 
-        //玩家导致耕地踩踏
-        if (block.getId() == Block.FARMLAND) {
-            Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"World","FarmProtect");
-            if(bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL){
-                if (bool) {
-                    if(MainClass.show_actionbar_text) {
-                        player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTrampleFarmland"));
-                    }
-                    event.setCancelled(true);
+            if(LiquidItem.isLiquidItem(item)){
+                Boolean bool = MainClass.getLevelBooleanInit(block.getLevelName(),"Block","AllowPlaceBlock");
+                if(bool == null){return;}
+                if (bool) { return; }
+                if(MainClass.show_actionbar_text) {
+                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
                 }
+                event.setCancelled(true);
             }
-        }
-
-        if(block.getId() == Block.CHEST) {
-            Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowOpenChest");
-            if(bool != null && !bool) {
-                if(MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList") == null){return;}
-                List<String> list = MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList");
-                List<Position> positionArrayList = new ArrayList<>();
-                for(String str: Objects.requireNonNull(list)){
-                    List<String> strspl = Arrays.asList(str.split(":"));
-                    if(strspl.size() == 3){
-                        positionArrayList.add(new Position(Double.parseDouble(strspl.get(0)),Double.parseDouble(strspl.get(1)),Double.parseDouble(strspl.get(2))));
-                    }
-                }
-                if(!positionArrayList.contains(block.getLocation())) {
-                    if(MainClass.show_actionbar_text) {
-                        String title = ConfigUtil.getLang("Tips","AntiUseChest").replace("%position%",String.valueOf(block.getLocation()));
-                        player.sendActionBar(title);
-                    }
-                    event.setCancelled(true);
-                }
-            }
-        }
-
-        List<String> strings1 = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks");
-        if (strings1.contains(block.getId() + ":" + block.getDamage()) || strings1.contains(String.valueOf(block.getId()))) {
-            if (MainClass.show_actionbar_text) {
-                player.sendActionBar(ConfigUtil.getLang("Tips", "BlockInteractBanned"));
-            }
-            event.setCancelled(true);
         }
 
         if(item != null) {
@@ -125,16 +137,6 @@ public class PlayerEventListener implements Listener {
             if (strings.contains(item.getId() + ":" + item.getDamage()) || strings.contains(String.valueOf(item.getId()))) {
                 if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "ItemBanned"));
-                }
-                event.setCancelled(true);
-            }
-
-            if(LiquidItem.isLiquidItem(item)){
-                Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","AllowPlaceBlock");
-                if(bool == null){return;}
-                if (bool) { return; }
-                if(MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
                 }
                 event.setCancelled(true);
             }
@@ -744,7 +746,7 @@ public class PlayerEventListener implements Listener {
                         if (MainClass.show_actionbar_text) {
                             event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiJump"));
                         }
-                        event.getPlayer().teleportImmediate(event.getPlayer().getLocation());
+                        event.getPlayer().teleport(event.getPlayer().getLocation());
                         event.getPlayer().setMotion(new Vector3(0, -1, 0));
                     }
                 }
