@@ -216,6 +216,15 @@ public class BlockEventListenerPM1E implements Listener {
     }
 
     @EventHandler
+    public void BlockPistonEvent(BlockPistonEvent event){
+        Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","PistonChange");
+        if(bool == null){return;}
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void BlockFromToEvent(BlockFromToEvent event){
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","FromToEvent");
         if(bool == null){return;}
