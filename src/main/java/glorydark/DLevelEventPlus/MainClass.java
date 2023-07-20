@@ -38,7 +38,7 @@ public class MainClass extends PluginBase implements Listener{
         path = this.getDataFolder().getPath();
         plugin = this;
         this.saveResource("config.yml", false);
-        this.saveResource("default_20220822.yml", false);
+        this.saveResource("default_20230720.yml", false);
         this.getLogger().info("§a default.yml为默认模板文件，请勿删除世界保护的default.yml，否则后果自负！");
         this.saveResource("lang.yml", false);
         File world_folder = new File(path + "/worlds/");
@@ -85,12 +85,15 @@ public class MainClass extends PluginBase implements Listener{
                 if(DefaultConfigUtils.isYaml(file1.getName())) {
                     Config config = new Config(file1);
                     String levelName = file1.getName().split("\\.")[0];
+                    defaultConfigUtils.checkAll(file1.getName(), config); // 检测配置
+                    Level level = Server.getInstance().getLevelByName(levelName);
                     plugin.getLogger().info("开始加载世界【" + levelName + "】");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
-
+                    if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")){
+                        level.stopTime = true;
+                    }
                     LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
                     if(gamerules.size() > 0){
-                        Level level = Server.getInstance().getLevelByName(levelName);
                         if(level == null){
                             plugin.getLogger().warning(levelName+"的世界规则加载失败，原因：找不到世界！");
                             continue;
@@ -131,6 +134,7 @@ public class MainClass extends PluginBase implements Listener{
             for (File file1 : listFiles) {
                 if(DefaultConfigUtils.isYaml(file1.getName())) {
                     Config config = new Config(file1);
+                    defaultConfigUtils.checkAll(file1.getName(), config);
                     String templateName = file1.getName().split("\\.")[0];
                     plugin.getLogger().info("加载模板【" + templateName + "】配置成功");
                     ConfigUtil.TemplateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
