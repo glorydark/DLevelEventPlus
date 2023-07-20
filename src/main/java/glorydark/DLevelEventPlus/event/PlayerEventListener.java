@@ -545,7 +545,8 @@ public class PlayerEventListener implements Listener {
                 MainClass.setLevelInit(levelname, "Block", "FromToEvent", responses.getToggleResponse(46));
                 MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
                 MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
-                cn.nukkit.utils.Config config = new cn.nukkit.utils.Config(MainClass.path+"/worlds/"+levelname+".yml", cn.nukkit.utils.Config.YAML);
+                MainClass.setLevelInit(levelname, "World", "TimeFlow", responses.getToggleResponse(49));
+                Config config = new Config(MainClass.path+"/worlds/"+levelname+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(MainClass.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
                 config.save();
                 GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
@@ -602,6 +603,7 @@ public class PlayerEventListener implements Listener {
                 ConfigUtil.setTemplateInit(select, "Block", "FromToEvent", responses.getToggleResponse(46));
                 ConfigUtil.setTemplateInit(select, "World", "AntiVoid", responses.getToggleResponse(47));
                 ConfigUtil.setTemplateInit(select, "World", "VoidHeight", responses.getInputResponse(48));
+                ConfigUtil.setTemplateInit(select, "World", "TimeFlow", responses.getToggleResponse(49));
                 config = new cn.nukkit.utils.Config(MainClass.path+"/templates/"+select+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(ConfigUtil.TemplateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();
