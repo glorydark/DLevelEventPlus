@@ -5,6 +5,7 @@ import glorydark.DLevelEventPlus.MainClass;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DefaultConfigUtils {
 
@@ -59,20 +60,23 @@ public class DefaultConfigUtils {
                     if(!check.exists(getKey)){
                         isUpdated = true;
                         changes+=1;
+                        MainClass.plugin.getLogger().info(getKey);
                         check.set(getKey, config.get(getKey));
                         check.save();
                     }
                 }
 
+                /*
                 for(String subKey: check.getSection(key).getKeys(false)){
                     String getKey = key+"."+subKey;
                     if(!config.exists(getKey)){
                         isUpdated = true;
                         changes+=1;
-                        check.getSection(key).remove(subKey);
+                        check.remove(getKey);
                         check.save();
                     }
                 }
+                * */
             }else{
                 isUpdated = true;
                 changes+=1;

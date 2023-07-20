@@ -8,6 +8,7 @@ World:
   KeepXp: true
   AntiVoid: false
   VoidHeight: 0
+  TimeFlow: true
 Player:
   CanUseFishingHook: true
   AllowInteractFrameBlock: true

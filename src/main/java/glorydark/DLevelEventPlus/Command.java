@@ -61,6 +61,9 @@ public class Command extends cn.nukkit.command.Command {
                                     }
                                 }
                             }
+
+                            MainClass.loadAllLevelConfig();
+                            MainClass.loadTemplateConfig();
                             return true;
                     }
                     break;
