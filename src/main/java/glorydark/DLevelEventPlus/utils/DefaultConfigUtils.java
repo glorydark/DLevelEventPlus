@@ -60,7 +60,6 @@ public class DefaultConfigUtils {
                     if(!check.exists(getKey)){
                         isUpdated = true;
                         changes+=1;
-                        MainClass.plugin.getLogger().info(getKey);
                         check.set(getKey, config.get(getKey));
                         check.save();
                     }
