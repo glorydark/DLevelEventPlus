@@ -1,7 +1,6 @@
 package glorydark.DLevelEventPlus.event;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartTNT;

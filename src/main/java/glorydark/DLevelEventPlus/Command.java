@@ -1,7 +1,6 @@
 package glorydark.DLevelEventPlus;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Nukkit-MOT-SNAPSHOT">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../dependences/Nukkit-MOT-SNAPSHOT.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

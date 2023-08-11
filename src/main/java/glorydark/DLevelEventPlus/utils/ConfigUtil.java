@@ -6,7 +6,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.Config;
-import com.sun.istack.internal.NotNull;
 import glorydark.DLevelEventPlus.MainClass;
 
 import java.io.File;
@@ -213,7 +212,6 @@ public class ConfigUtil {
         }
     }
 
-    @NotNull
     public static Object getTemplateInit(String ConfigName, String key, String subKey){
         if(TemplateCache.containsKey(ConfigName)){
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
@@ -227,7 +225,6 @@ public class ConfigUtil {
         return false;
     }
 
-    @NotNull
     public static Boolean getTemplateBooleanInit(String ConfigName, String key, String subKey){
         if(TemplateCache.containsKey(ConfigName)){
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
@@ -241,7 +238,6 @@ public class ConfigUtil {
         return false;
     }
 
-    @NotNull
     public static List<String> getTemplateListInit(String ConfigName, String key, String subKey){
         if(TemplateCache.containsKey(ConfigName)){
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
