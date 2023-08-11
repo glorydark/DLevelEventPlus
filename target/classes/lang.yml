@@ -1,4 +1,4 @@
-Version: 2022070101
+Version: 2023081101
 
 #tips translations
 Tips:
@@ -92,6 +92,7 @@ EditWindow:
   AntiVoid: 虚空保护
   VoidHeight: 虚空高度
   TimeFlow: 时间变化
+  Weather: 天气
 #AddedGuiTitle&Content
 SettingChooseWorldMenu:
   SelectWorld: 选择世界
