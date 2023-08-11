@@ -61,6 +61,8 @@
             <groupId>cn.nukkit</groupId>
             <artifactId>Nukkit</artifactId>
             <version>MOT-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/Nukkit-MOT-SNAPSHOT-JAVA8.jar</systemPath>
         </dependency>
 
     </dependencies>
