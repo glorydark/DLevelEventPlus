@@ -546,6 +546,10 @@ public class PlayerEventListener implements Listener {
                 MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
                 MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
                 MainClass.setLevelInit(levelname, "World", "TimeFlow", responses.getToggleResponse(49));
+                int weatherIndex = responses.getDropdownResponse(50).getElementID();
+                if(weatherIndex != 0){
+                    MainClass.setLevelInit(levelname, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
+                }
                 Config config = new Config(MainClass.path+"/worlds/"+levelname+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(MainClass.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
                 config.save();
@@ -604,6 +608,10 @@ public class PlayerEventListener implements Listener {
                 ConfigUtil.setTemplateInit(select, "World", "AntiVoid", responses.getToggleResponse(47));
                 ConfigUtil.setTemplateInit(select, "World", "VoidHeight", responses.getInputResponse(48));
                 ConfigUtil.setTemplateInit(select, "World", "TimeFlow", responses.getToggleResponse(49));
+                weatherIndex = responses.getDropdownResponse(50).getElementID();
+                if(weatherIndex != 0){
+                    ConfigUtil.setTemplateInit(select, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
+                }
                 config = new cn.nukkit.utils.Config(MainClass.path+"/templates/"+select+".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(ConfigUtil.TemplateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();

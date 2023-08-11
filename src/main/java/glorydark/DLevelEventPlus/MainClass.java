@@ -9,6 +9,7 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.BlockEventListener;
 import glorydark.DLevelEventPlus.event.EntityEventListener;
+import glorydark.DLevelEventPlus.event.LevelEventListener;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
@@ -36,7 +37,7 @@ public class MainClass extends PluginBase implements Listener{
         path = this.getDataFolder().getPath();
         plugin = this;
         this.saveResource("config.yml", false);
-        this.saveResource("default_20230720.yml", false);
+        this.saveResource("default_20230811.yml", false);
         this.getLogger().info("§a default.yml为默认模板文件，请勿删除世界保护的default.yml，否则后果自负！");
         this.saveResource("lang.yml", false);
         File world_folder = new File(path + "/worlds/");
@@ -48,7 +49,7 @@ public class MainClass extends PluginBase implements Listener{
         show_actionbar_text = config.getBoolean("show_actionbar_text", false);
         experimental = config.getBoolean("experimental", false);
 
-        defaultConfigUtils = new DefaultConfigUtils(new Config(path+"/default_20230720.yml",Config.YAML));
+        defaultConfigUtils = new DefaultConfigUtils(new Config(path+ "/default_20230811.yml",Config.YAML));
 
         Server.getInstance().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
         //加载配置
@@ -59,6 +60,7 @@ public class MainClass extends PluginBase implements Listener{
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
         this.getServer().getCommandMap().register("",new Command("dwp"));
         this.getLogger().info("DLevelEventPlus onEnable");
     }
@@ -85,6 +87,26 @@ public class MainClass extends PluginBase implements Listener{
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")){
                         level.stopTime = true;
+                    }
+                    Object weather = getLevelSettingInit(levelName, "World", "Weather");
+                    if(weather != null){
+                        switch (String.valueOf(weather).toLowerCase()){
+                            case "clear":
+                                level.setRaining(false);
+                                level.setThundering(false);
+                                level.setRainTime(12000 * 20);
+                                level.setThunderTime(12000 * 20);
+                                break;
+                            case "rain":
+                                level.setRaining(true);
+                                level.setRainTime(12000 * 20);
+                                break;
+                            case "thunder":
+                                level.setThundering(true);
+                                level.setRainTime(12000 * 20);
+                                level.setThunderTime(12000 * 20);
+                                break;
+                        }
                     }
                     LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
                     if(gamerules.size() > 0){
