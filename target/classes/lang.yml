@@ -91,6 +91,7 @@ EditWindow:
   BlockFromToEvent: 方块变化
   AntiVoid: 虚空保护
   VoidHeight: 虚空高度
+  TimeFlow: 时间变化
 #AddedGuiTitle&Content
 SettingChooseWorldMenu:
   SelectWorld: 选择世界

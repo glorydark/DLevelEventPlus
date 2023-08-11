@@ -9,6 +9,7 @@ World:
   AntiVoid: false
   VoidHeight: 0
   TimeFlow: true
+  Weather: ""
 Player:
   CanUseFishingHook: true
   AllowInteractFrameBlock: true
@@ -26,7 +27,7 @@ Player:
   EatFood: true
   CommandPreprocess: true
   GameModeChange: true
-  AntiTeleport: true
+  AntiTeleport: false
   Interact: true
   NoFallDamage: true
   AllowOpenChest: true

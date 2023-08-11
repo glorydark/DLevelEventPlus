@@ -7,10 +7,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
-import glorydark.DLevelEventPlus.event.BlockEventListener;
-import glorydark.DLevelEventPlus.event.BlockEventListenerPM1E;
-import glorydark.DLevelEventPlus.event.EntityEventListener;
-import glorydark.DLevelEventPlus.event.PlayerEventListener;
+import glorydark.DLevelEventPlus.event.*;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
 import glorydark.DLevelEventPlus.utils.NukkitTypeUtils;
@@ -38,7 +35,7 @@ public class MainClass extends PluginBase implements Listener{
         path = this.getDataFolder().getPath();
         plugin = this;
         this.saveResource("config.yml", false);
-        this.saveResource("default_20230720.yml", false);
+        this.saveResource("default_20230811.yml", false);
         this.getLogger().info("§a default.yml为默认模板文件，请勿删除世界保护的default.yml，否则后果自负！");
         this.saveResource("lang.yml", false);
         File world_folder = new File(path + "/worlds/");
@@ -65,6 +62,7 @@ public class MainClass extends PluginBase implements Listener{
         }else{
             this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
         }
+        this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
         this.getServer().getCommandMap().register("",new Command("dwp"));
         this.getServer().getLogger().info("DLevelEventPlus onEnable");
     }
@@ -90,7 +88,27 @@ public class MainClass extends PluginBase implements Listener{
                     plugin.getLogger().info("开始加载世界【" + levelName + "】");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")){
-                        level.stopTime = true;
+                        level.stopTime();
+                    }
+                    Object weather = getLevelSettingInit(levelName, "World", "Weather");
+                    if(weather != null){
+                        switch (String.valueOf(weather).toLowerCase()){
+                            case "clear":
+                                level.setRaining(false);
+                                level.setThundering(false);
+                                level.setRainTime(12000 * 20);
+                                level.setThunderTime(12000 * 20);
+                                break;
+                            case "rain":
+                                level.setRaining(true);
+                                level.setRainTime(12000 * 20);
+                                break;
+                            case "thunder":
+                                level.setThundering(true);
+                                level.setRainTime(12000 * 20);
+                                level.setThunderTime(12000 * 20);
+                                break;
+                        }
                     }
                     LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
                     if(gamerules.size() > 0){

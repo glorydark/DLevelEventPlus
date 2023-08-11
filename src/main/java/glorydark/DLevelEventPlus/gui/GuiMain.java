@@ -14,6 +14,9 @@ import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GuiMain {
     //设置选择世界
     public static void showSettingChooseWorldMenu(Player player){
@@ -135,6 +138,16 @@ public class GuiMain {
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "AntiVoid"), MainClass.getLevelSettingBooleanInit(level, "World", "AntiVoid")));
         formWindowCustom.addElement(new ElementInput(ConfigUtil.getLang("EditWindow", "VoidHeight"), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight")), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight"))));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "TimeFlow"), MainClass.getLevelSettingBooleanInit(level, "World", "TimeFlow")));
+        Object object = MainClass.getLevelSettingBooleanInit(level, "World", "Weather");
+        List<String> weatherList = new ArrayList<>();
+        weatherList.add("none");
+        weatherList.add("clear");
+        weatherList.add("thunder");
+        weatherList.add("rain");
+        if(object != null){
+            int index = weatherList.indexOf(String.valueOf(object));
+            formWindowCustom.addElement(new ElementDropdown(ConfigUtil.getLang("EditWindow", "Weather"), weatherList, Math.max(index, 0)));
+        }
         PlayerEventListener.showFormWindow(player,formWindowCustom, GuiType.Edit_Process);
     }
 
@@ -228,6 +241,16 @@ public class GuiMain {
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "AntiVoid"), ConfigUtil.getTemplateBooleanInit(TemplateName, "World", "AntiVoid")));
         formWindowCustom.addElement(new ElementInput(ConfigUtil.getLang("EditWindow", "VoidHeight"), String.valueOf(ConfigUtil.getTemplateInit(TemplateName, "World", "VoidHeight")),  String.valueOf(ConfigUtil.getTemplateInit(TemplateName, "World", "VoidHeight"))));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "TimeFlow"), ConfigUtil.getTemplateBooleanInit(TemplateName, "World", "TimeFlow")));
+        Object object = ConfigUtil.getTemplateInit(TemplateName, "World", "Weather");
+        List<String> weatherList = new ArrayList<>();
+        weatherList.add("none");
+        weatherList.add("clear");
+        weatherList.add("thunder");
+        weatherList.add("rain");
+        if(object != null){
+            int index = weatherList.indexOf(String.valueOf(object));
+            formWindowCustom.addElement(new ElementDropdown(ConfigUtil.getLang("EditWindow", "Weather"), weatherList, Math.max(index, 0)));
+        }
         PlayerEventListener.showFormWindow(player,formWindowCustom, type);
     }
 }
