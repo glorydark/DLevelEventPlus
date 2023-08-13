@@ -138,7 +138,7 @@ public class GuiMain {
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "AntiVoid"), MainClass.getLevelSettingBooleanInit(level, "World", "AntiVoid")));
         formWindowCustom.addElement(new ElementInput(ConfigUtil.getLang("EditWindow", "VoidHeight"), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight")), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight"))));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow", "TimeFlow"), MainClass.getLevelSettingBooleanInit(level, "World", "TimeFlow")));
-        Object object = MainClass.getLevelSettingBooleanInit(level, "World", "Weather");
+        Object object = MainClass.getLevelSettingInit(level, "World", "Weather");
         List<String> weatherList = new ArrayList<>();
         weatherList.add("none");
         weatherList.add("clear");
