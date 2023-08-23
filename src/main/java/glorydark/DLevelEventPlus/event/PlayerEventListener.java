@@ -2,6 +2,7 @@ package glorydark.DLevelEventPlus.event;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.entity.Entity;
@@ -543,7 +544,14 @@ public class PlayerEventListener implements Listener {
                 MainClass.setLevelInit(levelname, "Block", "FromToEvent", responses.getToggleResponse(46));
                 MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
                 MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
-                MainClass.setLevelInit(levelname, "World", "TimeFlow", responses.getToggleResponse(49));
+                boolean timeFlow = MainClass.getLevelSettingBooleanInit(levelname, "World", "TimeFlow");
+                if(!timeFlow){
+                    Level currentLevel = Server.getInstance().getLevelByName(levelname);
+                    if(currentLevel != null){
+                        currentLevel.stopTime();
+                    }
+                }
+                MainClass.setLevelInit(levelname, "World", "TimeFlow", timeFlow);
                 int weatherIndex = responses.getDropdownResponse(50).getElementID();
                 if(weatherIndex != 0){
                     MainClass.setLevelInit(levelname, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
