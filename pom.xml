@@ -51,19 +51,20 @@
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>cn.nukkit</groupId>
             <artifactId>Nukkit</artifactId>
             <version>MOT-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/Nukkit-MOT-SNAPSHOT-JAVA8.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
+            <scope>provided</scope>
+        </dependency>
+
 
     </dependencies>
 
