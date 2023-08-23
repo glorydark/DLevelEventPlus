@@ -94,7 +94,7 @@ public class MainClass extends PluginBase implements Listener{
                     plugin.getLogger().info("Loading protection rules for the level [" + levelName + "]");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")){
-                        level.stopTime = true;
+                        level.stopTime();
                     }
                     Object weather = getLevelSettingInit(levelName, "World", "Weather");
                     if(weather != null){
