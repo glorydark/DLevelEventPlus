@@ -83,7 +83,15 @@ public class MainClass extends PluginBase implements Listener{
                     defaultConfigUtils.checkAll(file1.getName(), config); // 检测配置
                     String levelName = file1.getName().split("\\.")[0];
                     Level level = Server.getInstance().getLevelByName(levelName);
-                    plugin.getLogger().info("开始加载世界【" + levelName + "】");
+                    if(level == null){
+                        if(Server.getInstance().loadLevel(levelName)){
+                            level = Server.getInstance().getLevelByName(levelName);
+                        }else{
+                            plugin.getLogger().warning("Can not load level for "+levelName);
+                            continue;
+                        }
+                    }
+                    plugin.getLogger().info("Loading protection rules for the level [" + levelName + "]");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")){
                         level.stopTime = true;
@@ -110,10 +118,6 @@ public class MainClass extends PluginBase implements Listener{
                     }
                     LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
                     if(gamerules.size() > 0){
-                        if(level == null){
-                            plugin.getLogger().warning(levelName+"的世界规则加载失败，原因：找不到世界！");
-                            continue;
-                        }
                         for(String item: gamerules.keySet()){
                             Optional<GameRule> options = GameRule.parseString(item);
                             if(options.isPresent()){
