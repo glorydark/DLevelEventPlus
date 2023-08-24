@@ -17,21 +17,21 @@ public class Command extends cn.nukkit.command.Command {
 
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
-        if(!(sender.isPlayer()) || (sender.isPlayer() && (ConfigUtil.isAdmin((Player) sender) || ConfigUtil.isOperator((Player) sender, ((Player) sender).getLevel())))){
-            switch (args.length){
+        if(!(sender.isPlayer()) || (sender.isPlayer() && (ConfigUtil.isAdmin((Player) sender) || ConfigUtil.isOperator((Player) sender, ((Player) sender).getLevel())))) {
+            switch (args.length) {
                 case 0:
-                    if(sender.isPlayer()){
+                    if(sender.isPlayer()) {
                         GuiMain.showMainMenu((Player) sender);
                     }else{
                         sender.sendMessage("§a[DLevelEventPlus] 请在游戏内使用!");
                     }
                     return true;
                 case 1:
-                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)){
+                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
                         sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
                         return false;
                     }
-                    switch (args[0]){
+                    switch (args[0]) {
                         case "save":
                             MainClass.saveAllConfig();
                             return true;
@@ -47,7 +47,7 @@ public class Command extends cn.nukkit.command.Command {
                             File[] worldsFiles = world_folder.listFiles();
                             if(worldsFiles != null) {
                                 for (File file : worldsFiles) {
-                                    if(DefaultConfigUtils.isYaml(file.getName())){
+                                    if(DefaultConfigUtils.isYaml(file.getName())) {
                                         MainClass.defaultConfigUtils.checkAll(file.getName(), new Config(file, Config.YAML));
                                     }
                                 }
@@ -56,7 +56,7 @@ public class Command extends cn.nukkit.command.Command {
                             File[] TemplateFiles = template_folder.listFiles();
                             if(TemplateFiles != null) {
                                 for (File file : TemplateFiles) {
-                                    if(DefaultConfigUtils.isYaml(file.getName())){
+                                    if(DefaultConfigUtils.isYaml(file.getName())) {
                                         MainClass.defaultConfigUtils.checkAll(file.getName(), new Config(file, Config.YAML));
                                     }
                                 }
@@ -68,12 +68,12 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     break;
                 case 2:
-                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)){
+                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
                         sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
                         return false;
                     }
-                    if(args[0].equals("addworld")){
-                        if(MainClass.defaultConfigUtils.writeAll(0, args[1])){
+                    if(args[0].equals("addworld")) {
+                        if(MainClass.defaultConfigUtils.writeAll(0, args[1])) {
                             sender.sendMessage("§a[DLevelEventPlus] 创建成功!");
                         }else{
                             sender.sendMessage("§c[DLevelEventPlus] 创建失败!");
@@ -82,12 +82,12 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     break;
                 case 3:
-                    if(sender.isPlayer()){
+                    if(sender.isPlayer()) {
                         sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
                         return false;
                     }
-                    if(args[0].equals("admin")){
-                        switch (args[1]){
+                    if(args[0].equals("admin")) {
+                        switch (args[1]) {
                             case "add":
                                 ConfigUtil.adminList(sender,0,args[2]);
                                 return true;
@@ -98,13 +98,13 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     break;
                 case 4:
-                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)){
+                    if(sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
                         sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
                         return false;
                     }
                     switch (args[0]) {
                         case "operatorlist":
-                            switch (args[1]){
+                            switch (args[1]) {
                                 case "add":
                                     ConfigUtil.operatorList(sender, 0,args[2],args[3]);
                                     return true;
@@ -113,7 +113,7 @@ public class Command extends cn.nukkit.command.Command {
                                     return true;
                             }
                         case "whitelist":
-                            switch (args[1]){
+                            switch (args[1]) {
                                 case "add":
                                     ConfigUtil.whiteList(sender,0,args[2],args[3]);
                                     return true;
@@ -130,7 +130,7 @@ public class Command extends cn.nukkit.command.Command {
         return true;
     }
 
-    public void sendCommandUsage(CommandSender p){
+    public void sendCommandUsage(CommandSender p) {
         //dgamerule operatorlist add/del xx XX
         //dgamerule whitelist add/del xx
         //dgamerule addworld xx

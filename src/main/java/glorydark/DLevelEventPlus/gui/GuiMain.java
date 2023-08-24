@@ -19,9 +19,9 @@ import java.util.List;
 
 public class GuiMain {
     //设置选择世界
-    public static void showSettingChooseWorldMenu(Player player){
+    public static void showSettingChooseWorldMenu(Player player) {
         FormWindowSimple window = new FormWindowSimple(ConfigUtil.getLang("SettingChooseWorldMenu","SelectWorld"), ConfigUtil.getLang("SettingChooseWorldMenu","SelectWorldContent"));
-        for(Level level: Server.getInstance().getLevels().values()){
+        for(Level level: Server.getInstance().getLevels().values()) {
             window.addButton(new ElementButton(level.getName()));
         }
         window.addButton(new ElementButton(ConfigUtil.getLang("General","ReturnButton")));
@@ -29,8 +29,8 @@ public class GuiMain {
     }
 
     //权限设置主页面
-    public static void showPowerMainMenu(Player player){
-        if(ConfigUtil.isAdmin(player)){
+    public static void showPowerMainMenu(Player player) {
+        if(ConfigUtil.isAdmin(player)) {
             FormWindowSimple window = new FormWindowSimple(ConfigUtil.getLang("PowerMainMenu","Title"), ConfigUtil.getLang("PowerMainMenu","Content"));
             window.addButton(new ElementButton(ConfigUtil.getLang("PowerMainMenu","AddPower")));
             window.addButton(new ElementButton(ConfigUtil.getLang("PowerMainMenu","RemovePower")));
@@ -40,8 +40,8 @@ public class GuiMain {
     }
 
     //主页面
-    public static void showMainMenu(Player player){
-        if(ConfigUtil.isAdmin(player)){
+    public static void showMainMenu(Player player) {
+        if(ConfigUtil.isAdmin(player)) {
             FormWindowSimple window = new FormWindowSimple(ConfigUtil.getLang("MainMenu","Title"), ConfigUtil.getLang("MainMenu","Content"));
             window.addButton(new ElementButton(ConfigUtil.getLang("MainMenu","ManageWorld")));
             window.addButton(new ElementButton(ConfigUtil.getLang("MainMenu","ManagePower")));
@@ -50,13 +50,13 @@ public class GuiMain {
             window.addButton(new ElementButton(ConfigUtil.getLang("MainMenu","ManageTemplate")));
             PlayerEventListener.showFormWindow(player,window,GuiType.ADMIN_Main);
         }
-        if(ConfigUtil.isOperator(player,player.getLevel())){
+        if(ConfigUtil.isOperator(player,player.getLevel())) {
             showEditMenu(player,player.getLevel().getName());
         }
     }
 
     //权限添加
-    public static void showPowerAddMenu(Player player){
+    public static void showPowerAddMenu(Player player) {
         FormWindowCustom window = new FormWindowCustom(ConfigUtil.getLang("PowerMenu","AddPowerTitle"));
         ElementDropdown powerDropDown = new ElementDropdown(ConfigUtil.getLang("PowerMenu","AddPowerDropdownTitle"));
         powerDropDown.addOption(ConfigUtil.getLang("PowerMenu","ManagerOption"));
@@ -71,7 +71,7 @@ public class GuiMain {
     }
 
     //取消权限
-    public static void showPowerDeleteMenu(Player player){
+    public static void showPowerDeleteMenu(Player player) {
         FormWindowCustom window = new FormWindowCustom(ConfigUtil.getLang("PowerMenu","DelPowerTitle"));
         ElementDropdown powerDropDown = new ElementDropdown(ConfigUtil.getLang("PowerMenu","DelPowerDropdownTitle"));
         powerDropDown.addOption(ConfigUtil.getLang("PowerMenu","ManagerOption"));
@@ -86,7 +86,7 @@ public class GuiMain {
     }
 
     //编辑世界
-    public static void showEditMenu(Player player, String level){
+    public static void showEditMenu(Player player, String level) {
         FormWindowCustom formWindowCustom = new FormWindowCustom(ConfigUtil.getLang("EditWindow","EditWorldTitle")+" - 【" + level + "】");
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","FarmProtect"), MainClass.getLevelSettingBooleanInit(level,"World","FarmProtect")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","AllExplodes"),MainClass.getLevelSettingBooleanInit(level,"World","AllExplodes")));
@@ -144,7 +144,7 @@ public class GuiMain {
         weatherList.add("clear");
         weatherList.add("thunder");
         weatherList.add("rain");
-        if(object != null){
+        if(object != null) {
             int index = weatherList.indexOf(String.valueOf(object));
             formWindowCustom.addElement(new ElementDropdown(ConfigUtil.getLang("EditWindow", "Weather"), weatherList, Math.max(index, 0)));
         }
@@ -152,7 +152,7 @@ public class GuiMain {
     }
 
     //返回窗口
-    public static void showReturnWindow(Player player, Boolean success, GuiType guiType){
+    public static void showReturnWindow(Player player, Boolean success, GuiType guiType) {
         FormWindowModal window;
         if(success) {
             window = new FormWindowModal(ConfigUtil.getLang("General","Title"), ConfigUtil.getLang("General","SaveSuccess"), ConfigUtil.getLang("General","ReturnButton"), ConfigUtil.getLang("General","QuitButton"));
@@ -172,9 +172,9 @@ public class GuiMain {
     }
 
     //设置选择模板 -> 两类 ①选择模板创建世界 ②设置模板
-    public static void showSettingChooseTemplateMenu(Player player, GuiType type){
+    public static void showSettingChooseTemplateMenu(Player player, GuiType type) {
         FormWindowSimple window = new FormWindowSimple(ConfigUtil.getLang("SettingChooseTemplateMenu","Title"), ConfigUtil.getLang("SettingChooseTemplateMenu","Content"));
-        for(String buttonTitle: ConfigUtil.TemplateCache.keySet()){
+        for(String buttonTitle: ConfigUtil.TemplateCache.keySet()) {
             window.addButton(new ElementButton(buttonTitle));
         }
         window.addButton(new ElementButton(ConfigUtil.getLang("General","ReturnButton")));
@@ -182,14 +182,14 @@ public class GuiMain {
     }
 
     //添加模板
-    public static void showTemplateAddMenu(Player player){
+    public static void showTemplateAddMenu(Player player) {
         FormWindowCustom custom = new FormWindowCustom(ConfigUtil.getLang("TemplateAddMenu","Title"));
         custom.addElement(new ElementInput(ConfigUtil.getLang("TemplateAddMenu","TemplateName")));
         PlayerEventListener.showFormWindow(player, custom, GuiType.Template_Add);
     }
 
     //模板设置
-    public static void showTemplateSettingMenu(Player player, String TemplateName, GuiType type){
+    public static void showTemplateSettingMenu(Player player, String TemplateName, GuiType type) {
         FormWindowCustom formWindowCustom = new FormWindowCustom(ConfigUtil.getLang("EditWindow","EditTemplateTitle") + " - "+ TemplateName);
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","FarmProtect"), ConfigUtil.getTemplateBooleanInit(TemplateName,"World","FarmProtect")));
         formWindowCustom.addElement(new ElementToggle(ConfigUtil.getLang("EditWindow","AllExplodes"), ConfigUtil.getTemplateBooleanInit(TemplateName,"World","AllExplodes")));
@@ -247,7 +247,7 @@ public class GuiMain {
         weatherList.add("clear");
         weatherList.add("thunder");
         weatherList.add("rain");
-        if(object != null){
+        if(object != null) {
             int index = weatherList.indexOf(String.valueOf(object));
             formWindowCustom.addElement(new ElementDropdown(ConfigUtil.getLang("EditWindow", "Weather"), weatherList, Math.max(index, 0)));
         }
