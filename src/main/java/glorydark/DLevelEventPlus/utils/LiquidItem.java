@@ -7,7 +7,7 @@ import java.util.List;
 
 public class LiquidItem {
 
-    public static Boolean isLiquidItem(Item item){
+    public static Boolean isLiquidItem(Item item) {
         List<Integer> items = new ArrayList<>();
         items.add(Item.STILL_WATER);
         items.add(Item.WATERLILY);

@@ -13,11 +13,11 @@ import glorydark.DLevelEventPlus.MainClass;
 public class LevelEventListener implements Listener {
 
     @EventHandler
-    public void WeatherChangeEvent(WeatherChangeEvent event){
+    public void WeatherChangeEvent(WeatherChangeEvent event) {
         Level level = event.getLevel();
         String levelName = level.getName();
         Object weather = MainClass.getLevelSettingInit(levelName, "World", "Weather");
-        if(weather != null && !String.valueOf(weather).equals("")){
+        if(weather != null && !String.valueOf(weather).equals("")) {
             event.setCancelled(true);
         }
     }
