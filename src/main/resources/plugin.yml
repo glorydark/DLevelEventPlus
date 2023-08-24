@@ -1,6 +1,6 @@
 name: DLevelEventPlus
 main: glorydark.DLevelEventPlus.MainClass
-version: "${project.version}"
+version: "${pom.version}"
 author: glorydark
 api: ["1.0.0"]
 description: DLevelEventPlus
