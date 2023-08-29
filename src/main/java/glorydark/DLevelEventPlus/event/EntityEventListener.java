@@ -92,7 +92,6 @@ public class EntityEventListener implements Listener {
             if(ConfigUtil.isAdmin(p)) { return; }
             if(ConfigUtil.isOperator(p, event.getEntity().getLevel())) { return; }
             if (!bool) {
-                p.sendActionBar(ConfigUtil.getLang("Tips","AntiPvp"));
                 if(MainClass.show_actionbar_text) {
                     ((Player) event.getDamager()).sendActionBar(ConfigUtil.getLang("Tips", "AntiPvp"));
                 }
