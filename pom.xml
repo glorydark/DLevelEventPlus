@@ -6,7 +6,7 @@
 
     <groupId>glorydark.nukkit</groupId>
     <artifactId>DLevelEventPlus-PNX</artifactId>
-    <version>1.1.9.6</version>
+    <version>1.1.9.7</version>
 
     <properties>
         <maven.complier.sourceEncoding>UTF-8</maven.complier.sourceEncoding>
