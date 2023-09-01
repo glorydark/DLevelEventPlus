@@ -1,4 +1,4 @@
-name: DLevelEventPlus-PNX
+name: DLevelEventPlus
 main: glorydark.DLevelEventPlus.MainClass
 version: "${pom.version}"
 author: glorydark

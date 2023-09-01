@@ -1,6 +1,6 @@
-name: DLevelEventPlus-PNX
+name: DLevelEventPlus
 main: glorydark.DLevelEventPlus.MainClass
-version: "1.1.9.6"
+version: "1.1.9.7-Fixed"
 author: glorydark
 api: ["1.0.0"]
 description: DLevelEventPlus
