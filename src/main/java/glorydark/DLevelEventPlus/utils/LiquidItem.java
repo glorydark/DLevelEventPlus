@@ -9,8 +9,8 @@ public class LiquidItem {
 
     public static Boolean isLiquidItem(Item item) {
         List<Integer> items = new ArrayList<>();
+        items.add(Item.WATERLILY);
         items.add(Item.WATER);
-        items.add(Item.WATER_LILY);
         items.add(Item.STILL_WATER);
         items.add(Item.LAVA);
         items.add(Item.STILL_LAVA);

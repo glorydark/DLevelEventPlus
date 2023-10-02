@@ -19,7 +19,7 @@ public class ConfigUtil {
             sender.sendMessage("§c[DLevelEventPlus] Can not find player: "+ name);
             return;
         }
-        Config worldcfg = new Config(MainClass.path + "/whitelists.yml", cn.nukkit.utils.Config.YAML);
+        Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
         Player player = Server.getInstance().getPlayer(name);
         switch (type) {
@@ -57,7 +57,7 @@ public class ConfigUtil {
             sender.sendMessage("§c[DLevelEventPlus] Can not find player: "+ name);
             return;
         }
-        Config worldcfg = new Config(MainClass.path + "/admins.yml", cn.nukkit.utils.Config.YAML);
+        Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
         Player player = Server.getInstance().getPlayer(name);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList("list"));
         switch (type) {
@@ -99,7 +99,7 @@ public class ConfigUtil {
             return;
         }
         Player player = Server.getInstance().getPlayer(name);
-        Config worldcfg = new Config(MainClass.path + "/operators.yml", cn.nukkit.utils.Config.YAML);
+        Config worldcfg = new Config(MainClass.path + "/operators.yml", Config.YAML);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
         switch (type) {
             case 0:
@@ -138,7 +138,7 @@ public class ConfigUtil {
         if(p == null) { return false; }
         File file = new File(MainClass.path + "/admins.yml");
         if (file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/admins.yml", cn.nukkit.utils.Config.YAML);
+            Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
             if(worldcfg.exists("list")) {
                 return worldcfg.getStringList("list").contains(p.getName());
             }
@@ -151,7 +151,7 @@ public class ConfigUtil {
         if(level == null) { return false; }
         File file = new File(MainClass.path + "/operators.yml");
         if (file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/operators.yml", cn.nukkit.utils.Config.YAML);
+            Config worldcfg = new Config(MainClass.path + "/operators.yml", Config.YAML);
             if (worldcfg.get(level.getName()) != null) {
                 return worldcfg.getStringList(level.getName()).contains(p.getName());
             }
@@ -164,7 +164,7 @@ public class ConfigUtil {
         if(level == null) { return false; }
         File file = new File(MainClass.path+"/whitelists.yml");
         if(file.exists()) {
-            cn.nukkit.utils.Config worldcfg = new cn.nukkit.utils.Config(MainClass.path + "/whitelists.yml", cn.nukkit.utils.Config.YAML);
+            Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
             if (worldcfg.exists(level.getName())) {
                 return worldcfg.getStringList(level.getName()).contains(p.getName());
             }else{

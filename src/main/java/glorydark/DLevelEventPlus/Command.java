@@ -39,7 +39,7 @@ public class Command extends cn.nukkit.command.Command {
                             MainClass.loadAllLevelConfig();
                             MainClass.loadTemplateConfig();
                             MainClass.loadLang();
-                            MainClass.show_actionbar_text = new cn.nukkit.utils.Config(MainClass.path+"/config.yml", cn.nukkit.utils.Config.YAML).getBoolean("show_actionbar_text", false);
+                            MainClass.show_actionbar_text = new Config(MainClass.path+"/config.yml", Config.YAML).getBoolean("show_actionbar_text", false);
                             return true;
                         case "fixall":
                             File world_folder = new File(MainClass.path + "/worlds/");

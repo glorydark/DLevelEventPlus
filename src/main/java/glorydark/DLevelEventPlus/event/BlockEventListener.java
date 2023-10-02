@@ -1,6 +1,5 @@
 package glorydark.DLevelEventPlus.event;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
@@ -9,29 +8,29 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.utils.Tools;
 
 public class BlockEventListener implements Listener {
     //Block
     //方块放置
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","AllowPlaceBlock");
         if(bool == null) {return;}
-        if(ConfigUtil.isAdmin(player)) {return;}
-        if(ConfigUtil.isOperator(player, player.getLevel())) {return;}
+        if(ConfigUtil.isAdmin(event.getPlayer())) {return;}
+        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {return;}
 
         if (!bool) {
             if(MainClass.show_actionbar_text) {
-                player.sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
+                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
             }
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.getId()+":"+block.getDamage();
+            String blockString = Tools.getItemString(block);
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiPlaceBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanPlaceBlocks").contains(blockString)) {
                 if(MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
+                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
                 }
                 event.setCancelled(true);
             }
@@ -41,29 +40,28 @@ public class BlockEventListener implements Listener {
     //方块破坏
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(),"Block","AllowBreakBlock");
+        Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","AllowBreakBlock");
         if(bool == null) {return;}
-        if(ConfigUtil.isAdmin(player)) { return; }
-        if(ConfigUtil.isOperator(player, player.getLevel())) { return; }
+        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
+        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
         if (!bool) {
             if(MainClass.show_actionbar_text) {
-                player.sendActionBar(ConfigUtil.getLang("Tips","AntiBreakBlock"));
+                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiBreakBlock"));
             }
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.getId()+":"+block.getDamage();
-            if(MainClass.getLevelStringListInit(player.getLevel().getName(),"Block","AntiBreakBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanBreakBlocks").contains(blockString)) {
+            String blockString = Tools.getItemString(block);
+            if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiBreakBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanBreakBlocks").contains(blockString)) {
                 if(MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips","AntiBreakSpecificBlock"));
+                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiBreakSpecificBlock"));
                 }
                 event.setCancelled(true);
             }else{
-                if(!isDropItem(player.getLevel(), block)) {
+                if(!isDropItem(event.getPlayer().getLevel(), block)) {
                     event.setDrops(new Item[0]);
                 }
-                if(!isDropExp(player.getLevel(), block)) {
+                if(!isDropExp(event.getPlayer().getLevel(), block)) {
                     event.setDropExp(0);
                 }
             }
@@ -73,7 +71,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropItem(Level level, Block block) {
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropItem");
         if(bool != null && !bool) {
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(block.getId() + ":" + block.getDamage());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(Tools.getItemString(block));
         }
         return true;
     }
@@ -81,7 +79,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropExp(Level level, Block block) {
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropExp");
         if(bool != null && !bool) {
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(block.getId() + ":" + block.getDamage());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(Tools.getItemString(block));
         }
         return true;
     }
@@ -219,7 +217,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockPistonChangeEvent(BlockPistonChangeEvent event) {
+    public void BlockPistonChangeEvent(BlockPistonEvent event) {
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(),"Block","PistonChange");
         if(bool == null) {return;}
         if (!bool) {

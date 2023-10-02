@@ -17,7 +17,7 @@ public class LevelEventListener implements Listener {
         Level level = event.getLevel();
         String levelName = level.getName();
         Object weather = MainClass.getLevelSettingInit(levelName, "World", "Weather");
-        if(weather != null) {
+        if(weather != null && !String.valueOf(weather).equals("")) {
             event.setCancelled(true);
         }
     }

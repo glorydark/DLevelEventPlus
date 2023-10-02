@@ -7,7 +7,10 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
-import glorydark.DLevelEventPlus.event.*;
+import glorydark.DLevelEventPlus.event.BlockEventListener;
+import glorydark.DLevelEventPlus.event.EntityEventListener;
+import glorydark.DLevelEventPlus.event.LevelEventListener;
+import glorydark.DLevelEventPlus.event.PlayerEventListener;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
 import glorydark.DLevelEventPlus.utils.NukkitTypeUtils;
@@ -29,6 +32,8 @@ public class MainClass extends PluginBase implements Listener{
 
     public static boolean experimental;
 
+    public static boolean compatibleMot;
+
     @Override
     public void onEnable() {
         server = this.getServer();
@@ -46,10 +51,13 @@ public class MainClass extends PluginBase implements Listener{
         Config config = new Config(path + "/config.yml", Config.YAML);
         show_actionbar_text = config.getBoolean("show_actionbar_text", false);
         experimental = config.getBoolean("experimental", false);
+        compatibleMot = NukkitTypeUtils.getNukkitType().equals(NukkitTypeUtils.NukkitType.MOT) || NukkitTypeUtils.getNukkitType().equals(NukkitTypeUtils.NukkitType.PM1E);
 
-        defaultConfigUtils = new DefaultConfigUtils(new Config(path+"/default_20220822.yml",Config.YAML));
+        defaultConfigUtils = new DefaultConfigUtils(new Config(path+ "/default_20230811.yml",Config.YAML));
 
-        Server.getInstance().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
+        if (!compatibleMot) {
+            Server.getInstance().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
+        }
         //加载配置
         loadLang();
         loadAllLevelConfig();
@@ -57,14 +65,10 @@ public class MainClass extends PluginBase implements Listener{
         //注册监听器、指令
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        if(NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.PM1E || NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT) {
-            this.getServer().getPluginManager().registerEvents(new BlockEventListenerPM1E(), this);
-        }else{
-            this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        }
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
         this.getServer().getCommandMap().register("",new Command("dwp"));
-        this.getServer().getLogger().info("DLevelEventPlus onEnable");
+        this.getLogger().info("DLevelEventPlus onEnable");
     }
 
     @Override
@@ -82,8 +86,8 @@ public class MainClass extends PluginBase implements Listener{
             for (File file1 : listFiles) {
                 if(DefaultConfigUtils.isYaml(file1.getName())) {
                     Config config = new Config(file1);
-                    String levelName = file1.getName().split("\\.")[0];
                     defaultConfigUtils.checkAll(file1.getName(), config); // 检测配置
+                    String levelName = file1.getName().split("\\.")[0];
                     Level level = Server.getInstance().getLevelByName(levelName);
                     if(level == null) {
                         if(Server.getInstance().loadLevel(levelName)) {
@@ -96,7 +100,7 @@ public class MainClass extends PluginBase implements Listener{
                     plugin.getLogger().info("Loading protection rules for the level [" + levelName + "]");
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if(!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")) {
-                        level.stopTime();
+                        level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                     }
                     Object weather = getLevelSettingInit(levelName, "World", "Weather");
                     if(weather != null) {
@@ -169,7 +173,7 @@ public class MainClass extends PluginBase implements Listener{
     public static void loadLang() {
         plugin.getLogger().info("开始加载语言配置");
         langConfig.clear();
-        Config langCfg = new Config(MainClass.path + "/lang.yml", cn.nukkit.utils.Config.YAML);
+        Config langCfg = new Config(MainClass.path + "/lang.yml", Config.YAML);
         langConfig = langCfg.getAll();
         plugin.getLogger().info("加载语言完成！");
     }

@@ -64,15 +64,17 @@ public class DefaultConfigUtils {
                     }
                 }
 
+                /*
                 for(String subKey: check.getSection(key).getKeys(false)) {
                     String getKey = key+"."+subKey;
                     if(!config.exists(getKey)) {
                         isUpdated = true;
                         changes+=1;
-                        check.getSection(key).remove(subKey);
+                        check.remove(getKey);
                         check.save();
                     }
                 }
+                * */
             }else{
                 isUpdated = true;
                 changes+=1;
