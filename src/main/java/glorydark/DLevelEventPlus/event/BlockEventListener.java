@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.utils.Tools;
 
 public class BlockEventListener implements Listener {
     //Block
@@ -26,7 +27,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.toItem().getNamespaceId();
+            String blockString = Tools.getItemString(block);
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiPlaceBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanPlaceBlocks").contains(blockString)) {
                 if(MainClass.show_actionbar_text) {
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceSpecificBlock"));
@@ -50,7 +51,7 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         }else{
             Block block = event.getBlock();
-            String blockString = block.toItem().getNamespaceId();
+            String blockString = Tools.getItemString(block);
             if(MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","AntiBreakBlocks").contains(blockString) && !MainClass.getLevelStringListInit(block.getLevel().getName(),"Block","CanBreakBlocks").contains(blockString)) {
                 if(MainClass.show_actionbar_text) {
                     event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiBreakSpecificBlock"));
@@ -70,7 +71,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropItem(Level level, Block block) {
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropItem");
         if(bool != null && !bool) {
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(block.toItem().getNamespaceId());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").contains(Tools.getItemString(block));
         }
         return true;
     }
@@ -78,7 +79,7 @@ public class BlockEventListener implements Listener {
     public boolean isDropExp(Level level, Block block) {
         Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Block","DropExp");
         if(bool != null && !bool) {
-            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(block.toItem().getNamespaceId());
+            return MainClass.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").contains(Tools.getItemString(block));
         }
         return true;
     }

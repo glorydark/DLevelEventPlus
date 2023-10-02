@@ -32,6 +32,7 @@ import glorydark.DLevelEventPlus.gui.GuiMain;
 import glorydark.DLevelEventPlus.gui.GuiType;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.LiquidItem;
+import glorydark.DLevelEventPlus.utils.Tools;
 
 import java.util.*;
 
@@ -107,7 +108,7 @@ public class PlayerEventListener implements Listener {
             }
 
             List<String> strings1 = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks");
-            if (strings1.contains(block.toItem().getNamespaceId())) {
+            if (strings1.contains(Tools.getItemString(block))) {
                 if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "BlockInteractBanned"));
                 }
@@ -115,7 +116,7 @@ public class PlayerEventListener implements Listener {
             }
 
             if(LiquidItem.isLiquidItem(item)) {
-                Boolean bool = MainClass.getLevelBooleanInit(block.getLevelName(),"Block","AllowPlaceBlock");
+                Boolean bool = MainClass.getLevelBooleanInit(block.getLevel().getName(),"Block","AllowPlaceBlock");
                 if(bool == null) { return; }
                 if (bool) { return; }
                 if(MainClass.show_actionbar_text) {
