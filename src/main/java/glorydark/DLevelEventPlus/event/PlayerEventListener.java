@@ -1,6 +1,5 @@
 package glorydark.DLevelEventPlus.event;
 
-import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
@@ -12,7 +11,6 @@ import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
-import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
@@ -24,15 +22,15 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.AvailableCommandsPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.gui.GuiMain;
 import glorydark.DLevelEventPlus.gui.GuiType;
+import glorydark.DLevelEventPlus.utils.AdventureSettingUtils;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.utils.ItemUtils;
 import glorydark.DLevelEventPlus.utils.LiquidItem;
-import glorydark.DLevelEventPlus.utils.Tools;
 
 import java.util.*;
 
@@ -41,19 +39,25 @@ import static cn.nukkit.network.protocol.PlayerActionPacket.ACTION_JUMP;
 public class PlayerEventListener implements Listener {
 
     public static final HashMap<Player, HashMap<Integer, GuiType>> UI_CACHE = new HashMap<>();
+
     public static void showFormWindow(Player player, FormWindow window, GuiType guiType) {
         UI_CACHE.computeIfAbsent(player, i -> new HashMap<>()).put(player.showFormWindow(window), guiType);
     }
+
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
         Player player = event.getPlayer();
         Level level = event.getPlayer().getLevel();
         Block block = event.getBlock();
         Item item = event.getPlayer().getInventory().getItemInHand();
-        Boolean interact = MainClass.getLevelBooleanInit(level.getName(),"Player","Interact");
-        if(interact != null && !interact) {
+        Boolean interact = MainClass.getLevelBooleanInit(level.getName(), "Player", "Interact");
+        if (interact != null && !interact) {
             if (MainClass.show_actionbar_text) {
                 player.sendActionBar(ConfigUtil.getLang("Tips", "AntiInteract"));
             }
@@ -61,11 +65,11 @@ public class PlayerEventListener implements Listener {
             return;
         }
 
-        if(block != null) {
+        if (block != null) {
             if (block.getId() == 389 || block.getId() == -339) {
-                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowInteractFrameBlock");
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "AllowInteractFrameBlock");
                 if (bool != null && !bool) {
-                    if(MainClass.show_actionbar_text) {
+                    if (MainClass.show_actionbar_text) {
                         player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTouchFlame"));
                     }
                     event.setCancelled(true);
@@ -74,10 +78,10 @@ public class PlayerEventListener implements Listener {
 
             //玩家导致耕地踩踏
             if (block.getId() == Block.FARMLAND) {
-                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"World","FarmProtect");
-                if(bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "World", "FarmProtect");
+                if (bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
                     if (bool) {
-                        if(MainClass.show_actionbar_text) {
+                        if (MainClass.show_actionbar_text) {
                             player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTrampleFarmland"));
                         }
                         event.setCancelled(true);
@@ -85,21 +89,23 @@ public class PlayerEventListener implements Listener {
                 }
             }
 
-            if(block.getId() == Block.CHEST) {
-                Boolean bool = MainClass.getLevelBooleanInit(level.getName(),"Player","AllowOpenChest");
-                if(bool != null && !bool) {
-                    if(MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList") == null) {return;}
-                    List<String> list = MainClass.getLevelStringListInit(level.getName(),"Player","ChestTrustList");
+            if (block.getId() == Block.CHEST) {
+                Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "AllowOpenChest");
+                if (bool != null && !bool) {
+                    if (MainClass.getLevelStringListInit(level.getName(), "Player", "ChestTrustList") == null) {
+                        return;
+                    }
+                    List<String> list = MainClass.getLevelStringListInit(level.getName(), "Player", "ChestTrustList");
                     List<Position> positionArrayList = new ArrayList<>();
-                    for(String str: Objects.requireNonNull(list)) {
+                    for (String str : Objects.requireNonNull(list)) {
                         List<String> strspl = Arrays.asList(str.split(":"));
-                        if(strspl.size() == 3) {
-                            positionArrayList.add(new Position(Double.parseDouble(strspl.get(0)),Double.parseDouble(strspl.get(1)),Double.parseDouble(strspl.get(2))));
+                        if (strspl.size() == 3) {
+                            positionArrayList.add(new Position(Double.parseDouble(strspl.get(0)), Double.parseDouble(strspl.get(1)), Double.parseDouble(strspl.get(2))));
                         }
                     }
-                    if(!positionArrayList.contains(block.getLocation())) {
-                        if(MainClass.show_actionbar_text) {
-                            String title = ConfigUtil.getLang("Tips","AntiUseChest").replace("%position%",String.valueOf(block.getLocation()));
+                    if (!positionArrayList.contains(block.getLocation())) {
+                        if (MainClass.show_actionbar_text) {
+                            String title = ConfigUtil.getLang("Tips", "AntiUseChest").replace("%position%", String.valueOf(block.getLocation()));
                             player.sendActionBar(title);
                         }
                         event.setCancelled(true);
@@ -107,26 +113,29 @@ public class PlayerEventListener implements Listener {
                 }
             }
 
-            List<String> strings1 = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks");
-            if (strings1.contains(Tools.getItemString(block))) {
+            if (MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block))) {
                 if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "BlockInteractBanned"));
                 }
                 event.setCancelled(true);
             }
 
-            if(LiquidItem.isLiquidItem(item)) {
-                Boolean bool = MainClass.getLevelBooleanInit(block.getLevel().getName(),"Block","AllowPlaceBlock");
-                if(bool == null) { return; }
-                if (bool) { return; }
-                if(MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips","AntiPlaceBlock"));
+            if (LiquidItem.isLiquidItem(item)) {
+                Boolean bool = MainClass.getLevelBooleanInit(block.getLevel().getName(), "Block", "AllowPlaceBlock");
+                if (bool == null) {
+                    return;
+                }
+                if (bool) {
+                    return;
+                }
+                if (MainClass.show_actionbar_text) {
+                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPlaceBlock"));
                 }
                 event.setCancelled(true);
             }
         }
 
-        if(item != null) {
+        if (item != null) {
             if (item instanceof ItemFishingRod) {
                 Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "CanUseFishingHook");
                 if (bool != null && !bool) {
@@ -138,7 +147,7 @@ public class PlayerEventListener implements Listener {
             }
 
             List<String> strings = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedUseItems");
-            if (strings.contains(item.getId() + ":" + item.getDamage()) || strings.contains(String.valueOf(item.getId()))) {
+            if (strings.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
                 if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "ItemBanned"));
                 }
@@ -149,32 +158,47 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerTeleportEvent(PlayerTeleportEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","AntiTeleport");
-        if(bool == null) {
+        Player player = event.getPlayer();
+        Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "AntiTeleport");
+        if (bool == null) {
             return;
         }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Level level = event.getTo().getLevel();
-        if(ConfigUtil.isWhiteListed(event.getPlayer(),level)) { return;}
-        if(event.getFrom().getLevel() == event.getTo().getLevel()) {
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        Level toLevel = event.getTo().getLevel();
+        if (ConfigUtil.isWhiteListed(player, toLevel)) {
+            return;
+        }
+        if (event.getFrom().getLevel() == event.getTo().getLevel()) {
             if (bool) {
-                if(MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiTeleport").replace("%s", level.getName()));
+                if (MainClass.show_actionbar_text) {
+                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiTeleport").replace("%s", toLevel.getName()));
                 }
                 event.setCancelled(true);
             }
+        } else {
+            AdventureSettingUtils.updatePlayerAdventureSettings(player, toLevel);
         }
     }
 
     @EventHandler
     public void PlayerBlockPickEvent(PlayerBlockPickEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","Pick");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Pick");
+        if (bool == null) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPickUpItem"));
             }
             event.setCancelled(true);
@@ -183,13 +207,19 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void InventoryPickupItemEvent(InventoryPickupItemEvent event) {
-        for(Player p : event.getViewers()) {
-            Boolean bool = MainClass.getLevelBooleanInit(p.getLevel().getName(),"Player","Pick");
-            if(bool == null) { return; }
-            if(ConfigUtil.isAdmin(p)) { return; }
-            if(ConfigUtil.isOperator(p, p.getLevel())) { return; }
+        for (Player p : event.getViewers()) {
+            Boolean bool = MainClass.getLevelBooleanInit(p.getLevel().getName(), "Player", "Pick");
+            if (bool == null) {
+                return;
+            }
+            if (ConfigUtil.isAdmin(p)) {
+                return;
+            }
+            if (ConfigUtil.isOperator(p, p.getLevel())) {
+                return;
+            }
             if (!bool) {
-                if(MainClass.show_actionbar_text) {
+                if (MainClass.show_actionbar_text) {
                     p.sendActionBar(ConfigUtil.getLang("Tips", "AntiPickUpItem"));
                 }
                 event.setCancelled(true);
@@ -199,12 +229,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerItemConsumeEvent(PlayerItemConsumeEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","ConsumeItem");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "ConsumeItem");
+        if (bool == null) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiConsumeItem"));
             }
             event.setCancelled(true);
@@ -213,12 +249,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerBedEnterEvent(PlayerBedEnterEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","BedEnter");
-        if(bool == null) { return; }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "BedEnter");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiBedEnter"));
             }
             event.setCancelled(true);
@@ -227,29 +269,37 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","CommandPreprocess");
-        if(bool == null) { return; }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        if(event.getPlayer() == null) {
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "CommandPreprocess");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        if (event.getPlayer() == null) {
             return;
         }
         if (bool) {
-            List<String> strings = MainClass.getLevelStringListInit(event.getPlayer().getLevel().getName(), "Player","BanCommands");
-            if(strings == null) { return; }
+            List<String> strings = MainClass.getLevelStringListInit(event.getPlayer().getLevel().getName(), "Player", "BanCommands");
+            if (strings == null) {
+                return;
+            }
             if (strings.size() > 0) {
                 String commandtext = event.getMessage();
-                for(String verify: strings) {
-                    if(commandtext.startsWith("/"+verify)) {
-                        if(MainClass.show_actionbar_text) {
+                for (String verify : strings) {
+                    if (commandtext.startsWith("/" + verify)) {
+                        if (MainClass.show_actionbar_text) {
                             event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiCommand"));
                         }
                         event.setCancelled(true);
                     }
                 }
             }
-        }else{
-            if(MainClass.show_actionbar_text) {
+        } else {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiAllCommand"));
             }
             event.setCancelled(true);
@@ -258,18 +308,20 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","GameModeChange");
-        if(bool == null) { return; }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "GameModeChange");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiChangeGamemode"));
             }
-            AdventureSettings adventureSettings = event.getPlayer().getAdventureSettings();
-            adventureSettings.set(AdventureSettings.Type.FLYING, event.getPlayer().getGamemode() == 1 && !event.getPlayer().isOnGround());
-            adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, event.getPlayer().getGamemode() == 1);
-            adventureSettings.update();
             event.setCancelled(true);
         }
     }
@@ -283,8 +335,8 @@ public class PlayerEventListener implements Listener {
         if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(),"Player","Move");
-        if(bool != null) {
+        Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Move");
+        if (bool != null) {
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "AntiMove"));
@@ -294,12 +346,12 @@ public class PlayerEventListener implements Listener {
         }
 
         Boolean bool1 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "World", "AntiVoid");
-        if(bool1 != null) {
+        if (bool1 != null) {
             if (bool1) {
                 Object o = MainClass.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight");
                 if (o != null) {
                     int voidHeight = Integer.parseInt((String) MainClass.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight"));
-                    if(event.getTo().getFloorY() <= voidHeight) {
+                    if (event.getTo().getFloorY() <= voidHeight) {
                         if (MainClass.show_actionbar_text) {
                             player.sendActionBar(ConfigUtil.getLang("Tips", "AntiVoid"));
                         }
@@ -309,7 +361,7 @@ public class PlayerEventListener implements Listener {
             }
         }
 
-        if(MainClass.experimental) {
+        if (MainClass.experimental) {
             Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
             if (bool2 == null) {
                 return;
@@ -336,12 +388,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerEatFoodEvent(PlayerEatFoodEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","EatFood");
-        if(bool == null) { return; }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "EatFood");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiEat"));
             }
             event.setCancelled(true);
@@ -350,10 +408,16 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerFoodLevelChangeEvent(PlayerFoodLevelChangeEvent event) {
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(),"Player","HungerChange");
-        if(bool == null) { return; }
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "HungerChange");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
         if (!bool) {
             event.getPlayer().getFoodData().reset();
         }
@@ -361,12 +425,12 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerDeathEvent(PlayerDeathEvent event) {
-        Boolean bool1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World","KeepXp");
-        Boolean bool2 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(),"World","KeepInventory");
-        if(bool1 != null) {
+        Boolean bool1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "KeepXp");
+        Boolean bool2 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "KeepInventory");
+        if (bool1 != null) {
             event.setKeepExperience(bool1);
         }
-        if(bool2 != null) {
+        if (bool2 != null) {
             event.setKeepInventory(bool2);
         }
     }
@@ -379,7 +443,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         GuiType guiType = UI_CACHE.containsKey(p) ? UI_CACHE.get(p).get(event.getFormID()) : null;
-        if(guiType == null) {
+        if (guiType == null) {
             return;
         }
         UI_CACHE.get(p).remove(event.getFormID());
@@ -396,8 +460,11 @@ public class PlayerEventListener implements Listener {
             this.formWindowModalOnClick(p, (FormWindowModal) window, guiType);
         }
     }
+
     private void formWindowSimpleOnClick(Player p, FormWindowSimple window, GuiType guiType) {
-        if(window.getResponse() == null) {return;}
+        if (window.getResponse() == null) {
+            return;
+        }
         switch (guiType) {
             case ADMIN_Main:
                 switch (window.getResponse().getClickedButtonId()) {
@@ -409,13 +476,13 @@ public class PlayerEventListener implements Listener {
                         break;
                     case 2:
                         MainClass.saveAllConfig();
-                        GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                        GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                         break;
                     case 3:
                         MainClass.loadAllLevelConfig();
                         MainClass.loadTemplateConfig();
                         MainClass.loadLang();
-                        GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                        GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                         break;
                     case 4:
                         GuiMain.showTemplateMainMenu(p);
@@ -438,15 +505,15 @@ public class PlayerEventListener implements Listener {
             case Edit_ChooseWorld:
                 String text = window.getResponse().getClickedButton().getText();
                 if (!text.equals("")) {
-                    if(!text.equals("返回")) {
+                    if (!text.equals("返回")) {
                         String worldName = window.getResponse().getClickedButton().getText();
-                        if(MainClass.configCache.containsKey(text)) {
+                        if (MainClass.configCache.containsKey(text)) {
                             GuiMain.showEditMenu(p, worldName);
-                        }else{
+                        } else {
                             GuiMain.showSettingChooseTemplateMenu(p, GuiType.Template_ChooseTemplateForNewConfig);
                         }
                         MainClass.selectCache.put(p, text);
-                    }else{
+                    } else {
                         GuiMain.showMainMenu(p);
                     }
                 }
@@ -454,10 +521,10 @@ public class PlayerEventListener implements Listener {
             case Template_ChooseTemplateForEdit:
                 text = window.getResponse().getClickedButton().getText();
                 if (!text.equals("")) {
-                    if(!text.equals("返回")) {
+                    if (!text.equals("返回")) {
                         GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_EditProcess);
                         MainClass.selectCache.put(p, text);
-                    }else{
+                    } else {
                         GuiMain.showMainMenu(p);
                     }
                 }
@@ -465,9 +532,9 @@ public class PlayerEventListener implements Listener {
             case Template_ChooseTemplateForNewConfig:
                 text = window.getResponse().getClickedButton().getText();
                 if (!text.equals("")) {
-                    if(!text.equals("返回")) {
+                    if (!text.equals("返回")) {
                         GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_CreateConfigProcess);
-                    }else{
+                    } else {
                         GuiMain.showMainMenu(p);
                     }
                 }
@@ -489,17 +556,19 @@ public class PlayerEventListener implements Listener {
     }
 
     private void formWindowCustomOnClick(Player p, FormWindowCustom window, GuiType guiType) {
-        if(window.getResponse() == null) {return;}
+        if (window.getResponse() == null) {
+            return;
+        }
         FormResponseCustom responses = window.getResponse();
         switch (guiType) {
             case Edit_Process:
             case Template_CreateConfigProcess:
                 String levelname = MainClass.selectCache.get(p);
-                if(levelname == null) {
-                    MainClass.plugin.getLogger().warning("Error: Can not find "+ p.getName() +"'s selected world.");
+                if (levelname == null) {
+                    MainClass.plugin.getLogger().warning("Error: Can not find " + p.getName() + "'s selected world.");
                     return;
                 }
-                if(!MainClass.configCache.containsKey(levelname)) {
+                if (!MainClass.configCache.containsKey(levelname)) {
                     MainClass.configCache.put(levelname, new LinkedHashMap<>());
                 }
                 MainClass.setLevelInit(levelname, "World", "FarmProtect", responses.getToggleResponse(0));
@@ -552,21 +621,21 @@ public class PlayerEventListener implements Listener {
                 MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
                 MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
                 boolean timeFlow = responses.getToggleResponse(49);
-                if(!timeFlow) {
+                if (!timeFlow) {
                     Level level = Server.getInstance().getLevelByName(levelname);
-                    if(level != null) {
+                    if (level != null) {
                         level.stopTime();
                     }
                 }
                 MainClass.setLevelInit(levelname, "World", "TimeFlow", timeFlow);
                 int weatherIndex = responses.getDropdownResponse(50).getElementID();
-                if(weatherIndex != 0) {
+                if (weatherIndex != 0) {
                     MainClass.setLevelInit(levelname, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
                 }
-                Config config = new Config(MainClass.path+"/worlds/"+levelname+".yml", cn.nukkit.utils.Config.YAML);
+                Config config = new Config(MainClass.path + "/worlds/" + levelname + ".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(MainClass.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
                 config.save();
-                GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                 break;
             case Template_EditProcess:
                 responses = window.getResponse();
@@ -622,23 +691,23 @@ public class PlayerEventListener implements Listener {
                 ConfigUtil.setTemplateInit(select, "World", "VoidHeight", responses.getInputResponse(48));
                 ConfigUtil.setTemplateInit(select, "World", "TimeFlow", responses.getToggleResponse(49));
                 weatherIndex = responses.getDropdownResponse(50).getElementID();
-                if(weatherIndex != 0) {
+                if (weatherIndex != 0) {
                     ConfigUtil.setTemplateInit(select, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
                 }
-                config = new cn.nukkit.utils.Config(MainClass.path+"/templates/"+select+".yml", cn.nukkit.utils.Config.YAML);
+                config = new cn.nukkit.utils.Config(MainClass.path + "/templates/" + select + ".yml", cn.nukkit.utils.Config.YAML);
                 config.setAll(ConfigUtil.TemplateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();
-                GuiMain.showReturnWindow(p,true,GuiType.Return_toMainMenu);
+                GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                 break;
             case Template_Add:
                 String text = responses.getInputResponse(0);
-                if(!text.replace(" ","").equals("")) {
-                    if(!ConfigUtil.TemplateCache.containsKey(text)) {
+                if (!text.replace(" ", "").equals("")) {
+                    if (!ConfigUtil.TemplateCache.containsKey(text)) {
                         MainClass.defaultConfigUtils.writeAll(1, text);
-                        ConfigUtil.TemplateCache.put(text, (LinkedHashMap<String, Object>) new Config(MainClass.path+"/templates/"+text+".yml", Config.YAML).getAll());
-                        GuiMain.showReturnWindow(p,true, GuiType.Return_toMainMenu);
-                    }else{
-                        GuiMain.showReturnWindow(p,false, GuiType.Return_toMainMenu);
+                        ConfigUtil.TemplateCache.put(text, (LinkedHashMap<String, Object>) new Config(MainClass.path + "/templates/" + text + ".yml", Config.YAML).getAll());
+                        GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
+                    } else {
+                        GuiMain.showReturnWindow(p, false, GuiType.Return_toMainMenu);
                     }
                 }
                 break;
@@ -650,14 +719,14 @@ public class PlayerEventListener implements Listener {
                 boolean b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
                 switch (select) {
                     case "管理员":
-                        if(player != null && !player.replace(" ","").equals("")) {
-                            GuiMain.showReturnWindow(p, true,GuiType.Return_toPowerMenu);
+                        if (player != null && !player.replace(" ", "").equals("")) {
+                            GuiMain.showReturnWindow(p, true, GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
                     case "白名单":
-                        if(b) {
-                            GuiMain.showReturnWindow(p, true,GuiType.Return_toPowerMenu);
+                        if (b) {
+                            GuiMain.showReturnWindow(p, true, GuiType.Return_toPowerMenu);
                         }
                         break;
                 }
@@ -670,21 +739,21 @@ public class PlayerEventListener implements Listener {
                 b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
                 switch (select) {
                     case "管理员":
-                        if(player != null && !player.replace(" ","").equals("")) {
+                        if (player != null && !player.replace(" ", "").equals("")) {
                             ConfigUtil.adminList(p, 1, player);
-                            GuiMain.showReturnWindow(p, true,GuiType.Return_toPowerMenu);
+                            GuiMain.showReturnWindow(p, true, GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
-                        if(b) {
-                            ConfigUtil.operatorList(p,1, player,world);
-                            GuiMain.showReturnWindow(p, true,GuiType.Return_toPowerMenu);
+                        if (b) {
+                            ConfigUtil.operatorList(p, 1, player, world);
+                            GuiMain.showReturnWindow(p, true, GuiType.Return_toPowerMenu);
                         }
                         break;
                     case "白名单":
-                        if(b) {
-                            ConfigUtil.whiteList(p, 1, player,world);
-                            GuiMain.showReturnWindow(p, true,GuiType.Return_toPowerMenu);
+                        if (b) {
+                            ConfigUtil.whiteList(p, 1, player, world);
+                            GuiMain.showReturnWindow(p, true, GuiType.Return_toPowerMenu);
                         }
                         break;
                 }
@@ -693,18 +762,20 @@ public class PlayerEventListener implements Listener {
     }
 
     private void formWindowModalOnClick(Player p, FormWindowModal window, GuiType guiType) {
-        if(window.getResponse() == null) {return;}
+        if (window.getResponse() == null) {
+            return;
+        }
         switch (guiType) {
             case Return_toMainMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
-                    if(ConfigUtil.isAdmin(p)) {
+                    if (ConfigUtil.isAdmin(p)) {
                         GuiMain.showMainMenu(p);
                     }
                 }
                 break;
             case Return_toPowerMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
-                    if(ConfigUtil.isAdmin(p)) {
+                    if (ConfigUtil.isAdmin(p)) {
                         GuiMain.showPowerMainMenu(p);
                     }
                 }
@@ -715,7 +786,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void ProjectileLaunchEvent(ProjectileLaunchEvent event) {
         Entity entity = event.getEntity().shootingEntity;
-        if(entity instanceof Player) {
+        if (entity instanceof Player) {
             Player player = (Player) entity;
             Boolean bool = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "ConsumeItem");
             if (bool == null) {
@@ -728,7 +799,7 @@ public class PlayerEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if(MainClass.show_actionbar_text) {
+                if (MainClass.show_actionbar_text) {
                     player.sendActionBar(ConfigUtil.getLang("Tips", "AntiConsumeItem"));
                 }
                 event.setCancelled(true);
@@ -738,26 +809,36 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleFlightEvent(PlayerToggleFlightEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","Fly");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Fly");
+        if (bool == null) {
+            return;
+        }
         if (!bool & event.isFlying()) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiFly"));
             }
             event.getPlayer().setPosition(event.getPlayer().getPosition());
-            event.getPlayer().setMotion(new Vector3(0,-1,0));
-            event.getPlayer().fall(event.getPlayer().getMotion().getFloorY()+1);
+            event.getPlayer().setMotion(new Vector3(0, -1, 0));
+            event.getPlayer().fall(event.getPlayer().getMotion().getFloorY() + 1);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        if(event.getPacket() instanceof PlayerActionPacket) {
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        if (event.getPacket() instanceof PlayerActionPacket) {
             PlayerActionPacket pk = (PlayerActionPacket) event.getPacket();
             if (pk.action == ACTION_JUMP) {
                 if (event.getPlayer().getGamemode() != 1 && event.getPlayer().getGamemode() != 3) {
@@ -779,12 +860,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerDropItemEvent(PlayerDropItemEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","DropItem");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "DropItem");
+        if (bool == null) {
+            return;
+        }
         if (!bool) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiDropItem"));
             }
             event.setCancelled(true);
@@ -793,12 +880,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleGlideEvent(PlayerToggleGlideEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","Glide");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Glide");
+        if (bool == null) {
+            return;
+        }
         if (!bool && event.isGliding()) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiGlide"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
@@ -808,12 +901,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleSwimEvent(PlayerToggleSwimEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","Swim");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Swim");
+        if (bool == null) {
+            return;
+        }
         if (!bool && event.isSwimming()) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSwim"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
@@ -823,12 +922,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","Sneak");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Sneak");
+        if (bool == null) {
+            return;
+        }
         if (!bool && event.isSneaking()) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSneak"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
@@ -838,12 +943,18 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleSprintEvent(PlayerToggleSprintEvent event) {
-        if(ConfigUtil.isAdmin(event.getPlayer())) { return; }
-        if(ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) { return; }
-        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player","Sprint");
-        if(bool == null) { return; }
+        if (ConfigUtil.isAdmin(event.getPlayer())) {
+            return;
+        }
+        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+            return;
+        }
+        Boolean bool = MainClass.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Sprint");
+        if (bool == null) {
+            return;
+        }
         if (!bool && event.isSprinting()) {
-            if(MainClass.show_actionbar_text) {
+            if (MainClass.show_actionbar_text) {
                 event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSprint"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
@@ -851,13 +962,9 @@ public class PlayerEventListener implements Listener {
         }
     }
 
-    //hide
     @EventHandler
-    public void HideCommand(DataPacketSendEvent event) {
-        if(event.getPacket() instanceof AvailableCommandsPacket) {
-            if(!ConfigUtil.isAdmin(event.getPlayer()) && !ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
-                ((AvailableCommandsPacket) event.getPacket()).commands.remove("dwp");
-            }
-        }
+    public void PlayerLocallyInitializedEvent(PlayerLocallyInitializedEvent event) {
+        Player player = event.getPlayer();
+        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
     }
 }
