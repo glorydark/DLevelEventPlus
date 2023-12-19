@@ -27,4 +27,8 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
     - name: Build projects
       run: mvn -B -U clean package --file pom.xml
-    - run: mkdir staging && cp target/*.jar staging
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: DLevelEventPlus
+        path: target/*.jar
