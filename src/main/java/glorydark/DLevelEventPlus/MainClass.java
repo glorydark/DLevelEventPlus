@@ -30,8 +30,6 @@ public class MainClass extends PluginBase implements Listener {
 
     public static boolean experimental; // Currently not at work
 
-    public static boolean adventureSettingsUpdate;
-
     public final List<String> enabledLanguage = List.of(new String[]{"chs", "eng"});
 
     @Override
@@ -61,7 +59,6 @@ public class MainClass extends PluginBase implements Listener {
         this.getLogger().info(language.translateString("tip_alert_defaultFile"));
         show_actionbar_text = config.getBoolean("show_actionbar_text", false);
         experimental = config.getBoolean("experimental", false);
-        adventureSettingsUpdate = config.getBoolean("adventure-settings-update", false);
         defaultConfigUtils = new DefaultConfigUtils(new Config(path + "/default_20230811.yml", Config.YAML));
         loadAllLevelConfig();
         loadTemplateConfig();

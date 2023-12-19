@@ -55,9 +55,6 @@ public class AdventureSettingUtils {
     }
 
     public static void updatePlayerAdventureSettings(Player player, Level level) {
-        if (!MainClass.adventureSettingsUpdate) {
-            return;
-        }
         if (ConfigUtil.isAdmin(player)) {
             AdventureSettingUtils.setAllowInteract(player, true);
             AdventureSettingUtils.setAllowModifyWorld(player, true);

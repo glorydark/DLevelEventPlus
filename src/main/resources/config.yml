@@ -1,10 +1,5 @@
 language: chs
-# 是否显示提示（actionbar）
+# Actionbar Tips
 show_actionbar_text: true
-# 开启飞行功能
-# 目前包含：禁止飞行后强制拉回
+# Experimental: Force anti-fly
 experimental: false
-# 是否启用玩家AdventureSettings更新
-# 可以实现和冒险模式一样无法交互、放置方块的效果。
-# 已知分支中，mot经过测试可以使用
-adventure-settings-update: false

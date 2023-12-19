@@ -345,25 +345,27 @@ public class PlayerEventListener implements Listener {
             }
         }
 
-        Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
-        if (bool2 == null) {
-            return;
-        }
-        
-        if (!bool2) {
-            Location location = player.getLocation();
-            boolean isFlying = true;
-            for (int i = 1; i <= 4; i++) {
-                Block block = player.getLevel().getBlock(location.add(0, -i, 0));
-                if (!(block instanceof BlockAir)) {
-                    isFlying = false;
-                }
+        if (MainClass.experimental) {
+            Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
+            if (bool2 == null) {
+                return;
             }
-            if (isFlying) {
-                if (MainClass.show_actionbar_text) {
-                    player.sendActionBar(MainClass.language.translateString("tip_fly"));
+
+            if (!bool2) {
+                Location location = player.getLocation();
+                boolean isFlying = true;
+                for (int i = 1; i <= 4; i++) {
+                    Block block = player.getLevel().getBlock(location.add(0, -i, 0));
+                    if (!(block instanceof BlockAir)) {
+                        isFlying = false;
+                    }
                 }
-                event.getPlayer().setMotion(new Vector3(0, -1, 0));
+                if (isFlying) {
+                    if (MainClass.show_actionbar_text) {
+                        player.sendActionBar(MainClass.language.translateString("tip_fly"));
+                    }
+                    event.getPlayer().setMotion(new Vector3(0, -1, 0));
+                }
             }
         }
     }
