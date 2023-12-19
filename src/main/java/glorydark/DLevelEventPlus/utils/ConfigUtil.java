@@ -15,8 +15,8 @@ public class ConfigUtil {
     public static HashMap<String, LinkedHashMap<String, Object>> TemplateCache = new HashMap<>();
 
     public static void whiteList(CommandSender sender, int type, String name, String levelname) {
-        if(!Server.getInstance().lookupName(name).isPresent()) {
-            sender.sendMessage("§c[DLevelEventPlus] Can not find player: "+ name);
+        if (Server.getInstance().lookupName(name).isPresent()) {
+            sender.sendMessage("§c[DLevelEventPlus] Can not find player: " + name);
             return;
         }
         Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
@@ -28,11 +28,11 @@ public class ConfigUtil {
                     arrayList.add(name);
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
-                    if(player != null) {
+                    if (player != null) {
                         player.sendMessage("§a[DLevelEventPlus] You are in this world's whitelist now!");
                     }
                     sender.sendMessage("§a[DLevelEventPlus] 新增成功！");
-                }else{
+                } else {
                     sender.sendMessage("§c[DLevelEventPlus] 新增失败，该玩家已在白名单内！");
                 }
                 break;
@@ -41,11 +41,11 @@ public class ConfigUtil {
                     arrayList.remove(name);
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
-                    if(player != null) {
+                    if (player != null) {
                         player.sendMessage("§c[DLevelEventPlus] You are no longer in this world's whitelist!");
                     }
                     sender.sendMessage("§a[DLevelEventPlus] 移除成功！");
-                }else{
+                } else {
                     sender.sendMessage("§c[DLevelEventPlus] 移除失败，该玩家不在白名单内！");
                 }
                 break;
@@ -53,8 +53,8 @@ public class ConfigUtil {
     }
 
     public static void adminList(CommandSender sender, int type, String name) {
-        if(!Server.getInstance().lookupName(name).isPresent()) {
-            sender.sendMessage("§c[DLevelEventPlus] Can not find player: "+ name);
+        if (Server.getInstance().lookupName(name).isPresent()) {
+            sender.sendMessage("§c[DLevelEventPlus] Can not find player: " + name);
             return;
         }
         Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
@@ -66,12 +66,11 @@ public class ConfigUtil {
                     arrayList.add(name);
                     worldcfg.set("list", arrayList);
                     worldcfg.save();
-                    if(player != null) {
+                    if (player != null) {
                         player.sendMessage("§a[DLevelEventPlus] You are admin now!");
-                        player.setAllowModifyWorld(true);
                     }
                     sender.sendMessage("§a[DLevelEventPlus] 新增成功！");
-                }else{
+                } else {
                     sender.sendMessage("§c[DLevelEventPlus] 新增失败，该玩家已为管理员！");
                 }
                 break;
@@ -81,12 +80,12 @@ public class ConfigUtil {
                         arrayList.remove(name);
                         worldcfg.set("list", arrayList);
                         worldcfg.save();
-                        if(player != null) {
+                        if (player != null) {
                             player.sendMessage("§c[DLevelEventPlus] You are no longer an admin!");
                         }
                         sender.sendMessage("§a[DLevelEventPlus] 移除成功！");
                     }
-                }else{
+                } else {
                     sender.sendMessage("§c[DLevelEventPlus] 移除失败，该玩家不是管理员！");
                 }
                 break;
@@ -94,8 +93,8 @@ public class ConfigUtil {
     }
 
     public static void operatorList(CommandSender sender, int type, String name, String levelname) {
-        if(!Server.getInstance().lookupName(name).isPresent()) {
-            sender.sendMessage("§c[DLevelEventPlus] Can not find player: "+ name);
+        if (Server.getInstance().lookupName(name).isPresent()) {
+            sender.sendMessage("§c[DLevelEventPlus] Can not find player: " + name);
             return;
         }
         Player player = Server.getInstance().getPlayer(name);
@@ -107,12 +106,12 @@ public class ConfigUtil {
                     arrayList.add(name);
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
-                    if(player != null) {
+                    if (player != null) {
                         player.setAllowModifyWorld(true);
                         player.sendMessage("§a[DLevelEventPlus] You are operator of this world now!");
                     }
                     sender.sendMessage("§a[DLevelEventPlus] 新增成功！");
-                }else{
+                } else {
                     sender.sendMessage("§c[DLevelEventPlus] 新增失败，该玩家已在白名单内！");
                 }
                 break;
@@ -122,11 +121,11 @@ public class ConfigUtil {
                         arrayList.remove(name);
                         worldcfg.set(levelname, arrayList);
                         worldcfg.save();
-                        if(player != null) {
+                        if (player != null) {
                             player.sendMessage("§c[DLevelEventPlus] You are no longer operator of this world!");
                         }
                         sender.sendMessage("§a[DLevelEventPlus] 移除成功！");
-                    }else{
+                    } else {
                         sender.sendMessage("§c[DLevelEventPlus] 移除失败，该玩家不在白名单内！");
                     }
                 }
@@ -135,11 +134,13 @@ public class ConfigUtil {
     }
 
     public static boolean isAdmin(Player p) {
-        if(p == null) { return false; }
+        if (p == null) {
+            return false;
+        }
         File file = new File(MainClass.path + "/admins.yml");
         if (file.exists()) {
             Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
-            if(worldcfg.exists("list")) {
+            if (worldcfg.exists("list")) {
                 return worldcfg.getStringList("list").contains(p.getName());
             }
         }
@@ -147,8 +148,12 @@ public class ConfigUtil {
     }
 
     public static boolean isOperator(Player p, Level level) {
-        if(p == null) { return false; }
-        if(level == null) { return false; }
+        if (p == null) {
+            return false;
+        }
+        if (level == null) {
+            return false;
+        }
         File file = new File(MainClass.path + "/operators.yml");
         if (file.exists()) {
             Config worldcfg = new Config(MainClass.path + "/operators.yml", Config.YAML);
@@ -160,46 +165,50 @@ public class ConfigUtil {
     }
 
     public static boolean isWhiteListed(Player p, Level level) {
-        if(p == null) { return false; }
-        if(level == null) { return false; }
-        File file = new File(MainClass.path+"/whitelists.yml");
-        if(file.exists()) {
+        if (p == null) {
+            return false;
+        }
+        if (level == null) {
+            return false;
+        }
+        File file = new File(MainClass.path + "/whitelists.yml");
+        if (file.exists()) {
             Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
             if (worldcfg.exists(level.getName())) {
                 return worldcfg.getStringList(level.getName()).contains(p.getName());
-            }else{
+            } else {
                 return true;
             }
-        }else{
+        } else {
             return true;
         }
     }
 
     public static String getLang(String key, String subKey) {
-        if(MainClass.langConfig.containsKey(key)) {
+        if (MainClass.langConfig.containsKey(key)) {
             Map<String, Object> map = (Map<String, Object>) MainClass.langConfig.getOrDefault(key, null);
-            if(map!=null) {
+            if (map != null) {
                 return (String) map.getOrDefault(subKey, "Translation Not Found!");
-            }else{
+            } else {
                 return "Translation Not Found!";
             }
-        }else{
+        } else {
             return "Translation Not Found!";
         }
     }
 
     public static List<String> getLangList(String text) {
-        if(MainClass.langConfig.containsKey(text)) {
+        if (MainClass.langConfig.containsKey(text)) {
             return (List<String>) MainClass.langConfig.get(text);
-        }else{
+        } else {
             return new ArrayList<>();
         }
     }
 
     public static void setTemplateInit(String ConfigName, String key, String subKey, Object value) {
-        if(TemplateCache.containsKey(ConfigName)) {
+        if (TemplateCache.containsKey(ConfigName)) {
             LinkedHashMap<String, Object> keyMap = TemplateCache.get(ConfigName);
-            if(keyMap != null && keyMap.containsKey(key)) {
+            if (keyMap != null && keyMap.containsKey(key)) {
                 Map<String, Object> obj = (Map<String, Object>) keyMap.get(key);
                 if (obj != null) {
                     obj.put(subKey, value);
@@ -213,11 +222,11 @@ public class ConfigUtil {
     }
 
     public static Object getTemplateInit(String ConfigName, String key, String subKey) {
-        if(TemplateCache.containsKey(ConfigName)) {
+        if (TemplateCache.containsKey(ConfigName)) {
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
-            if(keyMap != null && keyMap.containsKey(key)) {
+            if (keyMap != null && keyMap.containsKey(key)) {
                 Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
-                if(subkeyMap.containsKey(subKey)) {
+                if (subkeyMap.containsKey(subKey)) {
                     return subkeyMap.get(subKey);
                 }
             }
@@ -226,11 +235,11 @@ public class ConfigUtil {
     }
 
     public static Boolean getTemplateBooleanInit(String ConfigName, String key, String subKey) {
-        if(TemplateCache.containsKey(ConfigName)) {
+        if (TemplateCache.containsKey(ConfigName)) {
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
-            if(keyMap != null && keyMap.containsKey(key)) {
+            if (keyMap != null && keyMap.containsKey(key)) {
                 Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
-                if(subkeyMap.containsKey(subKey)) {
+                if (subkeyMap.containsKey(subKey)) {
                     return (Boolean) subkeyMap.get(subKey);
                 }
             }
@@ -239,11 +248,11 @@ public class ConfigUtil {
     }
 
     public static List<String> getTemplateListInit(String ConfigName, String key, String subKey) {
-        if(TemplateCache.containsKey(ConfigName)) {
+        if (TemplateCache.containsKey(ConfigName)) {
             Map<String, Object> keyMap = TemplateCache.get(ConfigName);
-            if(keyMap != null && keyMap.containsKey(key)) {
+            if (keyMap != null && keyMap.containsKey(key)) {
                 Map<String, Object> subkeyMap = (Map<String, Object>) keyMap.get(key); //键下的所有配置
-                if(subkeyMap.containsKey(subKey)) {
+                if (subkeyMap.containsKey(subKey)) {
                     return (List<String>) subkeyMap.get(subKey);
                 }
             }

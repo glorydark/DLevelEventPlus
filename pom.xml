@@ -6,7 +6,7 @@
 
     <groupId>glorydark.nukkit</groupId>
     <artifactId>DLevelEventPlus</artifactId>
-    <version>1.1.9.9</version>
+    <version>1.2.0.0-Pre1</version>
 
     <properties>
         <maven.complier.sourceEncoding>UTF-8</maven.complier.sourceEncoding>
@@ -48,14 +48,6 @@
             <artifactId>nukkit</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.nukkit</groupId>
-            <artifactId>Nukkit</artifactId>
-            <version>MOT-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/Nukkit-MOT-SNAPSHOT-JAVA8.jar</systemPath>
         </dependency>
 
         <dependency>
