@@ -1,3 +1,4 @@
+language: chs
 # 是否显示提示（actionbar）
 show_actionbar_text: true
 # 开启飞行功能

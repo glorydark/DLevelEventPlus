@@ -24,12 +24,12 @@ public class Command extends cn.nukkit.command.Command {
                     if (sender.isPlayer()) {
                         GuiMain.showMainMenu((Player) sender);
                     } else {
-                        sender.sendMessage("§a[DLevelEventPlus] 请在游戏内使用!");
+                        sender.sendMessage(MainClass.language.translateString("tip_generic_useInGame"));
                     }
                     return true;
                 case 1:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(MainClass.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     switch (args[0]) {
@@ -39,7 +39,6 @@ public class Command extends cn.nukkit.command.Command {
                         case "reload":
                             MainClass.loadAllLevelConfig();
                             MainClass.loadTemplateConfig();
-                            MainClass.loadLang();
                             MainClass.show_actionbar_text = new Config(MainClass.path + "/config.yml", Config.YAML).getBoolean("show_actionbar_text", false);
                             return true;
                         case "fixall":
@@ -70,21 +69,21 @@ public class Command extends cn.nukkit.command.Command {
                     break;
                 case 2:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(MainClass.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     if (args[0].equals("addworld")) {
                         if (MainClass.defaultConfigUtils.writeAll(0, args[1])) {
-                            sender.sendMessage("§a[DLevelEventPlus] 创建成功!");
+                            sender.sendMessage(MainClass.language.translateString("tip_addWorld_success"));
                         } else {
-                            sender.sendMessage("§c[DLevelEventPlus] 创建失败!");
+                            sender.sendMessage(MainClass.language.translateString("tip_addWorld_failed"));
                         }
                         return true;
                     }
                     break;
                 case 3:
                     if (sender.isPlayer()) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(MainClass.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     if (args[0].equals("admin")) {
@@ -102,7 +101,7 @@ public class Command extends cn.nukkit.command.Command {
                     break;
                 case 4:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(MainClass.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     switch (args[0]) {
@@ -135,12 +134,7 @@ public class Command extends cn.nukkit.command.Command {
         return true;
     }
 
-    public void sendCommandUsage(CommandSender p) {
-        //dgamerule operatorlist add/del xx XX
-        //dgamerule whitelist add/del xx
-        //dgamerule addworld xx
-        for (String string : ConfigUtil.getLangList("Help")) {
-            p.sendMessage(TextFormat.YELLOW + string);
-        }
+    public void sendCommandUsage(CommandSender sender) {
+        sender.sendMessage(MainClass.language.translateString("tip_help").replace("\\n", "\n"));
     }
 }

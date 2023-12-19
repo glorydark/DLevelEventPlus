@@ -32,7 +32,6 @@ Player:
   NoFallDamage: true
   AllowOpenChest: true
   ChestTrustList: []
-  BanCommands: []
   HungerChange: true
   BannedUseItems: []
   BannedInteractBlocks: []

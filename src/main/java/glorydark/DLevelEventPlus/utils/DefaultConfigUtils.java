@@ -83,9 +83,9 @@ public class DefaultConfigUtils {
             }
         }
         if (isUpdated) {
-            MainClass.plugin.getLogger().info("§a成功更新配置：" + fileName + "，共更新" + changes + "处！");
+            MainClass.plugin.getLogger().info(MainClass.language.translateString("tip_fix_config_success", fileName, changes));
         } else {
-            MainClass.plugin.getLogger().info("§e配置已为最新，文件名：" + fileName);
+            MainClass.plugin.getLogger().info(MainClass.language.translateString("tip_fix_config_skip", fileName));
         }
     }
 }

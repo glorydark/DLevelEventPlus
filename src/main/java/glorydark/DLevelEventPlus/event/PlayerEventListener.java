@@ -59,7 +59,7 @@ public class PlayerEventListener implements Listener {
         Boolean interact = MainClass.getLevelBooleanInit(level.getName(), "Player", "Interact");
         if (interact != null && !interact) {
             if (MainClass.show_actionbar_text) {
-                player.sendActionBar(ConfigUtil.getLang("Tips", "AntiInteract"));
+                player.sendActionBar(MainClass.language.translateString("tip_interact"));
             }
             event.setCancelled(true);
             return;
@@ -70,7 +70,7 @@ public class PlayerEventListener implements Listener {
                 Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "AllowInteractFrameBlock");
                 if (bool != null && !bool) {
                     if (MainClass.show_actionbar_text) {
-                        player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTouchFlame"));
+                        player.sendActionBar(MainClass.language.translateString("tip_touchFlame"));
                     }
                     event.setCancelled(true);
                 }
@@ -82,7 +82,7 @@ public class PlayerEventListener implements Listener {
                 if (bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
                     if (bool) {
                         if (MainClass.show_actionbar_text) {
-                            player.sendActionBar(ConfigUtil.getLang("Tips", "AntiTrampleFarmland"));
+                            player.sendActionBar(MainClass.language.translateString("tip_trampleFarmland"));
                         }
                         event.setCancelled(true);
                     }
@@ -105,7 +105,7 @@ public class PlayerEventListener implements Listener {
                     }
                     if (!positionArrayList.contains(block.getLocation())) {
                         if (MainClass.show_actionbar_text) {
-                            String title = ConfigUtil.getLang("Tips", "AntiUseChest").replace("%position%", String.valueOf(block.getLocation()));
+                            String title = MainClass.language.translateString("tip_useChest", String.valueOf(block.getLocation()));
                             player.sendActionBar(title);
                         }
                         event.setCancelled(true);
@@ -115,7 +115,7 @@ public class PlayerEventListener implements Listener {
 
             if (MainClass.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block))) {
                 if (MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips", "BlockInteractBanned"));
+                    player.sendActionBar(MainClass.language.translateString("tip_blockInteractBanned"));
                 }
                 event.setCancelled(true);
             }
@@ -129,7 +129,7 @@ public class PlayerEventListener implements Listener {
                     return;
                 }
                 if (MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPlaceBlock"));
+                    event.getPlayer().sendActionBar(MainClass.language.translateString("tip_placeBlock"));
                 }
                 event.setCancelled(true);
             }
@@ -140,7 +140,7 @@ public class PlayerEventListener implements Listener {
                 Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "CanUseFishingHook");
                 if (bool != null && !bool) {
                     if (MainClass.show_actionbar_text) {
-                        player.sendActionBar(ConfigUtil.getLang("Tips", "AntiUseFishingRod"));
+                        player.sendActionBar(MainClass.language.translateString("tip_useFishingRod"));
                     }
                     event.setCancelled(true);
                 }
@@ -149,7 +149,7 @@ public class PlayerEventListener implements Listener {
             List<String> strings = MainClass.getLevelStringListInit(level.getName(), "Player", "BannedUseItems");
             if (strings.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
                 if (MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips", "ItemBanned"));
+                    player.sendActionBar(MainClass.language.translateString("tip_itemBanned"));
                 }
                 event.setCancelled(true);
             }
@@ -176,7 +176,7 @@ public class PlayerEventListener implements Listener {
         if (event.getFrom().getLevel() == event.getTo().getLevel()) {
             if (bool) {
                 if (MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiTeleport").replace("%s", toLevel.getName()));
+                    event.getPlayer().sendActionBar(MainClass.language.translateString("tip_teleport", toLevel.getName()));
                 }
                 event.setCancelled(true);
             }
@@ -199,7 +199,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPickUpItem"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_pickUpItem"));
             }
             event.setCancelled(true);
         }
@@ -220,7 +220,7 @@ public class PlayerEventListener implements Listener {
             }
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    p.sendActionBar(ConfigUtil.getLang("Tips", "AntiPickUpItem"));
+                    p.sendActionBar(MainClass.language.translateString("tip_pickUpItem"));
                 }
                 event.setCancelled(true);
             }
@@ -241,7 +241,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiConsumeItem"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_consumeItem"));
             }
             event.setCancelled(true);
         }
@@ -261,7 +261,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiBedEnter"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_enterBed"));
             }
             event.setCancelled(true);
         }
@@ -282,25 +282,9 @@ public class PlayerEventListener implements Listener {
         if (event.getPlayer() == null) {
             return;
         }
-        if (bool) {
-            List<String> strings = MainClass.getLevelStringListInit(event.getPlayer().getLevel().getName(), "Player", "BanCommands");
-            if (strings == null) {
-                return;
-            }
-            if (strings.size() > 0) {
-                String commandtext = event.getMessage();
-                for (String verify : strings) {
-                    if (commandtext.startsWith("/" + verify)) {
-                        if (MainClass.show_actionbar_text) {
-                            event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiCommand"));
-                        }
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        } else {
+        if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiAllCommand"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_executeCommand"));
             }
             event.setCancelled(true);
         }
@@ -320,7 +304,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiChangeGamemode"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_changeGamemode"));
             }
             event.setCancelled(true);
         }
@@ -339,7 +323,7 @@ public class PlayerEventListener implements Listener {
         if (bool != null) {
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips", "AntiMove"));
+                    player.sendActionBar(MainClass.language.translateString("tip_move"));
                 }
                 event.setCancelled(true);
             }
@@ -353,7 +337,7 @@ public class PlayerEventListener implements Listener {
                     int voidHeight = Integer.parseInt((String) MainClass.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight"));
                     if (event.getTo().getFloorY() <= voidHeight) {
                         if (MainClass.show_actionbar_text) {
-                            player.sendActionBar(ConfigUtil.getLang("Tips", "AntiVoid"));
+                            player.sendActionBar(MainClass.language.translateString("tip_fallIntoVoid"));
                         }
                         event.setTo(player.getLevel().getSpawnLocation().getLocation());
                     }
@@ -361,26 +345,25 @@ public class PlayerEventListener implements Listener {
             }
         }
 
-        if (MainClass.experimental) {
-            Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
-            if (bool2 == null) {
-                return;
+        Boolean bool2 = MainClass.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
+        if (bool2 == null) {
+            return;
+        }
+        
+        if (!bool2) {
+            Location location = player.getLocation();
+            boolean isFlying = true;
+            for (int i = 1; i <= 4; i++) {
+                Block block = player.getLevel().getBlock(location.add(0, -i, 0));
+                if (!(block instanceof BlockAir)) {
+                    isFlying = false;
+                }
             }
-            if (!bool2) {
-                Location location = player.getLocation();
-                boolean isFlying = true;
-                for (int i = 1; i <= 4; i++) {
-                    Block block = player.getLevel().getBlock(location.add(0, -i, 0));
-                    if (!(block instanceof BlockAir)) {
-                        isFlying = false;
-                    }
+            if (isFlying) {
+                if (MainClass.show_actionbar_text) {
+                    player.sendActionBar(MainClass.language.translateString("tip_fly"));
                 }
-                if (isFlying) {
-                    if (MainClass.show_actionbar_text) {
-                        player.sendActionBar(ConfigUtil.getLang("Tips", "AntiFly"));
-                    }
-                    event.getPlayer().setMotion(new Vector3(0, -1, 0));
-                }
+                event.getPlayer().setMotion(new Vector3(0, -1, 0));
             }
         }
     }
@@ -400,7 +383,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiEat"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_eat"));
             }
             event.setCancelled(true);
         }
@@ -481,7 +464,6 @@ public class PlayerEventListener implements Listener {
                     case 3:
                         MainClass.loadAllLevelConfig();
                         MainClass.loadTemplateConfig();
-                        MainClass.loadLang();
                         GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                         break;
                     case 4:
@@ -695,16 +677,16 @@ public class PlayerEventListener implements Listener {
                     ConfigUtil.setTemplateInit(select, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
                 }
                 config = new Config(MainClass.path + "/templates/" + select + ".yml", Config.YAML);
-                config.setAll(ConfigUtil.TemplateCache.getOrDefault(select, new LinkedHashMap<>()));
+                config.setAll(ConfigUtil.templateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();
                 GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                 break;
             case Template_Add:
                 String text = responses.getInputResponse(0);
                 if (!text.replace(" ", "").equals("")) {
-                    if (!ConfigUtil.TemplateCache.containsKey(text)) {
+                    if (!ConfigUtil.templateCache.containsKey(text)) {
                         MainClass.defaultConfigUtils.writeAll(1, text);
-                        ConfigUtil.TemplateCache.put(text, (LinkedHashMap<String, Object>) new Config(MainClass.path + "/templates/" + text + ".yml", Config.YAML).getAll());
+                        ConfigUtil.templateCache.put(text, (LinkedHashMap<String, Object>) new Config(MainClass.path + "/templates/" + text + ".yml", Config.YAML).getAll());
                         GuiMain.showReturnWindow(p, true, GuiType.Return_toMainMenu);
                     } else {
                         GuiMain.showReturnWindow(p, false, GuiType.Return_toMainMenu);
@@ -800,7 +782,7 @@ public class PlayerEventListener implements Listener {
             }
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    player.sendActionBar(ConfigUtil.getLang("Tips", "AntiConsumeItem"));
+                    player.sendActionBar(MainClass.language.translateString("tip_consumeItem"));
                 }
                 event.setCancelled(true);
             }
@@ -821,7 +803,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool & event.isFlying()) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiFly"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_fly"));
             }
             event.getPlayer().setPosition(event.getPlayer().getPosition());
             event.getPlayer().setMotion(new Vector3(0, -1, 0));
@@ -848,7 +830,7 @@ public class PlayerEventListener implements Listener {
                     }
                     if (!bool) {
                         if (MainClass.show_actionbar_text) {
-                            event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiJump"));
+                            event.getPlayer().sendActionBar(MainClass.language.translateString("tip_jump"));
                         }
                         event.getPlayer().teleport(event.getPlayer().getLocation());
                         event.getPlayer().setMotion(new Vector3(0, -1, 0));
@@ -872,7 +854,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiDropItem"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_dropItem"));
             }
             event.setCancelled(true);
         }
@@ -892,7 +874,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool && event.isGliding()) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiGlide"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_glide"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
             event.setCancelled(true);
@@ -913,7 +895,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool && event.isSwimming()) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSwim"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_swim"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
             event.setCancelled(true);
@@ -934,7 +916,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool && event.isSneaking()) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSneak"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_sneak"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
             event.setCancelled(true);
@@ -955,7 +937,7 @@ public class PlayerEventListener implements Listener {
         }
         if (!bool && event.isSprinting()) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiSprint"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_sprint"));
             }
             event.getPlayer().teleport(event.getPlayer().getLocation(), null);
             event.setCancelled(true);

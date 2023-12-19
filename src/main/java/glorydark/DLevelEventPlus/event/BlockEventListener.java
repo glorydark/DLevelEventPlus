@@ -31,7 +31,7 @@ public class BlockEventListener implements Listener {
 
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPlaceBlock"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_placeBlock"));
             }
             event.setCancelled(true);
         } else {
@@ -40,7 +40,7 @@ public class BlockEventListener implements Listener {
             List<String> canPlaceBlockStrings = new ArrayList<>(MainClass.getLevelStringListInit(block.getLevel().getName(), "Block", "CanPlaceBlocks"));
             if (antiPlaceBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canPlaceBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
                 if (MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiPlaceSpecificBlock"));
+                    event.getPlayer().sendActionBar(MainClass.language.translateString("tip_placeSpecificBlock"));
                 }
                 event.setCancelled(true);
             }
@@ -62,7 +62,7 @@ public class BlockEventListener implements Listener {
         }
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiBreakBlock"));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_breakBlock"));
             }
             event.setCancelled(true);
         } else {
@@ -71,7 +71,7 @@ public class BlockEventListener implements Listener {
             List<String> canBreakBlockStrings = new ArrayList<>(MainClass.getLevelStringListInit(block.getLevel().getName(), "Block", "CanBreakBlocks"));
             if (antiBreakBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canBreakBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
                 if (MainClass.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiBreakSpecificBlock"));
+                    event.getPlayer().sendActionBar(MainClass.language.translateString("tip_breakSpecificBlock"));
                 }
                 event.setCancelled(true);
             } else {
@@ -204,7 +204,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void ItemFrameDropItemEvent(ItemFrameDropItemEvent event) {
+    public void ItemFrameDropItemEvent(ItemFrameUseEvent event) {
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "ItemFrameDropItem");
         if (bool == null) {
             return;
@@ -218,7 +218,7 @@ public class BlockEventListener implements Listener {
         Level level = event.getPlayer().getLevel();
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiDestroyFlameBlock").replace("%s", level.getName()));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_destroyFrameBlock", level.getName()));
             }
             event.setCancelled(true);
         }
@@ -239,7 +239,7 @@ public class BlockEventListener implements Listener {
         Level level = event.getPlayer().getLevel();
         if (!bool) {
             if (MainClass.show_actionbar_text) {
-                event.getPlayer().sendActionBar(ConfigUtil.getLang("Tips", "AntiChangeSignText").replace("%s", level.getName()));
+                event.getPlayer().sendActionBar(MainClass.language.translateString("tip_changeSignText", level.getName()));
             }
             event.setCancelled(true);
         }
@@ -268,7 +268,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockPistonChangeEvent(BlockPistonChangeEvent event) {
+    public void BlockPistonChangeEvent(BlockPistonEvent event) {
         Boolean bool = MainClass.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "PistonChange");
         if (bool == null) {
             return;

@@ -10,31 +10,80 @@ import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.*;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
+import glorydark.DLevelEventPlus.utils.Language;
 
 import java.io.File;
 import java.util.*;
 
 public class MainClass extends PluginBase implements Listener {
-    public static Server server;
+
     public static String path;
     public static MainClass plugin;
     public static HashMap<String, LinkedHashMap<String, Object>> configCache = new HashMap<>();
-    public static Map<String, Object> langConfig = new LinkedHashMap<>();
+
+    public static Language language;
     public static LinkedHashMap<Player, String> selectCache = new LinkedHashMap<>();
 
     public static DefaultConfigUtils defaultConfigUtils;
 
     public static boolean show_actionbar_text;
 
-    public static boolean experimental;
+    public static boolean experimental; // Currently not at work
 
     public static boolean adventureSettingsUpdate;
+
+    public final List<String> enabledLanguage = List.of(new String[]{"chs", "eng"});
+
+    @Override
+    public void onEnable() {
+        path = this.getDataFolder().getPath();
+        plugin = this;
+        this.saveResource("config.yml", false);
+        this.saveResource("default_20230811.yml", false);
+
+        // Loading Language File
+        this.saveResource("languages/chs/lang.properties", true);
+        this.saveResource("languages/eng/lang.properties", true);
+        // Creating Necessary Dictionaries
+        File world_folder = new File(path + "/worlds/");
+        world_folder.mkdir();
+        File template_folder = new File(path + "/templates/");
+        template_folder.mkdir();
+
+        Config config = new Config(path + "/config.yml", Config.YAML);
+        String defaultLang = config.getString("languages", Server.getInstance().getLanguage().getLang());
+        if (!enabledLanguage.contains(defaultLang)) {
+            defaultLang = "eng";
+        }
+        // Loading Language
+        language = new Language(new File(MainClass.path + "/languages/" + defaultLang + "/lang.properties"));
+        // Then others
+        this.getLogger().info(language.translateString("tip_alert_defaultFile"));
+        show_actionbar_text = config.getBoolean("show_actionbar_text", false);
+        experimental = config.getBoolean("experimental", false);
+        adventureSettingsUpdate = config.getBoolean("adventure-settings-update", false);
+        defaultConfigUtils = new DefaultConfigUtils(new Config(path + "/default_20230811.yml", Config.YAML));
+        loadAllLevelConfig();
+        loadTemplateConfig();
+        // Register Listeners
+        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
+        this.getServer().getCommandMap().register("", new Command("dwp"));
+    }
+
+    @Override
+    public void onDisable() {
+        saveAllConfig();
+        configCache.clear();
+    }
 
     public static void loadAllLevelConfig() {
         configCache = new LinkedHashMap<>();
         File file = new File(path + "/worlds/");
         File[] listFiles = file.listFiles();
-        plugin.getLogger().info("开始加载地图配置");
+        plugin.getLogger().info(language.translateString("tip_loading_levelAllConfigs"));
         if (listFiles != null) {
             for (File file1 : listFiles) {
                 if (DefaultConfigUtils.isYaml(file1.getName())) {
@@ -46,11 +95,11 @@ public class MainClass extends PluginBase implements Listener {
                         if (Server.getInstance().loadLevel(levelName)) {
                             level = Server.getInstance().getLevelByName(levelName);
                         } else {
-                            plugin.getLogger().warning("Can not load level for " + levelName);
+                            plugin.getLogger().warning(language.translateString("tip_generic_levelLoad_failed", levelName));
                             continue;
                         }
                     }
-                    plugin.getLogger().info("Loading protection rules for the level [" + levelName + "]");
+                    plugin.getLogger().info(language.translateString("tip_loading_gameRule", level));
                     configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                     if (!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")) {
                         level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -76,6 +125,7 @@ public class MainClass extends PluginBase implements Listener {
                         }
                     }
                     LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
+                    int loadedGameRule = 0;
                     if (gamerules.size() > 0) {
                         for (String item : gamerules.keySet()) {
                             Optional<GameRule> options = GameRule.parseString(item);
@@ -88,68 +138,58 @@ public class MainClass extends PluginBase implements Listener {
                                 } else if (object instanceof Float) {
                                     level.getGameRules().setGameRule(options.get(), (Float) object);
                                 }
-                                plugin.getLogger().info("§aSetting gamerule §e" + item + "§a to §e" + object.toString() + "§a!");
+                                loadedGameRule += 1;
+                                plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_success", item, object.toString()));
                             } else {
-                                plugin.getLogger().info("§aSetting gamerule §e" + item + "§a failed. Caused by wrong format of gamerule name!");
+                                plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_failed", item));
                             }
                         }
-                        plugin.getLogger().info("§aSuccessfully loaded all gamerule!");
-                    } else {
-                        plugin.getLogger().info("§aSuccessfully loaded §e0§a gamerule!");
                     }
-                    plugin.getLogger().info("加载世界【" + levelName + "】配置成功");
+                    plugin.getLogger().info(language.translateString("tip_loading_gameRule_finish", loadedGameRule));
+                    plugin.getLogger().info(language.translateString("tip_loading_levelConfig_success", levelName));
                 }
             }
         }
-        plugin.getLogger().info("加载地图配置完成！");
+        plugin.getLogger().info(language.translateString("tip_loading_levelAllConfigs_finish", configCache.keySet().size()));
     }
 
     public static void loadTemplateConfig() {
-        ConfigUtil.TemplateCache = new LinkedHashMap<>();
+        ConfigUtil.templateCache = new LinkedHashMap<>();
         File file = new File(path + "/templates/");
         File[] listFiles = file.listFiles();
-        plugin.getLogger().info("开始加载模板配置");
+        plugin.getLogger().info(language.translateString("tip_loading_allTemplates"));
         if (listFiles != null) {
             for (File file1 : listFiles) {
                 if (DefaultConfigUtils.isYaml(file1.getName())) {
                     Config config = new Config(file1);
                     defaultConfigUtils.checkAll(file1.getName(), config);
                     String templateName = file1.getName().split("\\.")[0];
-                    plugin.getLogger().info("加载模板【" + templateName + "】配置成功");
-                    ConfigUtil.TemplateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
+                    plugin.getLogger().info(language.translateString("tip_loading_template_success", templateName));
+                    ConfigUtil.templateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
                 }
             }
         }
-        plugin.getLogger().info("加载模板配置完成！");
-    }
-
-    public static void loadLang() {
-        plugin.getLogger().info("开始加载语言配置");
-        langConfig.clear();
-        Config langCfg = new Config(MainClass.path + "/lang.yml", Config.YAML);
-        langConfig = langCfg.getAll();
-        plugin.getLogger().info("加载语言完成！");
+        plugin.getLogger().info(language.translateString("tip_loading_allTemplates_finish", ConfigUtil.templateCache.keySet().size()));
     }
 
     public static void saveAllConfig() {
-        plugin.getLogger().alert("开始保存配置");
+        plugin.getLogger().info(language.translateString("tip_save_all_configs_start"));
         for (String s : MainClass.configCache.keySet()) {
             Config config = new Config(path + "/worlds/" + s + ".yml", Config.YAML);
             config.setAll(MainClass.configCache.get(s));
             config.save();
-            plugin.getLogger().info("保存世界【" + s + "】配置成功");
+            plugin.getLogger().info(language.translateString("tip_save_config_success", s));
         }
-
-        for (String s : ConfigUtil.TemplateCache.keySet()) {
+        plugin.getLogger().info(language.translateString("tip_save_all_templates_start"));
+        for (String s : ConfigUtil.templateCache.keySet()) {
             Config config = new Config(path + "/templates/" + s + ".yml", Config.YAML);
-            config.setAll(ConfigUtil.TemplateCache.get(s));
+            config.setAll(ConfigUtil.templateCache.get(s));
             config.save();
-            plugin.getLogger().info("保存模板【" + s + "】配置成功");
+            plugin.getLogger().info(language.translateString("tip_save_template_success", s));
         }
-        plugin.getLogger().alert("保存完成！");
+        plugin.getLogger().alert(language.translateString("tip_save_all_success"));
     }
 
-    // 获取世界的配置，无则返回null
     public static Boolean getLevelBooleanInit(String LevelName, String key, String subKey) {
         if (configCache.containsKey(LevelName)) {
             Map<String, Object> map = configCache.get(LevelName);
@@ -221,43 +261,5 @@ public class MainClass extends PluginBase implements Listener {
             }
         }
         return new ArrayList<>();
-    }
-
-    @Override
-    public void onEnable() {
-        server = this.getServer();
-        path = this.getDataFolder().getPath();
-        plugin = this;
-        this.saveResource("config.yml", false);
-        this.saveResource("default_20230811.yml", false);
-        this.getLogger().info("§a default.yml为默认模板文件，请勿删除世界保护的default.yml，否则后果自负！");
-        this.saveResource("lang.yml", false);
-        File world_folder = new File(path + "/worlds/");
-        world_folder.mkdir();
-        File template_folder = new File(path + "/templates/");
-        template_folder.mkdir();
-
-        Config config = new Config(path + "/config.yml", Config.YAML);
-        show_actionbar_text = config.getBoolean("show_actionbar_text", false);
-        experimental = config.getBoolean("experimental", false);
-        adventureSettingsUpdate = config.getBoolean("adventure-settings-update", false);
-        defaultConfigUtils = new DefaultConfigUtils(new Config(path + "/default_20230811.yml", Config.YAML));
-        //加载配置
-        loadLang();
-        loadAllLevelConfig();
-        loadTemplateConfig();
-        //注册监听器、指令
-        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
-        this.getServer().getCommandMap().register("", new Command("dwp"));
-        this.getLogger().info("DLevelEventPlus onEnable");
-    }
-
-    @Override
-    public void onDisable() {
-        saveAllConfig();
-        configCache.clear();
     }
 }

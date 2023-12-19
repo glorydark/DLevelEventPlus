@@ -43,26 +43,29 @@ public class EntityEventListener implements Listener {
         Entity entity = event.getEntity();
         Boolean bool1 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "TntExplodes");
         Boolean bool2 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
+        Boolean bool3 = MainClass.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "Explosion");
         if (bool1 == null) {
             return;
         }
         if (bool2 == null) {
             return;
         }
+        if (bool3 == null) {
+            return;
+        }
         if (entity instanceof EntityMinecartTNT || entity instanceof EntityPrimedTNT) {
             if (!bool1) {
                 entity.despawnFromAll();
-                if (MainClass.show_actionbar_text) {
-                    MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
-                }
                 event.setCancelled(true);
             }
         }
+        if (!bool3) {
+            entity.despawnFromAll();
+            event.setCancelled(true);
+            return;
+        }
         if (!bool2) {
             entity.despawnFromAll();
-            if (MainClass.show_actionbar_text) {
-                MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiAllExplode"));
-            }
             event.setCancelled(true);
         }
     }
@@ -74,9 +77,6 @@ public class EntityEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (MainClass.show_actionbar_text) {
-                MainClass.plugin.getLogger().info(ConfigUtil.getLang("Tips", "AntiTntExplode"));
-            }
             event.setCancelled(true);
         }
     }
@@ -109,7 +109,7 @@ public class EntityEventListener implements Listener {
             }
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    ((Player) event.getDamager()).sendActionBar(ConfigUtil.getLang("Tips", "AntiPvp"));
+                    ((Player) event.getDamager()).sendActionBar(MainClass.language.translateString("tip_pvp"));
                 }
                 event.setCancelled();
             }
@@ -133,7 +133,7 @@ public class EntityEventListener implements Listener {
             }
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    p.sendActionBar(ConfigUtil.getLang("Tips", "AntiPortalEnter"));
+                    p.sendActionBar(MainClass.language.translateString("tip_enterPortal"));
                 }
                 event.setCancelled(true);
             }
@@ -161,7 +161,7 @@ public class EntityEventListener implements Listener {
             }
             if (!bool) {
                 if (MainClass.show_actionbar_text) {
-                    p.sendActionBar(ConfigUtil.getLang("Tips", "AntiVehicleEnter"));
+                    p.sendActionBar(MainClass.language.translateString("tip_enterVehicle"));
                 }
                 event.setCancelled(true);
             }
@@ -186,7 +186,7 @@ public class EntityEventListener implements Listener {
             return;
         }
         if (MainClass.show_actionbar_text) {
-            p.sendActionBar(ConfigUtil.getLang("Tips", "AntiTeleport").replace("%s", level.getName()));
+            p.sendActionBar(MainClass.language.translateString("Tips", "AntiTeleport").replace("%s", level.getName()));
         }
         event.setCancelled(true);
     }
