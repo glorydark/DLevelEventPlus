@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.*;
+import glorydark.DLevelEventPlus.gui.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
 import glorydark.DLevelEventPlus.utils.Language;
@@ -56,6 +57,7 @@ public class MainClass extends PluginBase implements Listener {
         // Loading Language
         language = new Language(new File(MainClass.path + "/languages/" + defaultLang + "/lang.properties"));
         // Then others
+        ProtectionEntryMain.loadDefaultEntries();
         this.getLogger().info(language.translateString("tip_alert_defaultFile"));
         show_actionbar_text = config.getBoolean("show_actionbar_text", false);
         experimental = config.getBoolean("experimental", false);

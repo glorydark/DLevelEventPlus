@@ -1,7 +1,6 @@
 package glorydark.DLevelEventPlus.event;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.entity.Entity;
@@ -27,6 +26,11 @@ import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.gui.GuiMain;
 import glorydark.DLevelEventPlus.gui.GuiType;
+import glorydark.DLevelEventPlus.gui.protection.rule.ProtectionRuleEntries;
+import glorydark.DLevelEventPlus.gui.protection.rule.BooleanProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.DropdownProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.InputProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.ProtectionRuleEntry;
 import glorydark.DLevelEventPlus.utils.AdventureSettingUtils;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.ItemUtils;
@@ -451,7 +455,7 @@ public class PlayerEventListener implements Listener {
             return;
         }
         switch (guiType) {
-            case ADMIN_Main:
+            case Admin_Main:
                 switch (window.getResponse().getClickedButtonId()) {
                     case 0:
                         GuiMain.showSettingChooseWorldMenu(p);
@@ -492,7 +496,7 @@ public class PlayerEventListener implements Listener {
                     if (!text.equals("返回")) {
                         String worldName = window.getResponse().getClickedButton().getText();
                         if (MainClass.configCache.containsKey(text)) {
-                            GuiMain.showEditMenu(p, worldName);
+                            GuiMain.showEditMenuV2(p, worldName);
                         } else {
                             GuiMain.showSettingChooseTemplateMenu(p, GuiType.Template_ChooseTemplateForNewConfig);
                         }
@@ -506,7 +510,7 @@ public class PlayerEventListener implements Listener {
                 text = window.getResponse().getClickedButton().getText();
                 if (!text.equals("")) {
                     if (!text.equals("返回")) {
-                        GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_EditProcess);
+                        GuiMain.showTemplateSettingMenuV2(p, text, GuiType.Template_EditProcess);
                         MainClass.selectCache.put(p, text);
                     } else {
                         GuiMain.showMainMenu(p);
@@ -517,7 +521,7 @@ public class PlayerEventListener implements Listener {
                 text = window.getResponse().getClickedButton().getText();
                 if (!text.equals("")) {
                     if (!text.equals("返回")) {
-                        GuiMain.showTemplateSettingMenu(p, text, GuiType.Template_CreateConfigProcess);
+                        GuiMain.showTemplateSettingMenuV2(p, text, GuiType.Edit_Process);
                     } else {
                         GuiMain.showMainMenu(p);
                     }
@@ -546,7 +550,6 @@ public class PlayerEventListener implements Listener {
         FormResponseCustom responses = window.getResponse();
         switch (guiType) {
             case Edit_Process:
-            case Template_CreateConfigProcess:
                 String levelname = MainClass.selectCache.get(p);
                 if (levelname == null) {
                     MainClass.plugin.getLogger().warning("Error: Can not find " + p.getName() + "'s selected world.");
@@ -555,66 +558,27 @@ public class PlayerEventListener implements Listener {
                 if (!MainClass.configCache.containsKey(levelname)) {
                     MainClass.configCache.put(levelname, new LinkedHashMap<>());
                 }
-                MainClass.setLevelInit(levelname, "World", "FarmProtect", responses.getToggleResponse(0));
-                MainClass.setLevelInit(levelname, "World", "AllExplodes", responses.getToggleResponse(1));
-                MainClass.setLevelInit(levelname, "World", "TntExplodes", responses.getToggleResponse(2));
-                MainClass.setLevelInit(levelname, "World", "PVP", responses.getToggleResponse(3));
-                MainClass.setLevelInit(levelname, "World", "KeepInventory", responses.getToggleResponse(4));
-                MainClass.setLevelInit(levelname, "World", "KeepXp", responses.getToggleResponse(5));
-                MainClass.setLevelInit(levelname, "Player", "AllowOpenChest", responses.getToggleResponse(6));
-                MainClass.setLevelInit(levelname, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
-                MainClass.setLevelInit(levelname, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
-                MainClass.setLevelInit(levelname, "Player", "Sneak", responses.getToggleResponse(9));
-                MainClass.setLevelInit(levelname, "Player", "Fly", responses.getToggleResponse(10));
-                MainClass.setLevelInit(levelname, "Player", "Swim", responses.getToggleResponse(11));
-                MainClass.setLevelInit(levelname, "Player", "Glide", responses.getToggleResponse(12));
-                MainClass.setLevelInit(levelname, "Player", "Jump", responses.getToggleResponse(13));
-                MainClass.setLevelInit(levelname, "Player", "Sprint", responses.getToggleResponse(14));
-                MainClass.setLevelInit(levelname, "Player", "Pick", responses.getToggleResponse(15));
-                MainClass.setLevelInit(levelname, "Player", "ConsumeItem", responses.getToggleResponse(16));
-                MainClass.setLevelInit(levelname, "Player", "DropItem", responses.getToggleResponse(17));
-                MainClass.setLevelInit(levelname, "Player", "BedEnter", responses.getToggleResponse(18));
-                MainClass.setLevelInit(levelname, "Player", "Move", responses.getToggleResponse(19));
-                MainClass.setLevelInit(levelname, "Player", "EatFood", responses.getToggleResponse(20));
-                MainClass.setLevelInit(levelname, "Player", "CommandPreprocess", responses.getToggleResponse(21));
-                MainClass.setLevelInit(levelname, "Player", "GameModeChange", responses.getToggleResponse(22));
-                MainClass.setLevelInit(levelname, "Player", "AntiTeleport", responses.getToggleResponse(23));
-                MainClass.setLevelInit(levelname, "Player", "Interact", responses.getToggleResponse(24));
-                MainClass.setLevelInit(levelname, "Player", "NoFallDamage", responses.getToggleResponse(25));
-                MainClass.setLevelInit(levelname, "Entity", "Explosion", responses.getToggleResponse(26));
-                MainClass.setLevelInit(levelname, "Entity", "PortalEnter", responses.getToggleResponse(27));
-                MainClass.setLevelInit(levelname, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
-                MainClass.setLevelInit(levelname, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
-                MainClass.setLevelInit(levelname, "Block", "Burn", responses.getToggleResponse(30));
-                MainClass.setLevelInit(levelname, "Block", "Ignite", responses.getToggleResponse(31));
-                MainClass.setLevelInit(levelname, "Block", "Fall", responses.getToggleResponse(32));
-                MainClass.setLevelInit(levelname, "Block", "Grow", responses.getToggleResponse(33));
-                MainClass.setLevelInit(levelname, "Block", "Spread", responses.getToggleResponse(34));
-                MainClass.setLevelInit(levelname, "Block", "Form", responses.getToggleResponse(35));
-                MainClass.setLevelInit(levelname, "Block", "LeavesDecay", responses.getToggleResponse(36));
-                MainClass.setLevelInit(levelname, "Block", "LiquidFlow", responses.getToggleResponse(37));
-                MainClass.setLevelInit(levelname, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
-                MainClass.setLevelInit(levelname, "Block", "SignChange", responses.getToggleResponse(39));
-                MainClass.setLevelInit(levelname, "Block", "BlockRedstone", responses.getToggleResponse(40));
-                MainClass.setLevelInit(levelname, "Block", "DropItem", responses.getToggleResponse(41));
-                MainClass.setLevelInit(levelname, "Block", "DropExp", responses.getToggleResponse(42));
-                MainClass.setLevelInit(levelname, "Block", "Update", responses.getToggleResponse(43));
-                MainClass.setLevelInit(levelname, "Block", "Fade", responses.getToggleResponse(44));
-                MainClass.setLevelInit(levelname, "Block", "PistonChange", responses.getToggleResponse(45));
-                MainClass.setLevelInit(levelname, "Block", "FromToEvent", responses.getToggleResponse(46));
-                MainClass.setLevelInit(levelname, "World", "AntiVoid", responses.getToggleResponse(47));
-                MainClass.setLevelInit(levelname, "World", "VoidHeight", responses.getInputResponse(48));
-                boolean timeFlow = responses.getToggleResponse(49);
-                if (!timeFlow) {
-                    Level level = Server.getInstance().getLevelByName(levelname);
-                    if (level != null) {
-                        level.stopTime();
+                int id = 0;
+                for (ProtectionRuleEntry entry : ProtectionRuleEntries.getEntries()) {
+                    if (entry instanceof BooleanProtectionRuleEntry) {
+                        MainClass.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                    } else if (entry instanceof DropdownProtectionRuleEntry) {
+                        MainClass.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                    } else if (entry instanceof InputProtectionRuleEntry) {
+                        switch (((InputProtectionRuleEntry) entry).getSaveType()) {
+                            case STRING:
+                                MainClass.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                break;
+                            case INTEGER:
+                                try {
+                                    MainClass.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                } catch (NumberFormatException e) {
+                                    p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                }
+                                break;
+                        }
                     }
-                }
-                MainClass.setLevelInit(levelname, "World", "TimeFlow", timeFlow);
-                int weatherIndex = responses.getDropdownResponse(50).getElementID();
-                if (weatherIndex != 0) {
-                    MainClass.setLevelInit(levelname, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
+                    id++;
                 }
                 Config config = new Config(MainClass.path + "/worlds/" + levelname + ".yml", Config.YAML);
                 config.setAll(MainClass.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
@@ -624,59 +588,27 @@ public class PlayerEventListener implements Listener {
             case Template_EditProcess:
                 responses = window.getResponse();
                 String select = MainClass.selectCache.get(p);
-                ConfigUtil.setTemplateInit(select, "World", "FarmProtect", responses.getToggleResponse(0));
-                ConfigUtil.setTemplateInit(select, "World", "AllExplodes", responses.getToggleResponse(1));
-                ConfigUtil.setTemplateInit(select, "World", "TntExplodes", responses.getToggleResponse(2));
-                ConfigUtil.setTemplateInit(select, "World", "PVP", responses.getToggleResponse(3));
-                ConfigUtil.setTemplateInit(select, "World", "KeepInventory", responses.getToggleResponse(4));
-                ConfigUtil.setTemplateInit(select, "World", "KeepXp", responses.getToggleResponse(5));
-                ConfigUtil.setTemplateInit(select, "Player", "AllowOpenChest", responses.getToggleResponse(6));
-                ConfigUtil.setTemplateInit(select, "Player", "CanUseFishingHook", responses.getToggleResponse(7));
-                ConfigUtil.setTemplateInit(select, "Player", "AllowInteractFrameBlock", responses.getToggleResponse(8));
-                ConfigUtil.setTemplateInit(select, "Player", "Sneak", responses.getToggleResponse(9));
-                ConfigUtil.setTemplateInit(select, "Player", "Fly", responses.getToggleResponse(10));
-                ConfigUtil.setTemplateInit(select, "Player", "Swim", responses.getToggleResponse(11));
-                ConfigUtil.setTemplateInit(select, "Player", "Glide", responses.getToggleResponse(12));
-                ConfigUtil.setTemplateInit(select, "Player", "Jump", responses.getToggleResponse(13));
-                ConfigUtil.setTemplateInit(select, "Player", "Sprint", responses.getToggleResponse(14));
-                ConfigUtil.setTemplateInit(select, "Player", "Pick", responses.getToggleResponse(15));
-                ConfigUtil.setTemplateInit(select, "Player", "ConsumeItem", responses.getToggleResponse(16));
-                ConfigUtil.setTemplateInit(select, "Player", "DropItem", responses.getToggleResponse(17));
-                ConfigUtil.setTemplateInit(select, "Player", "BedEnter", responses.getToggleResponse(18));
-                ConfigUtil.setTemplateInit(select, "Player", "Move", responses.getToggleResponse(19));
-                ConfigUtil.setTemplateInit(select, "Player", "EatFood", responses.getToggleResponse(20));
-                ConfigUtil.setTemplateInit(select, "Player", "CommandPreprocess", responses.getToggleResponse(21));
-                ConfigUtil.setTemplateInit(select, "Player", "GameModeChange", responses.getToggleResponse(22));
-                ConfigUtil.setTemplateInit(select, "Player", "AntiTeleport", responses.getToggleResponse(23));
-                ConfigUtil.setTemplateInit(select, "Player", "Interact", responses.getToggleResponse(24));
-                ConfigUtil.setTemplateInit(select, "Player", "NoFallDamage", responses.getToggleResponse(25));
-                ConfigUtil.setTemplateInit(select, "Entity", "Explosion", responses.getToggleResponse(26));
-                ConfigUtil.setTemplateInit(select, "Entity", "PortalEnter", responses.getToggleResponse(27));
-                ConfigUtil.setTemplateInit(select, "Block", "AllowPlaceBlock", responses.getToggleResponse(28));
-                ConfigUtil.setTemplateInit(select, "Block", "AllowBreakBlock", responses.getToggleResponse(29));
-                ConfigUtil.setTemplateInit(select, "Block", "Burn", responses.getToggleResponse(30));
-                ConfigUtil.setTemplateInit(select, "Block", "Ignite", responses.getToggleResponse(31));
-                ConfigUtil.setTemplateInit(select, "Block", "Fall", responses.getToggleResponse(32));
-                ConfigUtil.setTemplateInit(select, "Block", "Grow", responses.getToggleResponse(33));
-                ConfigUtil.setTemplateInit(select, "Block", "Spread", responses.getToggleResponse(34));
-                ConfigUtil.setTemplateInit(select, "Block", "Form", responses.getToggleResponse(35));
-                ConfigUtil.setTemplateInit(select, "Block", "LeavesDecay", responses.getToggleResponse(36));
-                ConfigUtil.setTemplateInit(select, "Block", "LiquidFlow", responses.getToggleResponse(37));
-                ConfigUtil.setTemplateInit(select, "Block", "ItemFrameDropItem", responses.getToggleResponse(38));
-                ConfigUtil.setTemplateInit(select, "Block", "SignChange", responses.getToggleResponse(39));
-                ConfigUtil.setTemplateInit(select, "Block", "BlockRedstone", responses.getToggleResponse(40));
-                ConfigUtil.setTemplateInit(select, "Block", "DropItem", responses.getToggleResponse(41));
-                ConfigUtil.setTemplateInit(select, "Block", "DropExp", responses.getToggleResponse(42));
-                ConfigUtil.setTemplateInit(select, "Block", "Update", responses.getToggleResponse(43));
-                ConfigUtil.setTemplateInit(select, "Block", "Fade", responses.getToggleResponse(44));
-                ConfigUtil.setTemplateInit(select, "Block", "PistonChange", responses.getToggleResponse(45));
-                ConfigUtil.setTemplateInit(select, "Block", "FromToEvent", responses.getToggleResponse(46));
-                ConfigUtil.setTemplateInit(select, "World", "AntiVoid", responses.getToggleResponse(47));
-                ConfigUtil.setTemplateInit(select, "World", "VoidHeight", responses.getInputResponse(48));
-                ConfigUtil.setTemplateInit(select, "World", "TimeFlow", responses.getToggleResponse(49));
-                weatherIndex = responses.getDropdownResponse(50).getElementID();
-                if (weatherIndex != 0) {
-                    ConfigUtil.setTemplateInit(select, "World", "Weather", responses.getDropdownResponse(50).getElementContent());
+                id = 0;
+                for (ProtectionRuleEntry entry : ProtectionRuleEntries.getEntries()) {
+                    if (entry instanceof BooleanProtectionRuleEntry) {
+                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                    } else if (entry instanceof DropdownProtectionRuleEntry) {
+                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                    } else if (entry instanceof InputProtectionRuleEntry) {
+                        switch (((InputProtectionRuleEntry) entry).getSaveType()) {
+                            case STRING:
+                                ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                break;
+                            case INTEGER:
+                                try {
+                                    ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                } catch (NumberFormatException e) {
+                                    p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                }
+                                break;
+                        }
+                    }
+                    id++;
                 }
                 config = new Config(MainClass.path + "/templates/" + select + ".yml", Config.YAML);
                 config.setAll(ConfigUtil.templateCache.getOrDefault(select, new LinkedHashMap<>()));

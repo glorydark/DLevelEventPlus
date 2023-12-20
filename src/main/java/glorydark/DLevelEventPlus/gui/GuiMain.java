@@ -12,10 +12,12 @@ import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.level.Level;
 import glorydark.DLevelEventPlus.MainClass;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
+import glorydark.DLevelEventPlus.gui.protection.rule.ProtectionRuleEntries;
+import glorydark.DLevelEventPlus.gui.protection.rule.BooleanProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.DropdownProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.InputProtectionRuleEntry;
+import glorydark.DLevelEventPlus.gui.protection.rule.ProtectionRuleEntry;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiMain {
     //设置选择世界
@@ -48,10 +50,10 @@ public class GuiMain {
             window.addButton(new ElementButton(MainClass.language.translateString("window_main_button_saveInit")));
             window.addButton(new ElementButton(MainClass.language.translateString("window_main_button_reloadInit")));
             window.addButton(new ElementButton(MainClass.language.translateString("window_main_button_manageTemplate")));
-            PlayerEventListener.showFormWindow(player, window, GuiType.ADMIN_Main);
+            PlayerEventListener.showFormWindow(player, window, GuiType.Admin_Main);
         }
         if (ConfigUtil.isOperator(player, player.getLevel())) {
-            showEditMenu(player, player.getLevel().getName());
+            showEditMenuV2(player, player.getLevel().getName());
         }
     }
 
@@ -83,72 +85,6 @@ public class GuiMain {
         window.addElement(playerNameInput);
         window.addElement(worldNameInput);
         PlayerEventListener.showFormWindow(player, window, GuiType.Power_Delete);
-    }
-
-    //编辑世界
-    public static void showEditMenu(Player player, String level) {
-        FormWindowCustom formWindowCustom = new FormWindowCustom(MainClass.language.translateString("window_edit_chooseWorldTitle"));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_farmProtect"), MainClass.getLevelSettingBooleanInit(level, "World", "FarmProtect")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_allExplodes"), MainClass.getLevelSettingBooleanInit(level, "World", "AllExplodes")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_tntExplodes"), MainClass.getLevelSettingBooleanInit(level, "World", "TntExplodes")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_pvp"), MainClass.getLevelSettingBooleanInit(level, "World", "PVP")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_keepInventory"), MainClass.getLevelSettingBooleanInit(level, "World", "KeepInventory")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_keepXp"), MainClass.getLevelSettingBooleanInit(level, "World", "KeepXp")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_openChest"), MainClass.getLevelSettingBooleanInit(level, "Player", "AllowOpenChest")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_useFishingHook"), MainClass.getLevelSettingBooleanInit(level, "Player", "CanUseFishingHook")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_interactFrameBlock"), MainClass.getLevelSettingBooleanInit(level, "Player", "AllowInteractFrameBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_sneak"), MainClass.getLevelSettingBooleanInit(level, "Player", "Sneak")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_fly"), MainClass.getLevelSettingBooleanInit(level, "Player", "Fly")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_swim"), MainClass.getLevelSettingBooleanInit(level, "Player", "Swim")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_glide"), MainClass.getLevelSettingBooleanInit(level, "Player", "Glide")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_jump"), MainClass.getLevelSettingBooleanInit(level, "Player", "Jump")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_sprint"), MainClass.getLevelSettingBooleanInit(level, "Player", "Sprint")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_pick"), MainClass.getLevelSettingBooleanInit(level, "Player", "Pick")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_consumeItem"), MainClass.getLevelSettingBooleanInit(level, "Player", "ConsumeItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_playerDropItem"), MainClass.getLevelSettingBooleanInit(level, "Player", "DropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_bedEnter"), MainClass.getLevelSettingBooleanInit(level, "Player", "BedEnter")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_move"), MainClass.getLevelSettingBooleanInit(level, "Player", "Move")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_eatFood"), MainClass.getLevelSettingBooleanInit(level, "Player", "EatFood")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_commandPreprocess"), MainClass.getLevelSettingBooleanInit(level, "Player", "CommandPreprocess")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_gameModeChange"), MainClass.getLevelSettingBooleanInit(level, "Player", "GameModeChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_antiTeleport"), MainClass.getLevelSettingBooleanInit(level, "Player", "AntiTeleport")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_interact"), MainClass.getLevelSettingBooleanInit(level, "Player", "Interact")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_immuneToFallDamage"), MainClass.getLevelSettingBooleanInit(level, "Player", "NoFallDamage")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_entityExplosion"), MainClass.getLevelSettingBooleanInit(level, "Entity", "Explosion")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_portalEnter"), MainClass.getLevelSettingBooleanInit(level, "Entity", "PortalEnter")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_placeBlock"), MainClass.getLevelSettingBooleanInit(level, "Block", "AllowPlaceBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_breakBlock"), MainClass.getLevelSettingBooleanInit(level, "Block", "AllowBreakBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockBurn"), MainClass.getLevelSettingBooleanInit(level, "Block", "Burn")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockIgnite"), MainClass.getLevelSettingBooleanInit(level, "Block", "Ignite")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFall"), MainClass.getLevelSettingBooleanInit(level, "Block", "Fall")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockGrow"), MainClass.getLevelSettingBooleanInit(level, "Block", "Grow")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockSpread"), MainClass.getLevelSettingBooleanInit(level, "Block", "Spread")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockForm"), MainClass.getLevelSettingBooleanInit(level, "Block", "Form")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_leavesDecay"), MainClass.getLevelSettingBooleanInit(level, "Block", "LeavesDecay")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_liquidFlow"), MainClass.getLevelSettingBooleanInit(level, "Block", "LiquidFlow")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_itemFrameDropItem"), MainClass.getLevelSettingBooleanInit(level, "Block", "ItemFrameDropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_signChange"), MainClass.getLevelSettingBooleanInit(level, "Block", "SignChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockRedstone"), MainClass.getLevelSettingBooleanInit(level, "Block", "BlockRedstone")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockDropItem"), MainClass.getLevelSettingBooleanInit(level, "Block", "DropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockDropExp"), MainClass.getLevelSettingBooleanInit(level, "Block", "DropExp")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockUpdate"), MainClass.getLevelSettingBooleanInit(level, "Block", "Update")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFade"), MainClass.getLevelSettingBooleanInit(level, "Block", "Fade")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockPistonChange"), MainClass.getLevelSettingBooleanInit(level, "Block", "PistonChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFromToEvent"), MainClass.getLevelSettingBooleanInit(level, "Block", "FromToEvent")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_antiVoid"), MainClass.getLevelSettingBooleanInit(level, "World", "AntiVoid")));
-        formWindowCustom.addElement(new ElementInput(MainClass.language.translateString("window_edit_label_voidHeight"), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight")), String.valueOf(MainClass.getLevelSettingInit(level, "World", "VoidHeight"))));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_timeFlow"), MainClass.getLevelSettingBooleanInit(level, "World", "TimeFlow")));
-        Object object = MainClass.getLevelSettingInit(level, "World", "Weather");
-        List<String> weatherList = new ArrayList<>();
-        weatherList.add("none");
-        weatherList.add("clear");
-        weatherList.add("thunder");
-        weatherList.add("rain");
-        if (object != null) {
-            int index = weatherList.indexOf(String.valueOf(object));
-            formWindowCustom.addElement(new ElementDropdown(MainClass.language.translateString("window_edit_label_weather"), weatherList, Math.max(index, 0)));
-        }
-        PlayerEventListener.showFormWindow(player, formWindowCustom, GuiType.Edit_Process);
     }
 
     //返回窗口
@@ -188,69 +124,33 @@ public class GuiMain {
         PlayerEventListener.showFormWindow(player, custom, GuiType.Template_Add);
     }
 
-    //模板设置
-    public static void showTemplateSettingMenu(Player player, String templateName, GuiType type) {
-        FormWindowCustom formWindowCustom = new FormWindowCustom(MainClass.language.translateString("window_edit_templateTitle", templateName));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_farmProtect"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "FarmProtect")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_allExplodes"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "AllExplodes")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_tntExplodes"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "TntExplodes")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_pvp"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "PVP")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_keepInventory"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "KeepInventory")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_keepXp"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "KeepXp")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_openChest"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "AllowOpenChest")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_useFishingHook"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "CanUseFishingHook")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_interactFrameBlock"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "AllowInteractFrameBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_sneak"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Sneak")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_fly"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Fly")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_swim"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Swim")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_glide"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Glide")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_jump"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Jump")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_sprint"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Sprint")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_pick"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Pick")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_consumeItem"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "ConsumeItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_playerDropItem"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "DropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_bedEnter"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "BedEnter")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_move"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Move")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_eatFood"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "EatFood")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_commandPreprocess"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "CommandPreprocess")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_gameModeChange"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "GameModeChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_antiTeleport"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "AntiTeleport")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_interact"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "Interact")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_immuneToFallDamage"), ConfigUtil.getTemplateBooleanInit(templateName, "Player", "NoFallDamage")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_entityExplosion"), ConfigUtil.getTemplateBooleanInit(templateName, "Entity", "Explosion")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_portalEnter"), ConfigUtil.getTemplateBooleanInit(templateName, "Entity", "PortalEnter")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_placeBlock"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "AllowPlaceBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_breakBlock"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "AllowBreakBlock")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockBurn"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Burn")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockIgnite"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Ignite")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFall"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Fall")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockGrow"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Grow")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockSpread"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Spread")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockForm"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Form")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_leavesDecay"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "LeavesDecay")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_liquidFlow"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "LiquidFlow")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_itemFrameDropItem"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "ItemFrameDropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_signChange"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "SignChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockRedstone"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "BlockRedstone")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockDropItem"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "DropItem")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockDropExp"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "DropExp")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockUpdate"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Update")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFade"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "Fade")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockPistonChange"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "PistonChange")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_blockFromToEvent"), ConfigUtil.getTemplateBooleanInit(templateName, "Block", "FromToEvent")));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_antiVoid"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "AntiVoid")));
-        formWindowCustom.addElement(new ElementInput(MainClass.language.translateString("window_edit_label_voidHeight"), String.valueOf(ConfigUtil.getTemplateInit(templateName, "World", "VoidHeight")), String.valueOf(ConfigUtil.getTemplateInit(templateName, "World", "VoidHeight"))));
-        formWindowCustom.addElement(new ElementToggle(MainClass.language.translateString("window_edit_label_timeFlow"), ConfigUtil.getTemplateBooleanInit(templateName, "World", "TimeFlow")));
-        Object object = ConfigUtil.getTemplateInit(templateName, "World", "Weather");
-        List<String> weatherList = new ArrayList<>();
-        weatherList.add("none");
-        weatherList.add("clear");
-        weatherList.add("thunder");
-        weatherList.add("rain");
-        if (object != null) {
-            int index = weatherList.indexOf(String.valueOf(object));
-            formWindowCustom.addElement(new ElementDropdown(MainClass.language.translateString("window_edit_label_weather"), weatherList, Math.max(index, 0)));
+    public static void showTemplateSettingMenuV2(Player player, String templateName, GuiType type) {
+        FormWindowCustom formWindowCustom = new FormWindowCustom(MainClass.language.translateString("window_edit_chooseWorldTitle"));
+        for (ProtectionRuleEntry entry : ProtectionRuleEntries.getEntries()) {
+            if (entry instanceof BooleanProtectionRuleEntry) {
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));
+            } else if (entry instanceof DropdownProtectionRuleEntry) {
+                Object object = ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName());
+                formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null? 0: Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
+            } else if (entry instanceof InputProtectionRuleEntry) {
+                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName()).toString()));
+            }
         }
         PlayerEventListener.showFormWindow(player, formWindowCustom, type);
+    }
+
+    public static void showEditMenuV2(Player player, String level) {
+        FormWindowCustom formWindowCustom = new FormWindowCustom(MainClass.language.translateString("window_edit_chooseWorldTitle"));
+        for (ProtectionRuleEntry entry : ProtectionRuleEntries.getEntries()) {
+            if (entry instanceof BooleanProtectionRuleEntry) {
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), MainClass.getLevelSettingBooleanInit(level, entry.getCategory(), entry.getEntryName())));
+            } else if (entry instanceof DropdownProtectionRuleEntry) {
+                Object object = MainClass.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null? 0: Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
+            } else if (entry instanceof InputProtectionRuleEntry) {
+                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), MainClass.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName()).toString()));
+            }
+        }
+        PlayerEventListener.showFormWindow(player, formWindowCustom, GuiType.Edit_Process);
     }
 }
