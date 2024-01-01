@@ -9,8 +9,8 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.event.BlockEventListener;
 import glorydark.DLevelEventPlus.event.EntityEventListener;
-import glorydark.DLevelEventPlus.event.LevelEventListener;
 import glorydark.DLevelEventPlus.event.PlayerEventListener;
+import glorydark.DLevelEventPlus.event.WorldEventListener;
 import glorydark.DLevelEventPlus.gui.FormEventListener;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
@@ -28,61 +28,9 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
     public static Language language;
     public static LinkedHashMap<Player, String> selectCache = new LinkedHashMap<>();
 
-    public static boolean show_actionbar_text;
-
     public static boolean experimental; // Currently not at work
 
     public final List<String> enabledLanguage = List.of(new String[]{"chs", "eng"});
-
-    @Override
-    public void onEnable() {
-        path = this.getDataFolder().getPath();
-        plugin = this;
-        this.saveResource("config.yml", false);
-        this.saveResource("default_20230811.yml", false);
-
-        // Loading Language File
-        this.saveResource("languages/chs.properties", false);
-        this.saveResource("languages/eng.properties", false);
-        // Creating Necessary Dictionaries
-        File world_folder = new File(path + "/worlds/");
-        world_folder.mkdir();
-        File template_folder = new File(path + "/templates/");
-        template_folder.mkdir();
-
-        Config config = new Config(path + "/config.yml", Config.YAML);
-        // Preparing for configs
-        if (config.getBoolean("auto_update_files", false)) {
-            ProtectionEntryMain.loadDefaultEntries();
-            ProtectionEntryMain.updateFiles();
-        }
-        String defaultLang = config.getString("languages", Server.getInstance().getLanguage().getLang());
-        if (!enabledLanguage.contains(defaultLang)) {
-            defaultLang = "eng";
-        }
-        // Loading Language
-        language = new Language(new File(LevelEventPlusMain.path + "/languages/" + defaultLang + ".properties"));
-
-        // then others
-        this.getLogger().info(language.translateString("tip_alert_defaultFile"));
-        show_actionbar_text = config.getBoolean("show_actionbar_text", false);
-        experimental = config.getBoolean("experimental", false);
-        loadAllLevelConfig();
-        loadTemplateConfig();
-        // Register Listeners
-        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
-        this.getServer().getCommandMap().register("", new Command("dwp"));
-    }
-
-    @Override
-    public void onDisable() {
-        saveAllConfig();
-        configCache.clear();
-    }
 
     public static void loadAllLevelConfig() {
         configCache = new LinkedHashMap<>();
@@ -260,5 +208,54 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public void onEnable() {
+        path = this.getDataFolder().getPath();
+        plugin = this;
+        this.saveResource("config.yml", false);
+        this.saveResource("default_20230811.yml", false);
+        // Loading Language File
+        this.saveResource("languages/chs.properties", false);
+        this.saveResource("languages/eng.properties", false);
+        // Creating Necessary Dictionaries
+        File world_folder = new File(path + "/worlds/");
+        world_folder.mkdir();
+        File template_folder = new File(path + "/templates/");
+        template_folder.mkdir();
+
+        Config config = new Config(path + "/config.yml", Config.YAML);
+        String defaultLang = config.getString("languages", Server.getInstance().getLanguage().getLang());
+        if (!enabledLanguage.contains(defaultLang)) {
+            defaultLang = "eng";
+        }
+        // Loading Language
+        language = new Language(new File(LevelEventPlusMain.path + "/languages/" + defaultLang + ".properties"));
+
+        ProtectionEntryMain.loadDefaultEntries();
+        // Preparing for configs
+        if (config.getBoolean("auto_update_files", false)) {
+            ProtectionEntryMain.updateFiles();
+        }
+
+        // then others
+        this.getLogger().info(language.translateString("tip_alert_defaultFile"));
+        experimental = config.getBoolean("experimental", false);
+        loadAllLevelConfig();
+        loadTemplateConfig();
+        // Register Listeners
+        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new WorldEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
+        this.getServer().getCommandMap().register("", new Command("dwp"));
+    }
+
+    @Override
+    public void onDisable() {
+        saveAllConfig();
+        configCache.clear();
     }
 }

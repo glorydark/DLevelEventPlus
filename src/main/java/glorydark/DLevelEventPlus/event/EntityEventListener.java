@@ -108,9 +108,6 @@ public class EntityEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    ((Player) event.getDamager()).sendActionBar(LevelEventPlusMain.language.translateString("tip_pvp"));
-                }
                 event.setCancelled();
             }
         }
@@ -132,9 +129,6 @@ public class EntityEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    p.sendActionBar(LevelEventPlusMain.language.translateString("tip_enterPortal"));
-                }
                 event.setCancelled(true);
             }
         } else {
@@ -160,9 +154,6 @@ public class EntityEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    p.sendActionBar(LevelEventPlusMain.language.translateString("tip_enterVehicle"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -185,9 +176,50 @@ public class EntityEventListener implements Listener {
         if (bool) {
             return;
         }
-        if (LevelEventPlusMain.show_actionbar_text) {
-            p.sendActionBar(LevelEventPlusMain.language.translateString("Tips", "AntiTeleport").replace("%s", level.getName()));
-        }
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void EntityBlockChangeEvent(EntityBlockChangeEvent event) {
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void EntityCombustByBlockEvent(EntityCombustByBlockEvent event) {
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void EntityCombustByEntityEvent(EntityCombustByEntityEvent event) {
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void EntityDamageBlockedEvent(EntityDamageBlockedEvent event) {
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getAttacker().getLevel().getName(), "Entity", "DamageBlocked");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
     }
 }

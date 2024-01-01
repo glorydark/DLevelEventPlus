@@ -1,5 +1,6 @@
 package glorydark.DLevelEventPlus.event;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
@@ -30,18 +31,12 @@ public class BlockEventListener implements Listener {
         }
 
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_placeBlock"));
-            }
             event.setCancelled(true);
         } else {
             Block block = event.getBlock();
             List<String> antiPlaceBlockStrings = new ArrayList<>(LevelEventPlusMain.getLevelStringListInit(block.getLevel().getName(), "Block", "AntiPlaceBlocks"));
             List<String> canPlaceBlockStrings = new ArrayList<>(LevelEventPlusMain.getLevelStringListInit(block.getLevel().getName(), "Block", "CanPlaceBlocks"));
             if (antiPlaceBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canPlaceBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_placeSpecificBlock"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -61,18 +56,12 @@ public class BlockEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_breakBlock"));
-            }
             event.setCancelled(true);
         } else {
             Block block = event.getBlock();
             List<String> antiBreakBlockStrings = new ArrayList<>(LevelEventPlusMain.getLevelStringListInit(block.getLevel().getName(), "Block", "AntiBreakBlocks"));
             List<String> canBreakBlockStrings = new ArrayList<>(LevelEventPlusMain.getLevelStringListInit(block.getLevel().getName(), "Block", "CanBreakBlocks"));
             if (antiBreakBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canBreakBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_breakSpecificBlock"));
-                }
                 event.setCancelled(true);
             } else {
                 if (!isDropItem(event.getPlayer().getLevel(), block)) {
@@ -217,9 +206,6 @@ public class BlockEventListener implements Listener {
         }
         Level level = event.getPlayer().getLevel();
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_destroyFrameBlock", level.getName()));
-            }
             event.setCancelled(true);
         }
     }
@@ -238,9 +224,6 @@ public class BlockEventListener implements Listener {
         }
         Level level = event.getPlayer().getLevel();
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_changeSignText", level.getName()));
-            }
             event.setCancelled(true);
         }
     }
@@ -281,6 +264,107 @@ public class BlockEventListener implements Listener {
     @EventHandler
     public void BlockFromToEvent(BlockFromToEvent event) {
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "FromToEvent");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void BellRingEvent(BellRingEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (ConfigUtil.isAdmin(player)) {
+                return;
+            }
+            if (ConfigUtil.isOperator(player, player.getLevel())) {
+                return;
+            }
+        }
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BellRing");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void BlockExplosionPrimeEvent(BlockExplosionPrimeEvent event) {
+        Boolean allExplode = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "World", "AllExplodes");
+        Boolean blockExplode = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BlockExplode");
+        if (allExplode != null && allExplode) {
+            event.setCancelled(true);
+            return;
+        }
+        if (blockExplode == null) {
+            return;
+        }
+        if (!blockExplode) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void LecternDropBookEvent(LecternDropBookEvent event) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternDropBook");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void LecternPageChangeEvent(LecternPageChangeEvent event) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternPageChange");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void SignColorChangeEvent(SignColorChangeEvent event) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "SignColorChange");
+        if (bool == null) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void WaterFrostEvent(WaterFrostEvent event) {
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "WaterFrost");
         if (bool == null) {
             return;
         }

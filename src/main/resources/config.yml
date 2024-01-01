@@ -1,6 +1,4 @@
 language: chs
-# Actionbar Tips
-show_actionbar_text: true
 # Experimental: Force anti-fly
 experimental: false
 auto_update_files: false

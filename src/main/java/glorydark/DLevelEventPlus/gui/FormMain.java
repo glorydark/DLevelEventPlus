@@ -134,7 +134,7 @@ public class FormMain {
     }
 
     public static void showTemplateSettingMenuV2(Player player, String templateName, FormType type) {
-        FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_chooseWorldTitle"));
+        FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_templateTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
                 formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));

@@ -3,7 +3,6 @@ package glorydark.DLevelEventPlus;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.gui.FormMain;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
@@ -38,7 +37,10 @@ public class Command extends cn.nukkit.command.Command {
                         case "reload":
                             LevelEventPlusMain.loadAllLevelConfig();
                             LevelEventPlusMain.loadTemplateConfig();
-                            LevelEventPlusMain.show_actionbar_text = new Config(LevelEventPlusMain.path + "/config.yml", Config.YAML).getBoolean("show_actionbar_text", false);
+                            return true;
+                        case "fixall":
+                            ProtectionEntryMain.updateFiles();
+                            sender.sendMessage(LevelEventPlusMain.language.translateString("tip_fix_config_success"));
                             return true;
                     }
                     break;

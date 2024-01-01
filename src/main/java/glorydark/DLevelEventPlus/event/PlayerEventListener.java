@@ -16,6 +16,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.EmotePacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
 import glorydark.DLevelEventPlus.utils.AdventureSettingUtils;
@@ -32,21 +33,19 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
-            return;
-        }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
-            return;
-        }
         Player player = event.getPlayer();
-        Level level = event.getPlayer().getLevel();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+
+        Level level = player.getLevel();
         Block block = event.getBlock();
-        Item item = event.getPlayer().getInventory().getItemInHand();
+        Item item = player.getInventory().getItemInHand();
         Boolean interact = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "Interact");
         if (interact != null && !interact) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                player.sendActionBar(LevelEventPlusMain.language.translateString("tip_interact"));
-            }
             event.setCancelled(true);
             return;
         }
@@ -55,9 +54,6 @@ public class PlayerEventListener implements Listener {
             if (block.getId() == 389 || block.getId() == -339) {
                 Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "AllowInteractFrameBlock");
                 if (bool != null && !bool) {
-                    if (LevelEventPlusMain.show_actionbar_text) {
-                        player.sendActionBar(LevelEventPlusMain.language.translateString("tip_touchFlame"));
-                    }
                     event.setCancelled(true);
                 }
             }
@@ -67,9 +63,6 @@ public class PlayerEventListener implements Listener {
                 Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "World", "FarmProtect");
                 if (bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
                     if (bool) {
-                        if (LevelEventPlusMain.show_actionbar_text) {
-                            player.sendActionBar(LevelEventPlusMain.language.translateString("tip_trampleFarmland"));
-                        }
                         event.setCancelled(true);
                     }
                 }
@@ -90,19 +83,12 @@ public class PlayerEventListener implements Listener {
                         }
                     }
                     if (!positionArrayList.contains(block.getLocation())) {
-                        if (LevelEventPlusMain.show_actionbar_text) {
-                            String title = LevelEventPlusMain.language.translateString("tip_useChest", String.valueOf(block.getLocation()));
-                            player.sendActionBar(title);
-                        }
                         event.setCancelled(true);
                     }
                 }
             }
 
             if (LevelEventPlusMain.getLevelStringListInit(level.getName(), "Player", "BannedInteractBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block))) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    player.sendActionBar(LevelEventPlusMain.language.translateString("tip_blockInteractBanned"));
-                }
                 event.setCancelled(true);
             }
 
@@ -114,9 +100,6 @@ public class PlayerEventListener implements Listener {
                 if (bool) {
                     return;
                 }
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_placeBlock"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -125,18 +108,12 @@ public class PlayerEventListener implements Listener {
             if (item instanceof ItemFishingRod) {
                 Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "CanUseFishingHook");
                 if (bool != null && !bool) {
-                    if (LevelEventPlusMain.show_actionbar_text) {
-                        player.sendActionBar(LevelEventPlusMain.language.translateString("tip_useFishingRod"));
-                    }
                     event.setCancelled(true);
                 }
             }
 
             List<String> strings = LevelEventPlusMain.getLevelStringListInit(level.getName(), "Player", "BannedUseItems");
             if (strings.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    player.sendActionBar(LevelEventPlusMain.language.translateString("tip_itemBanned"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -161,9 +138,6 @@ public class PlayerEventListener implements Listener {
         }
         if (event.getFrom().getLevel() == event.getTo().getLevel()) {
             if (bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_teleport", toLevel.getName()));
-                }
                 event.setCancelled(true);
             }
         } else {
@@ -184,9 +158,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_pickUpItem"));
-            }
             event.setCancelled(true);
         }
     }
@@ -205,9 +176,6 @@ public class PlayerEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    p.sendActionBar(LevelEventPlusMain.language.translateString("tip_pickUpItem"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -226,9 +194,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_consumeItem"));
-            }
             event.setCancelled(true);
         }
     }
@@ -246,9 +211,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_enterBed"));
-            }
             event.setCancelled(true);
         }
     }
@@ -269,9 +231,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_executeCommand"));
-            }
             event.setCancelled(true);
         }
     }
@@ -289,9 +248,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_changeGamemode"));
-            }
             event.setCancelled(true);
         }
     }
@@ -308,9 +264,6 @@ public class PlayerEventListener implements Listener {
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Move");
         if (bool != null) {
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    player.sendActionBar(LevelEventPlusMain.language.translateString("tip_move"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -322,9 +275,6 @@ public class PlayerEventListener implements Listener {
                 if (o != null) {
                     int voidHeight = Integer.parseInt(LevelEventPlusMain.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight").toString());
                     if (event.getTo().getFloorY() <= voidHeight) {
-                        if (LevelEventPlusMain.show_actionbar_text) {
-                            player.sendActionBar(LevelEventPlusMain.language.translateString("tip_fallIntoVoid"));
-                        }
                         event.setTo(player.getLevel().getSpawnLocation().getLocation());
                     }
                 }
@@ -347,9 +297,6 @@ public class PlayerEventListener implements Listener {
                     }
                 }
                 if (isFlying) {
-                    if (LevelEventPlusMain.show_actionbar_text) {
-                        player.sendActionBar(LevelEventPlusMain.language.translateString("tip_fly"));
-                    }
                     event.getPlayer().setMotion(new Vector3(0, -1, 0));
                 }
             }
@@ -370,9 +317,6 @@ public class PlayerEventListener implements Listener {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_eat"));
-            }
             event.setCancelled(true);
         }
     }
@@ -422,9 +366,6 @@ public class PlayerEventListener implements Listener {
                 return;
             }
             if (!bool) {
-                if (LevelEventPlusMain.show_actionbar_text) {
-                    player.sendActionBar(LevelEventPlusMain.language.translateString("tip_consumeItem"));
-                }
                 event.setCancelled(true);
             }
         }
@@ -432,33 +373,32 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerToggleFlightEvent(PlayerToggleFlightEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Fly");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
         if (bool == null) {
             return;
         }
         if (!bool & event.isFlying()) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_fly"));
-            }
-            event.getPlayer().setPosition(event.getPlayer().getPosition());
-            event.getPlayer().setMotion(new Vector3(0, -1, 0));
-            event.getPlayer().fall(event.getPlayer().getMotion().getFloorY() + 1);
+            player.setPosition(player.getPosition());
+            player.setMotion(new Vector3(0, -1, 0));
+            player.fall(player.getMotion().getFloorY() + 1);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
         if (event.getPacket() instanceof PlayerActionPacket) {
@@ -470,124 +410,216 @@ public class PlayerEventListener implements Listener {
                         return;
                     }
                     if (!bool) {
-                        if (LevelEventPlusMain.show_actionbar_text) {
-                            event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_jump"));
-                        }
                         event.getPlayer().teleport(event.getPlayer().getLocation());
                         event.getPlayer().setMotion(new Vector3(0, -1, 0));
                     }
+                    return;
                 }
+            }
+        }
+
+        if (event.getPacket() instanceof EmotePacket) {
+            Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Emote");
+            if (bool == null) {
+                return;
+            }
+            if (!bool) {
+                event.setCancelled(true);
             }
         }
     }
 
+
     @EventHandler
     public void PlayerDropItemEvent(PlayerDropItemEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "DropItem");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "DropItem");
         if (bool == null) {
             return;
         }
         if (!bool) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_dropItem"));
-            }
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void PlayerToggleGlideEvent(PlayerToggleGlideEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Glide");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Glide");
         if (bool == null) {
             return;
         }
         if (!bool && event.isGliding()) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_glide"));
-            }
-            event.getPlayer().teleport(event.getPlayer().getLocation(), null);
+            player.teleport(event.getPlayer().getLocation(), null);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void PlayerToggleSwimEvent(PlayerToggleSwimEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Swim");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Swim");
         if (bool == null) {
             return;
         }
         if (!bool && event.isSwimming()) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_swim"));
-            }
-            event.getPlayer().teleport(event.getPlayer().getLocation(), null);
+            player.teleport(player.getLocation(), null);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void PlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Sneak");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Sneak");
         if (bool == null) {
             return;
         }
         if (!bool && event.isSneaking()) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_sneak"));
-            }
-            event.getPlayer().teleport(event.getPlayer().getLocation(), null);
+            player.teleport(player.getLocation(), null);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void PlayerToggleSprintEvent(PlayerToggleSprintEvent event) {
-        if (ConfigUtil.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (ConfigUtil.isAdmin(player)) {
             return;
         }
-        if (ConfigUtil.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "Sprint");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Sprint");
         if (bool == null) {
             return;
         }
         if (!bool && event.isSprinting()) {
-            if (LevelEventPlusMain.show_actionbar_text) {
-                event.getPlayer().sendActionBar(LevelEventPlusMain.language.translateString("tip_sprint"));
-            }
-            event.getPlayer().teleport(event.getPlayer().getLocation(), null);
+            player.teleport(player.getLocation(), null);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void PlayerLocallyInitializedEvent(PlayerLocallyInitializedEvent event) {
+    public void PlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        if (player == null) {
+            return;
+        }
         AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
+    }
+
+    @EventHandler
+    public void CraftingTableOpenEvent(CraftingTableOpenEvent event) {
+        Player player = event.getPlayer();
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "CraftingTableOpen");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void PlayerAchievementAwardedEvent(PlayerAchievementAwardedEvent event) {
+        Player player = event.getPlayer();
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Achievement");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void PlayerBucketFillEvent(PlayerBucketFillEvent event) {
+        Player player = event.getPlayer();
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "BucketFill");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void PlayerBucketEmptyEvent(PlayerBucketEmptyEvent event) {
+        Player player = event.getPlayer();
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "BucketEmpty");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void PlayerToggleCrawlEvent(PlayerToggleCrawlEvent event) {
+        Player player = event.getPlayer();
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Crawl");
+        if (bool == null) {
+            return;
+        }
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        if (!bool) {
+            event.setCancelled(true);
+        }
     }
 }
