@@ -211,15 +211,4 @@ public class EntityEventListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-    @EventHandler
-    public void EntityDamageBlockedEvent(EntityDamageBlockedEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getAttacker().getLevel().getName(), "Entity", "DamageBlocked");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
 }

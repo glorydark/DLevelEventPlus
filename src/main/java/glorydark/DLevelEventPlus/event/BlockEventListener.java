@@ -193,7 +193,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void ItemFrameDropItemEvent(ItemFrameUseEvent event) {
+    public void ItemFrameDropItemEvent(ItemFrameDropItemEvent event) {
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "ItemFrameDropItem");
         if (bool == null) {
             return;
@@ -251,7 +251,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockPistonChangeEvent(BlockPistonEvent event) {
+    public void BlockPistonChangeEvent(BlockPistonChangeEvent event) {
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "PistonChange");
         if (bool == null) {
             return;
@@ -273,78 +273,6 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BellRingEvent(BellRingEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (ConfigUtil.isAdmin(player)) {
-                return;
-            }
-            if (ConfigUtil.isOperator(player, player.getLevel())) {
-                return;
-            }
-        }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BellRing");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void BlockExplosionPrimeEvent(BlockExplosionPrimeEvent event) {
-        Boolean allExplode = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "World", "AllExplodes");
-        Boolean blockExplode = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BlockExplode");
-        if (allExplode != null && allExplode) {
-            event.setCancelled(true);
-            return;
-        }
-        if (blockExplode == null) {
-            return;
-        }
-        if (!blockExplode) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void LecternDropBookEvent(LecternDropBookEvent event) {
-        Player player = event.getPlayer();
-        if (ConfigUtil.isAdmin(player)) {
-            return;
-        }
-        if (ConfigUtil.isOperator(player, player.getLevel())) {
-            return;
-        }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternDropBook");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void LecternPageChangeEvent(LecternPageChangeEvent event) {
-        Player player = event.getPlayer();
-        if (ConfigUtil.isAdmin(player)) {
-            return;
-        }
-        if (ConfigUtil.isOperator(player, player.getLevel())) {
-            return;
-        }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternPageChange");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void SignColorChangeEvent(SignColorChangeEvent event) {
         Player player = event.getPlayer();
         if (ConfigUtil.isAdmin(player)) {
@@ -354,17 +282,6 @@ public class BlockEventListener implements Listener {
             return;
         }
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "SignColorChange");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void WaterFrostEvent(WaterFrostEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "WaterFrost");
         if (bool == null) {
             return;
         }
