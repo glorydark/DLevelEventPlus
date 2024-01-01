@@ -215,7 +215,6 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         path = this.getDataFolder().getPath();
         plugin = this;
         this.saveResource("config.yml", false);
-        this.saveResource("default_20230811.yml", false);
         // Loading Language File
         this.saveResource("languages/chs.properties", false);
         this.saveResource("languages/eng.properties", false);

@@ -30,6 +30,7 @@ public class ProtectionEntryMain {
         entries.addInputProtectionEntry("World", "VoidHeight", "window_edit_label_world_voidHeight", InputSaveType.INTEGER, 0);
         entries.addBooleanProtectionEntry("World", "TimeFlow", "window_edit_label_world_timeFlow", true);
         entries.addDropdownProtectionEntry("World", "Weather", "window_edit_label_world_weather", List.of("", "clear", "thunder", "rain"), "");
+        entries.addBooleanProtectionEntry("World", "LightningStrike", "window_edit_label_world_lightningStrike", true);
 
         entries.addBooleanProtectionEntry("Player", "AllowOpenChest", "window_edit_label_player_openChest", true);
         entries.addBooleanProtectionEntry("Player", "CanUseFishingHook", "window_edit_label_player_useFishingHook", true);
@@ -51,9 +52,15 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Player", "AntiTeleport", "window_edit_label_player_antiTeleport", true);
         entries.addBooleanProtectionEntry("Player", "Interact", "window_edit_label_player_interact", true);
         entries.addBooleanProtectionEntry("Player", "NoFallDamage", "window_edit_label_player_immuneToFallDamage", true);
+        entries.addBooleanProtectionEntry("Player", "Achievement", "window_edit_label_player_achievement", true);
+        entries.addBooleanProtectionEntry("Player", "BucketFill", "window_edit_label_player_bucketFill", true);
+        entries.addBooleanProtectionEntry("Player", "BucketEmpty", "window_edit_label_player_bucketEmpty", true);
 
         entries.addBooleanProtectionEntry("Entity", "Explosion", "window_edit_label_entity_entityExplosion", true);
         entries.addBooleanProtectionEntry("Entity", "PortalEnter", "window_edit_label_entity_portalEnter", true);
+        entries.addBooleanProtectionEntry("Entity", "BlockChange", "window_edit_label_entity_blockChange", true);
+        entries.addBooleanProtectionEntry("Entity", "CombustByBlock", "window_edit_label_entity_combustByBlock", true);
+        entries.addBooleanProtectionEntry("Entity", "CombustByEntity", "window_edit_label_entity_combustByEntity", true);
 
         entries.addBooleanProtectionEntry("Block", "AllowPlaceBlock", "window_edit_label_block_placeBlock", true);
         entries.addBooleanProtectionEntry("Block", "AllowBreakBlock", "window_edit_label_block_breakBlock", true);
@@ -74,28 +81,19 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Block", "Fade", "window_edit_label_block_blockFade", true);
         entries.addBooleanProtectionEntry("Block", "PistonChange", "window_edit_label_block_blockPistonChange", true);
         entries.addBooleanProtectionEntry("Block", "FromToEvent", "window_edit_label_block_blockFromToEvent", true);
+        entries.addBooleanProtectionEntry("Block", "SignColorChange", "window_edit_label_block_signColorChange", true);
 
         // MOT dedicated entries
-        entries.addBooleanProtectionEntry("World", "LightningStrike", "window_edit_label_world_lightningStrike", true);
-
         entries.addBooleanProtectionEntry("Player", "CraftingTableOpen", "window_edit_label_player_craftingTableOpen", true);
-        entries.addBooleanProtectionEntry("Player", "Achievement", "window_edit_label_player_achievement", true);
-        entries.addBooleanProtectionEntry("Player", "BucketFill", "window_edit_label_player_bucketFill", true);
-        entries.addBooleanProtectionEntry("Player", "BucketEmpty", "window_edit_label_player_bucketEmpty", true);
         entries.addBooleanProtectionEntry("Player", "Crawl", "window_edit_label_player_crawl", true);
         entries.addBooleanProtectionEntry("Player", "Emote", "window_edit_label_player_emote", true);
 
-
-        entries.addBooleanProtectionEntry("Entity", "BlockChange", "window_edit_label_entity_blockChange", true);
-        entries.addBooleanProtectionEntry("Entity", "CombustByBlock", "window_edit_label_entity_combustByBlock", true);
-        entries.addBooleanProtectionEntry("Entity", "CombustByEntity", "window_edit_label_entity_combustByEntity", true);
         entries.addBooleanProtectionEntry("Entity", "DamageBlocked", "window_edit_label_entity_damageBlocked", true);
 
         entries.addBooleanProtectionEntry("Block", "BellRing", "window_edit_label_block_bellRing", true);
         entries.addBooleanProtectionEntry("Block", "BlockExplode", "window_edit_label_block_blockExplode", true);
         entries.addBooleanProtectionEntry("Block", "LecternDropBook", "window_edit_label_block_lecternDropBook", true);
         entries.addBooleanProtectionEntry("Block", "LecternPageChange", "window_edit_label_block_lecternPageChange", true);
-        entries.addBooleanProtectionEntry("Block", "SignColorChange", "window_edit_label_block_signColorChange", true);
         entries.addBooleanProtectionEntry("Block", "WaterFrost", "window_edit_label_block_waterFrost", true);
     }
 
