@@ -3,7 +3,7 @@ package glorydark.DLevelEventPlus.utils;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.level.Level;
-import glorydark.DLevelEventPlus.MainClass;
+import glorydark.DLevelEventPlus.LevelEventPlusMain;
 
 /**
  * @author glorydark
@@ -55,9 +55,6 @@ public class AdventureSettingUtils {
     }
 
     public static void updatePlayerAdventureSettings(Player player, Level level) {
-        if (!MainClass.adventureSettingsUpdate) {
-            return;
-        }
         if (ConfigUtil.isAdmin(player)) {
             AdventureSettingUtils.setAllowInteract(player, true);
             AdventureSettingUtils.setAllowModifyWorld(player, true);
@@ -68,9 +65,9 @@ public class AdventureSettingUtils {
             AdventureSettingUtils.setAllowModifyWorld(player, true);
             return;
         }
-        Boolean interact = MainClass.getLevelBooleanInit(level.getName(), "Player", "Interact");
-        Boolean placeB = MainClass.getLevelBooleanInit(level.getName(), "Block", "AllowPlaceBlock");
-        Boolean breakB = MainClass.getLevelBooleanInit(level.getName(), "Block", "AllowBreakBlock");
+        Boolean interact = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "Interact");
+        Boolean placeB = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowPlaceBlock");
+        Boolean breakB = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowBreakBlock");
         boolean final1 = interact != null && !interact; // 是否不可放置
         boolean final2 = !final1 && placeB != null && breakB != null && !placeB && !breakB;
         AdventureSettingUtils.setAllowInteract(player, !final1);
