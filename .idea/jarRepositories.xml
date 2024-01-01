@@ -17,6 +17,11 @@
       <option name="url" value="https://repo.lanink.cn/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="repo-lanink-cn" />
+      <option name="name" value="repo-lanink-cn" />
+      <option name="url" value="https://repo.lanink.cn/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

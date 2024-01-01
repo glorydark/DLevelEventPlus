@@ -1,13 +1,11 @@
 package glorydark.DLevelEventPlus;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.TextFormat;
-import glorydark.DLevelEventPlus.gui.GuiMain;
-import glorydark.DLevelEventPlus.utils.AdventureSettingUtils;
+import glorydark.DLevelEventPlus.gui.FormMain;
+import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
-import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
 
 import java.io.File;
 
@@ -22,99 +20,89 @@ public class Command extends cn.nukkit.command.Command {
             switch (args.length) {
                 case 0:
                     if (sender.isPlayer()) {
-                        GuiMain.showMainMenu((Player) sender);
+                        FormMain.showMainMenu((Player) sender);
                     } else {
-                        sender.sendMessage("§a[DLevelEventPlus] 请在游戏内使用!");
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_useInGame"));
                     }
                     return true;
                 case 1:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     switch (args[0]) {
                         case "save":
-                            MainClass.saveAllConfig();
+                            LevelEventPlusMain.saveAllConfig();
                             return true;
                         case "reload":
-                            MainClass.loadAllLevelConfig();
-                            MainClass.loadTemplateConfig();
-                            MainClass.loadLang();
-                            MainClass.show_actionbar_text = new Config(MainClass.path + "/config.yml", Config.YAML).getBoolean("show_actionbar_text", false);
+                            LevelEventPlusMain.loadAllLevelConfig();
+                            LevelEventPlusMain.loadTemplateConfig();
                             return true;
                         case "fixall":
-                            File world_folder = new File(MainClass.path + "/worlds/");
-                            File template_folder = new File(MainClass.path + "/templates/");
-                            File[] worldsFiles = world_folder.listFiles();
-                            if (worldsFiles != null) {
-                                for (File file : worldsFiles) {
-                                    if (DefaultConfigUtils.isYaml(file.getName())) {
-                                        MainClass.defaultConfigUtils.checkAll(file.getName(), new Config(file, Config.YAML));
-                                    }
-                                }
-                            }
-
-                            File[] TemplateFiles = template_folder.listFiles();
-                            if (TemplateFiles != null) {
-                                for (File file : TemplateFiles) {
-                                    if (DefaultConfigUtils.isYaml(file.getName())) {
-                                        MainClass.defaultConfigUtils.checkAll(file.getName(), new Config(file, Config.YAML));
-                                    }
-                                }
-                            }
-
-                            MainClass.loadAllLevelConfig();
-                            MainClass.loadTemplateConfig();
+                            ProtectionEntryMain.updateFiles();
+                            sender.sendMessage(LevelEventPlusMain.language.translateString("tip_fix_config_success"));
                             return true;
                     }
                     break;
                 case 2:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     if (args[0].equals("addworld")) {
-                        if (MainClass.defaultConfigUtils.writeAll(0, args[1])) {
-                            sender.sendMessage("§a[DLevelEventPlus] 创建成功!");
+                        if (ProtectionEntryMain.createFile(new File(LevelEventPlusMain.path + "/worlds/" + args[1]))) {
+                            sender.sendMessage(LevelEventPlusMain.language.translateString("tip_addWorld_success"));
                         } else {
-                            sender.sendMessage("§c[DLevelEventPlus] 创建失败!");
+                            sender.sendMessage(LevelEventPlusMain.language.translateString("tip_addWorld_failed"));
                         }
                         return true;
                     }
                     break;
                 case 3:
                     if (sender.isPlayer()) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     if (args[0].equals("admin")) {
                         switch (args[1]) {
                             case "add":
-                                ConfigUtil.adminList(sender, 0, args[2]);
-                                AdventureSettingUtils.updatePlayerAdventureSettings((Player) sender, ((Player) sender).getLevel());
+                                if (Server.getInstance().lookupName(args[2]).isPresent()) {
+                                    ConfigUtil.adminList(sender, 0, args[2]);
+                                } else {
+                                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
+                                }
                                 return true;
                             case "del":
-                                ConfigUtil.adminList(sender, 1, args[2]);
-                                AdventureSettingUtils.updatePlayerAdventureSettings((Player) sender, ((Player) sender).getLevel());
+                                if (Server.getInstance().lookupName(args[2]).isPresent()) {
+                                    ConfigUtil.adminList(sender, 1, args[2]);
+                                } else {
+                                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
+                                }
                                 return true;
                         }
                     }
                     break;
                 case 4:
                     if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
-                        sender.sendMessage("§c[DLevelEventPlus] 您没有权限！");
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
                     switch (args[0]) {
                         case "operatorlist":
                             switch (args[1]) {
                                 case "add":
-                                    ConfigUtil.operatorList(sender, 0, args[2], args[3]);
-                                    AdventureSettingUtils.updatePlayerAdventureSettings((Player) sender, ((Player) sender).getLevel());
+                                    if (Server.getInstance().lookupName(args[2]).isPresent()) {
+                                        ConfigUtil.operatorList(sender, 0, args[2], args[3]);
+                                    } else {
+                                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
+                                    }
                                     return true;
                                 case "del":
-                                    ConfigUtil.operatorList(sender, 1, args[2], args[3]);
-                                    AdventureSettingUtils.updatePlayerAdventureSettings((Player) sender, ((Player) sender).getLevel());
+                                    if (Server.getInstance().lookupName(args[2]).isPresent()) {
+                                        ConfigUtil.operatorList(sender, 1, args[2], args[3]);
+                                    } else {
+                                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
+                                    }
                                     return true;
                             }
                         case "whitelist":
@@ -135,12 +123,7 @@ public class Command extends cn.nukkit.command.Command {
         return true;
     }
 
-    public void sendCommandUsage(CommandSender p) {
-        //dgamerule operatorlist add/del xx XX
-        //dgamerule whitelist add/del xx
-        //dgamerule addworld xx
-        for (String string : ConfigUtil.getLangList("Help")) {
-            p.sendMessage(TextFormat.YELLOW + string);
-        }
+    public void sendCommandUsage(CommandSender sender) {
+        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_help").replace("\\n", "\n"));
     }
 }
