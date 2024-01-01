@@ -4,7 +4,7 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.level.Level;
-import glorydark.DLevelEventPlus.MainClass;
+import glorydark.DLevelEventPlus.LevelEventPlusMain;
 
 /**
  * @author glorydark
@@ -16,7 +16,7 @@ public class LevelEventListener implements Listener {
     public void WeatherChangeEvent(WeatherChangeEvent event) {
         Level level = event.getLevel();
         String levelName = level.getName();
-        Object weather = MainClass.getLevelSettingInit(levelName, "World", "Weather");
+        Object weather = LevelEventPlusMain.getLevelSettingInit(levelName, "World", "Weather");
         if (weather != null && !String.valueOf(weather).equals("")) {
             event.setCancelled(true);
         }

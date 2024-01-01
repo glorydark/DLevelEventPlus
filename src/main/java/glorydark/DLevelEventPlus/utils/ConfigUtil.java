@@ -6,7 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.Config;
-import glorydark.DLevelEventPlus.MainClass;
+import glorydark.DLevelEventPlus.LevelEventPlusMain;
 
 import java.io.File;
 import java.util.*;
@@ -15,11 +15,7 @@ public class ConfigUtil {
     public static HashMap<String, LinkedHashMap<String, Object>> templateCache = new HashMap<>();
 
     public static void whiteList(CommandSender sender, int type, String playerName, String levelname) {
-        if (Server.getInstance().lookupName(playerName).isPresent()) {
-            sender.sendMessage(MainClass.language.translateString("tip_generic_playerNotFound", playerName));
-            return;
-        }
-        Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
+        Config worldcfg = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
         Player player = Server.getInstance().getPlayer(playerName);
         switch (type) {
@@ -29,11 +25,11 @@ public class ConfigUtil {
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
                     if (player != null) {
-                        player.sendMessage(MainClass.language.translateString("tip_whitelist_add_success_receiver", playerName, levelname));
+                        player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success_receiver", playerName, levelname));
                     }
-                    sender.sendMessage(MainClass.language.translateString("tip_whitelist_add_success", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success", playerName, levelname));
                 } else {
-                    sender.sendMessage(MainClass.language.translateString("tip_whitelist_add_failed", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_failed", playerName, levelname));
                 }
                 break;
             case 1:
@@ -42,22 +38,18 @@ public class ConfigUtil {
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
                     if (player != null) {
-                        player.sendMessage(MainClass.language.translateString("tip_whitelist_del_success_receiver", playerName, levelname));
+                        player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_del_success_receiver", playerName, levelname));
                     }
-                    sender.sendMessage(MainClass.language.translateString("tip_whitelist_del_success", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_del_success", playerName, levelname));
                 } else {
-                    sender.sendMessage(MainClass.language.translateString("tip_whitelist_del_failed", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_del_failed", playerName, levelname));
                 }
                 break;
         }
     }
 
     public static void adminList(CommandSender sender, int type, String playerName) {
-        if (Server.getInstance().lookupName(playerName).isPresent()) {
-            sender.sendMessage("§c[DLevelEventPlus] Can not find player: " + playerName);
-            return;
-        }
-        Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
+        Config worldcfg = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML);
         Player player = Server.getInstance().getPlayer(playerName);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList("list"));
         switch (type) {
@@ -67,11 +59,12 @@ public class ConfigUtil {
                     worldcfg.set("list", arrayList);
                     worldcfg.save();
                     if (player != null) {
-                        player.sendMessage(MainClass.language.translateString("tip_admin_add_success_receiver", playerName));
+                        player.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_add_success_receiver", playerName));
+                        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                     }
-                    sender.sendMessage(MainClass.language.translateString("tip_admin_add_success", playerName));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_add_success", playerName));
                 } else {
-                    sender.sendMessage(MainClass.language.translateString("tip_admin_add_failed", playerName));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_add_failed", playerName));
                 }
                 break;
             case 1:
@@ -81,24 +74,21 @@ public class ConfigUtil {
                         worldcfg.set("list", arrayList);
                         worldcfg.save();
                         if (player != null) {
-                            player.sendMessage(MainClass.language.translateString("tip_admin_del_success_receiver", playerName));
+                            player.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success_receiver", playerName));
+                            AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                         }
-                        sender.sendMessage(MainClass.language.translateString("tip_admin_del_success", playerName));
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success", playerName));
                     }
                 } else {
-                    sender.sendMessage(MainClass.language.translateString("tip_admin_del_failed", playerName));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_failed", playerName));
                 }
                 break;
         }
     }
 
     public static void operatorList(CommandSender sender, int type, String playerName, String levelname) {
-        if (Server.getInstance().lookupName(playerName).isPresent()) {
-            sender.sendMessage("§c[DLevelEventPlus] Can not find player: " + playerName);
-            return;
-        }
         Player player = Server.getInstance().getPlayer(playerName);
-        Config worldcfg = new Config(MainClass.path + "/operators.yml", Config.YAML);
+        Config worldcfg = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML);
         List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
         switch (type) {
             case 0:
@@ -107,12 +97,12 @@ public class ConfigUtil {
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
                     if (player != null) {
-                        player.setAllowModifyWorld(true);
-                        player.sendMessage(MainClass.language.translateString("tip_operator_add_success_receiver", playerName, levelname));
+                        player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success_receiver", playerName, levelname));
+                        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                     }
-                    sender.sendMessage(MainClass.language.translateString("tip_operator_add_success", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success", playerName, levelname));
                 } else {
-                    sender.sendMessage(MainClass.language.translateString("tip_operator_add_failed", playerName, levelname));
+                    sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_failed", playerName, levelname));
                 }
                 break;
             case 1:
@@ -122,11 +112,12 @@ public class ConfigUtil {
                         worldcfg.set(levelname, arrayList);
                         worldcfg.save();
                         if (player != null) {
-                            player.sendMessage(MainClass.language.translateString("tip_operator_del_success_receiver", playerName, levelname));
+                            player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success_receiver", playerName, levelname));
+                            AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                         }
-                        sender.sendMessage(MainClass.language.translateString("tip_operator_del_success", playerName, levelname));
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success", playerName, levelname));
                     } else {
-                        sender.sendMessage(MainClass.language.translateString("tip_operator_del_failed", playerName, levelname));
+                        sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_failed", playerName, levelname));
                     }
                 }
                 break;
@@ -137,9 +128,9 @@ public class ConfigUtil {
         if (p == null) {
             return false;
         }
-        File file = new File(MainClass.path + "/admins.yml");
+        File file = new File(LevelEventPlusMain.path + "/admins.yml");
         if (file.exists()) {
-            Config worldcfg = new Config(MainClass.path + "/admins.yml", Config.YAML);
+            Config worldcfg = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML);
             if (worldcfg.exists("list")) {
                 return worldcfg.getStringList("list").contains(p.getName());
             }
@@ -154,9 +145,9 @@ public class ConfigUtil {
         if (level == null) {
             return false;
         }
-        File file = new File(MainClass.path + "/operators.yml");
+        File file = new File(LevelEventPlusMain.path + "/operators.yml");
         if (file.exists()) {
-            Config worldcfg = new Config(MainClass.path + "/operators.yml", Config.YAML);
+            Config worldcfg = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML);
             if (worldcfg.get(level.getName()) != null) {
                 return worldcfg.getStringList(level.getName()).contains(p.getName());
             }
@@ -171,9 +162,9 @@ public class ConfigUtil {
         if (level == null) {
             return false;
         }
-        File file = new File(MainClass.path + "/whitelists.yml");
+        File file = new File(LevelEventPlusMain.path + "/whitelists.yml");
         if (file.exists()) {
-            Config worldcfg = new Config(MainClass.path + "/whitelists.yml", Config.YAML);
+            Config worldcfg = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
             if (worldcfg.exists(level.getName())) {
                 return worldcfg.getStringList(level.getName()).contains(p.getName());
             } else {
@@ -194,7 +185,7 @@ public class ConfigUtil {
                     keyMap.put(key, obj);
                     templateCache.put(ConfigName, keyMap);
                 } else {
-                    MainClass.plugin.getLogger().warning(MainClass.language.translateString("tip_save_template_failed", subKey));
+                    LevelEventPlusMain.plugin.getLogger().warning(LevelEventPlusMain.language.translateString("tip_save_template_failed", subKey));
                 }
             }
         }

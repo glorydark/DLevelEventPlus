@@ -1,6 +1,6 @@
-package glorydark.DLevelEventPlus.gui.protection.rule;
+package glorydark.DLevelEventPlus.protection.rule;
 
-import glorydark.DLevelEventPlus.gui.protection.type.EntryElementType;
+import glorydark.DLevelEventPlus.protection.type.EntryElementType;
 import lombok.AllArgsConstructor;
 
 /**
@@ -18,12 +18,14 @@ public class ProtectionRuleEntry {
 
     private EntryElementType type;
 
-    public void setType(EntryElementType type) {
-        this.type = type;
-    }
+    private Object defaultValue;
 
     public EntryElementType getType() {
         return type;
+    }
+
+    public void setType(EntryElementType type) {
+        this.type = type;
     }
 
     public String getCategory() {
@@ -36,5 +38,9 @@ public class ProtectionRuleEntry {
 
     public String getEntryName() {
         return entryName;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 }

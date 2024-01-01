@@ -1,6 +1,6 @@
 package glorydark.DLevelEventPlus.gui;
 
-public enum GuiType {
+public enum FormType {
     Edit_ChooseWorld,
     Edit_Process,
     Return_toPowerMenu,

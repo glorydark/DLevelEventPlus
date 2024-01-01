@@ -10,9 +10,9 @@ public class CheckTask extends Task {
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
             if (level.getPlayers().size() > 0) {
-                Boolean bool = MainClass.getLevelBooleanInit(level.getName(), "Player", "Interact");
-                Boolean bool1 = MainClass.getLevelBooleanInit(level.getName(), "Block", "AllowPlaceBlock");
-                Boolean bool2 = MainClass.getLevelBooleanInit(level.getName(), "Block", "AllowBreakBlock");
+                Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "Interact");
+                Boolean bool1 = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowPlaceBlock");
+                Boolean bool2 = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowBreakBlock");
                 boolean final1 = bool != null && !bool; // 是否不可放置
                 boolean final2 = !final1 && bool1 != null && bool2 != null && !bool1 && !bool2;
                 level.getPlayers().values().forEach(player -> {

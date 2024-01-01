@@ -1,4 +1,4 @@
-package glorydark.DLevelEventPlus.gui.protection.type;
+package glorydark.DLevelEventPlus.protection.type;
 
 /**
  * @author glorydark

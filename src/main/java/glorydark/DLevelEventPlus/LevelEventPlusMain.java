@@ -7,25 +7,26 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
-import glorydark.DLevelEventPlus.event.*;
-import glorydark.DLevelEventPlus.gui.protection.ProtectionEntryMain;
+import glorydark.DLevelEventPlus.event.BlockEventListener;
+import glorydark.DLevelEventPlus.event.EntityEventListener;
+import glorydark.DLevelEventPlus.event.LevelEventListener;
+import glorydark.DLevelEventPlus.event.PlayerEventListener;
+import glorydark.DLevelEventPlus.gui.FormEventListener;
+import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
-import glorydark.DLevelEventPlus.utils.DefaultConfigUtils;
 import glorydark.DLevelEventPlus.utils.Language;
 
 import java.io.File;
 import java.util.*;
 
-public class MainClass extends PluginBase implements Listener {
+public class LevelEventPlusMain extends PluginBase implements Listener {
 
     public static String path;
-    public static MainClass plugin;
+    public static LevelEventPlusMain plugin;
     public static HashMap<String, LinkedHashMap<String, Object>> configCache = new HashMap<>();
 
     public static Language language;
     public static LinkedHashMap<Player, String> selectCache = new LinkedHashMap<>();
-
-    public static DefaultConfigUtils defaultConfigUtils;
 
     public static boolean show_actionbar_text;
 
@@ -41,8 +42,8 @@ public class MainClass extends PluginBase implements Listener {
         this.saveResource("default_20230811.yml", false);
 
         // Loading Language File
-        this.saveResource("languages/chs/lang.properties", true);
-        this.saveResource("languages/eng/lang.properties", true);
+        this.saveResource("languages/chs.properties", false);
+        this.saveResource("languages/eng.properties", false);
         // Creating Necessary Dictionaries
         File world_folder = new File(path + "/worlds/");
         world_folder.mkdir();
@@ -50,18 +51,22 @@ public class MainClass extends PluginBase implements Listener {
         template_folder.mkdir();
 
         Config config = new Config(path + "/config.yml", Config.YAML);
+        // Preparing for configs
+        if (config.getBoolean("auto_update_files", false)) {
+            ProtectionEntryMain.loadDefaultEntries();
+            ProtectionEntryMain.updateFiles();
+        }
         String defaultLang = config.getString("languages", Server.getInstance().getLanguage().getLang());
         if (!enabledLanguage.contains(defaultLang)) {
             defaultLang = "eng";
         }
         // Loading Language
-        language = new Language(new File(MainClass.path + "/languages/" + defaultLang + "/lang.properties"));
-        // Then others
-        ProtectionEntryMain.loadDefaultEntries();
+        language = new Language(new File(LevelEventPlusMain.path + "/languages/" + defaultLang + ".properties"));
+
+        // then others
         this.getLogger().info(language.translateString("tip_alert_defaultFile"));
         show_actionbar_text = config.getBoolean("show_actionbar_text", false);
         experimental = config.getBoolean("experimental", false);
-        defaultConfigUtils = new DefaultConfigUtils(new Config(path + "/default_20230811.yml", Config.YAML));
         loadAllLevelConfig();
         loadTemplateConfig();
         // Register Listeners
@@ -69,6 +74,7 @@ public class MainClass extends PluginBase implements Listener {
         this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new LevelEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
         this.getServer().getCommandMap().register("", new Command("dwp"));
     }
 
@@ -85,68 +91,65 @@ public class MainClass extends PluginBase implements Listener {
         plugin.getLogger().info(language.translateString("tip_loading_levelAllConfigs"));
         if (listFiles != null) {
             for (File file1 : listFiles) {
-                if (DefaultConfigUtils.isYaml(file1.getName())) {
-                    Config config = new Config(file1);
-                    defaultConfigUtils.checkAll(file1.getName(), config); // 检测配置
-                    String levelName = file1.getName().split("\\.")[0];
-                    Level level = Server.getInstance().getLevelByName(levelName);
-                    if (level == null) {
-                        if (Server.getInstance().loadLevel(levelName)) {
-                            level = Server.getInstance().getLevelByName(levelName);
-                        } else {
-                            plugin.getLogger().warning(language.translateString("tip_generic_levelLoad_failed", levelName));
-                            continue;
-                        }
+                Config config = new Config(file1, Config.YAML);
+                String levelName = file1.getName().split("\\.")[0];
+                Level level = Server.getInstance().getLevelByName(levelName);
+                if (level == null) {
+                    if (Server.getInstance().loadLevel(levelName)) {
+                        level = Server.getInstance().getLevelByName(levelName);
+                    } else {
+                        plugin.getLogger().warning(language.translateString("tip_generic_levelLoad_failed", levelName));
+                        continue;
                     }
-                    plugin.getLogger().info(language.translateString("tip_loading_gameRule", level));
-                    configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
-                    if (!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")) {
-                        level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                    }
-                    Object weather = getLevelSettingInit(levelName, "World", "Weather");
-                    if (weather != null) {
-                        switch (String.valueOf(weather).toLowerCase()) {
-                            case "clear":
-                                level.setRaining(false);
-                                level.setThundering(false);
-                                level.setRainTime(12000 * 20);
-                                level.setThunderTime(12000 * 20);
-                                break;
-                            case "rain":
-                                level.setRaining(true);
-                                level.setRainTime(12000 * 20);
-                                break;
-                            case "thunder":
-                                level.setThundering(true);
-                                level.setRainTime(12000 * 20);
-                                level.setThunderTime(12000 * 20);
-                                break;
-                        }
-                    }
-                    LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
-                    int loadedGameRule = 0;
-                    if (gamerules.size() > 0) {
-                        for (String item : gamerules.keySet()) {
-                            Optional<GameRule> options = GameRule.parseString(item);
-                            if (options.isPresent()) {
-                                Object object = gamerules.get(item);
-                                if (object instanceof Boolean) {
-                                    level.getGameRules().setGameRule(options.get(), (Boolean) object);
-                                } else if (object instanceof Integer) {
-                                    level.getGameRules().setGameRule(options.get(), (Integer) object);
-                                } else if (object instanceof Float) {
-                                    level.getGameRules().setGameRule(options.get(), (Float) object);
-                                }
-                                loadedGameRule += 1;
-                                plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_success", item, object.toString()));
-                            } else {
-                                plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_failed", item));
-                            }
-                        }
-                    }
-                    plugin.getLogger().info(language.translateString("tip_loading_gameRule_finish", loadedGameRule));
-                    plugin.getLogger().info(language.translateString("tip_loading_levelConfig_success", levelName));
                 }
+                plugin.getLogger().info(language.translateString("tip_loading_gameRule", level));
+                configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
+                if (!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")) {
+                    level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                }
+                Object weather = getLevelSettingInit(levelName, "World", "Weather");
+                if (weather != null) {
+                    switch (String.valueOf(weather).toLowerCase()) {
+                        case "clear":
+                            level.setRaining(false);
+                            level.setThundering(false);
+                            level.setRainTime(12000 * 20);
+                            level.setThunderTime(12000 * 20);
+                            break;
+                        case "rain":
+                            level.setRaining(true);
+                            level.setRainTime(12000 * 20);
+                            break;
+                        case "thunder":
+                            level.setThundering(true);
+                            level.setRainTime(12000 * 20);
+                            level.setThunderTime(12000 * 20);
+                            break;
+                    }
+                }
+                LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
+                int loadedGameRule = 0;
+                if (gamerules.size() > 0) {
+                    for (String item : gamerules.keySet()) {
+                        Optional<GameRule> options = GameRule.parseString(item);
+                        if (options.isPresent()) {
+                            Object object = gamerules.get(item);
+                            if (object instanceof Boolean) {
+                                level.getGameRules().setGameRule(options.get(), (Boolean) object);
+                            } else if (object instanceof Integer) {
+                                level.getGameRules().setGameRule(options.get(), (Integer) object);
+                            } else if (object instanceof Float) {
+                                level.getGameRules().setGameRule(options.get(), (Float) object);
+                            }
+                            loadedGameRule += 1;
+                            plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_success", item, object.toString()));
+                        } else {
+                            plugin.getLogger().info(language.translateString("tip_modifying_gameRule_entry_failed", item));
+                        }
+                    }
+                }
+                plugin.getLogger().info(language.translateString("tip_loading_gameRule_finish", loadedGameRule));
+                plugin.getLogger().info(language.translateString("tip_loading_levelConfig_success", levelName));
             }
         }
         plugin.getLogger().info(language.translateString("tip_loading_levelAllConfigs_finish", configCache.keySet().size()));
@@ -159,13 +162,10 @@ public class MainClass extends PluginBase implements Listener {
         plugin.getLogger().info(language.translateString("tip_loading_allTemplates"));
         if (listFiles != null) {
             for (File file1 : listFiles) {
-                if (DefaultConfigUtils.isYaml(file1.getName())) {
-                    Config config = new Config(file1);
-                    defaultConfigUtils.checkAll(file1.getName(), config);
-                    String templateName = file1.getName().split("\\.")[0];
-                    plugin.getLogger().info(language.translateString("tip_loading_template_success", templateName));
-                    ConfigUtil.templateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
-                }
+                Config config = new Config(file1);
+                String templateName = file1.getName().split("\\.")[0];
+                plugin.getLogger().info(language.translateString("tip_loading_template_success", templateName));
+                ConfigUtil.templateCache.put(templateName, (LinkedHashMap<String, Object>) config.getAll());
             }
         }
         plugin.getLogger().info(language.translateString("tip_loading_allTemplates_finish", ConfigUtil.templateCache.keySet().size()));
@@ -173,9 +173,9 @@ public class MainClass extends PluginBase implements Listener {
 
     public static void saveAllConfig() {
         plugin.getLogger().info(language.translateString("tip_save_all_configs_start"));
-        for (String s : MainClass.configCache.keySet()) {
+        for (String s : LevelEventPlusMain.configCache.keySet()) {
             Config config = new Config(path + "/worlds/" + s + ".yml", Config.YAML);
-            config.setAll(MainClass.configCache.get(s));
+            config.setAll(LevelEventPlusMain.configCache.get(s));
             config.save();
             plugin.getLogger().info(language.translateString("tip_save_config_success", s));
         }
