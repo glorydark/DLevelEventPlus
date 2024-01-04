@@ -19,7 +19,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EmotePacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
-import glorydark.DLevelEventPlus.utils.AdventureSettingUtils;
 import glorydark.DLevelEventPlus.utils.ConfigUtil;
 import glorydark.DLevelEventPlus.utils.ItemUtils;
 import glorydark.DLevelEventPlus.utils.LiquidItem;
@@ -140,8 +139,6 @@ public class PlayerEventListener implements Listener {
             if (bool) {
                 event.setCancelled(true);
             }
-        } else {
-            AdventureSettingUtils.updatePlayerAdventureSettings(player, toLevel);
         }
     }
 
@@ -522,15 +519,6 @@ public class PlayerEventListener implements Listener {
             player.teleport(player.getLocation(), null);
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler
-    public void PlayerJoinEvent(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (player == null) {
-            return;
-        }
-        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
     }
 
     @EventHandler
