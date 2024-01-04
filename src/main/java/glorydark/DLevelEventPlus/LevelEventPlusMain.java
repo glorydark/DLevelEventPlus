@@ -173,7 +173,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                 }
             }
         }
-        return false;
+        return "";
     }
 
     public static void setLevelInit(String LevelName, String key, String subKey, Object value) {

@@ -139,7 +139,7 @@ public class FormMain {
             if (entry instanceof BooleanProtectionRuleEntry) {
                 formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName()).toString()));

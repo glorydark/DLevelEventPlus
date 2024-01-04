@@ -173,10 +173,12 @@ public class FormEventListener implements Listener {
                                 LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
-                                try {
-                                    LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
-                                } catch (NumberFormatException e) {
-                                    p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                if (!responses.getInputResponse(id).isEmpty()) {
+                                    try {
+                                        LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                    } catch (NumberFormatException e) {
+                                        p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                    }
                                 }
                                 break;
                         }
@@ -203,10 +205,12 @@ public class FormEventListener implements Listener {
                                 ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
-                                try {
-                                    ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
-                                } catch (NumberFormatException e) {
-                                    p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                if (!responses.getInputResponse(id).isEmpty()) {
+                                    try {
+                                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                    } catch (NumberFormatException e) {
+                                        p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
+                                    }
                                 }
                                 break;
                         }

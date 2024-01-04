@@ -60,7 +60,6 @@ public class ConfigUtil {
                     worldcfg.save();
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_add_success_receiver", playerName));
-                        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                     }
                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_add_success", playerName));
                 } else {
@@ -75,7 +74,6 @@ public class ConfigUtil {
                         worldcfg.save();
                         if (player != null) {
                             player.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success_receiver", playerName));
-                            AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                         }
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success", playerName));
                     }
@@ -98,7 +96,6 @@ public class ConfigUtil {
                     worldcfg.save();
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success_receiver", playerName, levelname));
-                        AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                     }
                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success", playerName, levelname));
                 } else {
@@ -113,7 +110,6 @@ public class ConfigUtil {
                         worldcfg.save();
                         if (player != null) {
                             player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success_receiver", playerName, levelname));
-                            AdventureSettingUtils.updatePlayerAdventureSettings(player, player.getLevel());
                         }
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success", playerName, levelname));
                     } else {
@@ -201,7 +197,7 @@ public class ConfigUtil {
                 }
             }
         }
-        return false;
+        return "";
     }
 
     public static Boolean getTemplateBooleanInit(String ConfigName, String key, String subKey) {
