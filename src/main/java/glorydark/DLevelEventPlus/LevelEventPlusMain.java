@@ -50,7 +50,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                         continue;
                     }
                 }
-                plugin.getLogger().info(language.translateString("tip_loading_gameRule", level));
+                plugin.getLogger().info(language.translateString("tip_loading_gameRule", level.getName()));
                 configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
                 if (!getLevelSettingBooleanInit(levelName, "World", "TimeFlow")) {
                     level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -249,6 +249,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new WorldEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
+        this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
         this.getServer().getCommandMap().register("", new Command("dwp"));
     }
 
