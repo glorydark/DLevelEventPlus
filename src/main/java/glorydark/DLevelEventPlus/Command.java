@@ -50,7 +50,7 @@ public class Command extends cn.nukkit.command.Command {
                         return false;
                     }
                     if (args[0].equals("addworld")) {
-                        if (ProtectionEntryMain.createFile(new File(LevelEventPlusMain.path + "/worlds/" + args[1]))) {
+                        if (ProtectionEntryMain.createFile(new File(LevelEventPlusMain.path + "/worlds/" + args[1] + ".yml"))) {
                             sender.sendMessage(LevelEventPlusMain.language.translateString("tip_addWorld_success"));
                         } else {
                             sender.sendMessage(LevelEventPlusMain.language.translateString("tip_addWorld_failed"));

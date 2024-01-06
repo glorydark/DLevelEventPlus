@@ -8,6 +8,7 @@ import glorydark.DLevelEventPlus.protection.rule.ProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.type.InputSaveType;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,13 @@ import java.util.Map;
 public class ProtectionEntryMain {
 
     protected static ProtectionRuleEntries entries = new ProtectionRuleEntries();
+
+    public static final List<String> supplementListEntry = List.of("Block.AntiPlaceBlocks", "Block.AntiBreakBlocks",
+            "Block.CanBreakBlocks", "Block.CanPlaceBlocks",
+            "Block.DropItemBlocks", "Block.DropExpBlocks",
+            "Player.ChestTrustList",
+            "Player.BannedUseItems", "Player.BannedInteractBlocks",
+            "Player.ClearItems");
 
     public static void loadDefaultEntries() {
         entries.addBooleanProtectionEntry("World", "FarmProtect", "window_edit_label_world_farmProtect", true);
@@ -137,7 +145,7 @@ public class ProtectionEntryMain {
                 if (mapSection instanceof ConfigSection) {
                     for (Map.Entry<String, Object> objectEntry : ((ConfigSection) mapSection).entrySet()) {
                         String entryName = objectEntry.getKey();
-                        if (!ProtectionEntryMain.hasProtectionEntry(category, entryName)) {
+                        if (!ProtectionEntryMain.hasProtectionEntry(category, entryName) && !supplementListEntry.contains(category + "." + entryName)) {
                             config.remove(category + "." + entryName);
                         }
                     }
@@ -150,6 +158,11 @@ public class ProtectionEntryMain {
                     config.set(key, protectionRuleEntry.getDefaultValue());
                 }
             }
+            for (String key : supplementListEntry) {
+                if (!config.exists(key)) {
+                    config.set(key, new ArrayList<>());
+                }
+            }
             config.save();
         }
     }
@@ -160,6 +173,9 @@ public class ProtectionEntryMain {
             for (ProtectionRuleEntry protectionRuleEntry : getProtectionRuleEntries()) {
                 String key = protectionRuleEntry.getCategory() + "." + protectionRuleEntry.getEntryName();
                 config.set(key, protectionRuleEntry.getDefaultValue());
+            }
+            for (String key : supplementListEntry) {
+                config.set(key, new ArrayList<>());
             }
             config.save();
             return true;

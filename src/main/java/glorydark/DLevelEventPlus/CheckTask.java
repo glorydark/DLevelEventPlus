@@ -1,35 +1,27 @@
 package glorydark.DLevelEventPlus;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.scheduler.Task;
-import glorydark.DLevelEventPlus.utils.ConfigUtil;
+
+import java.util.List;
+import java.util.Map;
 
 public class CheckTask extends Task {
+
     @Override
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
-            if (level.getPlayers().size() > 0) {
-                Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "Interact");
-                Boolean bool1 = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowPlaceBlock");
-                Boolean bool2 = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Block", "AllowBreakBlock");
-                boolean final1 = bool != null && !bool; // 是否不可放置
-                boolean final2 = !final1 && bool1 != null && bool2 != null && !bool1 && !bool2;
-                level.getPlayers().values().forEach(player -> {
-                    if (ConfigUtil.isAdmin(player)) {
-                        player.setAllowInteract(true);
-                        player.setAllowModifyWorld(true);
-                        return;
+            List<String> clearItems = LevelEventPlusMain.getLevelStringListInit(level.getName(), "Player", "ClearItems");
+            for (Player player : level.getPlayers().values()) {
+                for (Map.Entry<Integer, Item> entry : player.getInventory().getContents().entrySet()) {
+                    Item check = entry.getValue();
+                    if (clearItems.contains(check.getNamespaceId() + ":" + check.getDamage())) {
+                        player.getInventory().remove(check);
                     }
-                    if (ConfigUtil.isOperator(player, level)) {
-                        player.setAllowInteract(true);
-                        player.setAllowModifyWorld(true);
-                        return;
-                    }
-                    player.setAllowInteract(!final1);
-                    player.setAllowModifyWorld(!final2);
-                    player.sendCommandData();
-                });
+                }
             }
         }
     }
