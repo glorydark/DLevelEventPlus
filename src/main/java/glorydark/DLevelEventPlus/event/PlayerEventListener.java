@@ -574,4 +574,20 @@ public class PlayerEventListener implements Listener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void PlayerItemHeldEvent(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        Item item = event.getItem();
+        if (ConfigUtil.isAdmin(player)) {
+            return;
+        }
+        if (ConfigUtil.isOperator(player, player.getLevel())) {
+            return;
+        }
+        List<String> clearItems = LevelEventPlusMain.getLevelStringListInit(player.getLevel().getName(), "Player", "ClearItems");
+        if (clearItems.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
+            player.getInventory().remove(item);
+        }
+    }
 }
