@@ -16,11 +16,10 @@ public class ItemUtils {
         compatible with these server software.
     */
     public static boolean isEqual(String itemString, Item item) {
-        return Item.fromString(itemString).equals(item);
+        return itemString.equals(item.getNamespaceId()) || Item.fromString(itemString).equals(item);
     }
 
     public static boolean isEqual(String itemString, Block block) {
-        return Item.fromString(itemString).equals(block.toItem());
+        return itemString.equals(block.toItem().getNamespaceId()) || Item.fromString(itemString).equals(block.toItem());
     }
-
 }
