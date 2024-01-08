@@ -225,7 +225,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         template_folder.mkdir();
 
         Config config = new Config(path + "/config.yml", Config.YAML);
-        String defaultLang = config.getString("languages", Server.getInstance().getLanguage().getLang());
+        String defaultLang = config.getString("language", Server.getInstance().getLanguage().getLang());
         if (!enabledLanguage.contains(defaultLang)) {
             defaultLang = "eng";
         }
@@ -239,7 +239,6 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         }
 
         // then others
-        this.getLogger().info(language.translateString("tip_alert_defaultFile"));
         experimental = config.getBoolean("experimental", false);
         loadAllLevelConfig();
         loadTemplateConfig();
