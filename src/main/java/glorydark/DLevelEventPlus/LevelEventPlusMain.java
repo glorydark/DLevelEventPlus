@@ -32,6 +32,54 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
 
     public final List<String> enabledLanguage = List.of(new String[]{"chs", "eng"});
 
+    @Override
+    public void onEnable() {
+        path = this.getDataFolder().getPath();
+        plugin = this;
+        this.saveResource("config.yml", false);
+        // Loading Language File
+        this.saveResource("languages/chs.properties", false);
+        this.saveResource("languages/eng.properties", false);
+        // Creating Necessary Dictionaries
+        File world_folder = new File(path + "/worlds/");
+        world_folder.mkdir();
+        File template_folder = new File(path + "/templates/");
+        template_folder.mkdir();
+
+        Config config = new Config(path + "/config.yml", Config.YAML);
+        String defaultLang = config.getString("language", Server.getInstance().getLanguage().getLang());
+        if (!enabledLanguage.contains(defaultLang)) {
+            defaultLang = "eng";
+        }
+        // Loading Language
+        language = new Language(new File(LevelEventPlusMain.path + "/languages/" + defaultLang + ".properties"));
+
+        ProtectionEntryMain.loadDefaultEntries();
+        // Preparing for configs
+        if (config.getBoolean("auto_update_files", false)) {
+            ProtectionEntryMain.updateFiles();
+        }
+
+        // then others
+        experimental = config.getBoolean("experimental", false);
+        loadAllLevelConfig();
+        loadTemplateConfig();
+        // Register Listeners
+        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new WorldEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
+        this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
+        this.getServer().getCommandMap().register("", new Command("dwp"));
+    }
+
+    @Override
+    public void onDisable() {
+        saveAllConfig();
+        configCache.clear();
+    }
+
     public static void loadAllLevelConfig() {
         configCache = new LinkedHashMap<>();
         File file = new File(path + "/worlds/");
@@ -173,7 +221,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                 }
             }
         }
-        return "";
+        return null;
     }
 
     public static void setLevelInit(String LevelName, String key, String subKey, Object value) {
@@ -208,53 +256,5 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
             }
         }
         return new ArrayList<>();
-    }
-
-    @Override
-    public void onEnable() {
-        path = this.getDataFolder().getPath();
-        plugin = this;
-        this.saveResource("config.yml", false);
-        // Loading Language File
-        this.saveResource("languages/chs.properties", false);
-        this.saveResource("languages/eng.properties", false);
-        // Creating Necessary Dictionaries
-        File world_folder = new File(path + "/worlds/");
-        world_folder.mkdir();
-        File template_folder = new File(path + "/templates/");
-        template_folder.mkdir();
-
-        Config config = new Config(path + "/config.yml", Config.YAML);
-        String defaultLang = config.getString("language", Server.getInstance().getLanguage().getLang());
-        if (!enabledLanguage.contains(defaultLang)) {
-            defaultLang = "eng";
-        }
-        // Loading Language
-        language = new Language(new File(LevelEventPlusMain.path + "/languages/" + defaultLang + ".properties"));
-
-        ProtectionEntryMain.loadDefaultEntries();
-        // Preparing for configs
-        if (config.getBoolean("auto_update_files", false)) {
-            ProtectionEntryMain.updateFiles();
-        }
-
-        // then others
-        experimental = config.getBoolean("experimental", false);
-        loadAllLevelConfig();
-        loadTemplateConfig();
-        // Register Listeners
-        this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new BlockEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new WorldEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
-        this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
-        this.getServer().getCommandMap().register("", new Command("dwp"));
-    }
-
-    @Override
-    public void onDisable() {
-        saveAllConfig();
-        configCache.clear();
     }
 }

@@ -83,12 +83,22 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityDamageEvent(EntityDamageEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Player", "NoFallDamage");
-        if (bool == null) {
+        Entity entity = event.getEntity();
+        Boolean antiVoid = LevelEventPlusMain.getLevelBooleanInit(entity.getLevel().getName(), "World", "AntiVoid");
+        if (antiVoid != null) {
+            if (antiVoid) {
+                if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                    entity.teleport(entity.getLevel().getSpawnLocation().getLocation());
+                    event.setCancelled(true);
+                }
+            }
+        }
+        Boolean noFallDamage = LevelEventPlusMain.getLevelBooleanInit(entity.getLevel().getName(), "Player", "NoFallDamage");
+        if (noFallDamage == null) {
             return;
         }
         if (event.getEntity() instanceof Player && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-            event.setCancelled(bool);
+            event.setCancelled(noFallDamage);
         }
     }
 

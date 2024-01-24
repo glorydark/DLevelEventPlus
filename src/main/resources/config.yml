@@ -1,4 +1,3 @@
 language: chs
-# Experimental: Force anti-fly
 experimental: false
 auto_update_files: false

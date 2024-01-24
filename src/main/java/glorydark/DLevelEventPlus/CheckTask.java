@@ -17,7 +17,19 @@ public class CheckTask extends Task {
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
             List<String> clearItems = LevelEventPlusMain.getLevelStringListInit(level.getName(), "Player", "ClearItems");
+            Boolean movable = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "World", "Move");
             for (Player player : level.getPlayers().values()) {
+                Boolean antiVoid = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "World", "AntiVoid");
+                if (antiVoid != null) {
+                    if (antiVoid) {
+                        Object voidHeight = LevelEventPlusMain.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight");
+                        if (voidHeight != null) {
+                            if (player.getFloorY() <= Integer.parseInt(voidHeight.toString())) {
+                                player.teleport(player.getLevel().getSpawnLocation().getLocation());
+                            }
+                        }
+                    }
+                }
                 if (ConfigUtil.isAdmin(player)) {
                     return;
                 }
@@ -28,6 +40,13 @@ public class CheckTask extends Task {
                     Item check = entry.getValue();
                     if (clearItems.stream().anyMatch(s -> ItemUtils.isEqual(s, check))) {
                         player.getInventory().remove(check);
+                    }
+                }
+                if (movable != null) {
+                    // If they are in contrast. Immobile -> movable
+                    // This aims at reducing packet sending
+                    if (player.isImmobile() == movable) {
+                        player.setImmobile(movable);
                     }
                 }
             }
