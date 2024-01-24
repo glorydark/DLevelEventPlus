@@ -31,9 +31,15 @@ public class CheckTask extends Task {
                     }
                 }
                 if (ConfigUtil.isAdmin(player)) {
+                    if (player.isImmobile()) {
+                        player.setImmobile(false);
+                    }
                     return;
                 }
                 if (ConfigUtil.isOperator(player, player.getLevel())) {
+                    if (player.isImmobile()) {
+                        player.setImmobile(false);
+                    }
                     return;
                 }
                 for (Map.Entry<Integer, Item> entry : player.getInventory().getContents().entrySet()) {
