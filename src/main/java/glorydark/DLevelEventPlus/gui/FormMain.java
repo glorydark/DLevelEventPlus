@@ -142,7 +142,8 @@ public class FormMain {
                 Object object = ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName()).toString()));
+                Object object = ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
+                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }
         showFormWindow(player, formWindowCustom, type);
@@ -157,7 +158,8 @@ public class FormMain {
                 Object object = LevelEventPlusMain.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), LevelEventPlusMain.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName()).toString()));
+                Object object = LevelEventPlusMain.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }
         showFormWindow(player, formWindowCustom, FormType.Edit_Process);

@@ -250,58 +250,6 @@ public class PlayerEventListener implements Listener {
     }
 
     @EventHandler
-    public void PlayerMoveEvent(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (ConfigUtil.isAdmin(player)) {
-            return;
-        }
-        if (ConfigUtil.isOperator(player, player.getLevel())) {
-            return;
-        }
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Move");
-        if (bool != null) {
-            if (!bool) {
-                event.setCancelled(true);
-            }
-        }
-
-        Boolean bool1 = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "World", "AntiVoid");
-        if (bool1 != null) {
-            if (bool1) {
-                Object o = LevelEventPlusMain.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight");
-                if (o != null) {
-                    int voidHeight = Integer.parseInt(LevelEventPlusMain.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight").toString());
-                    if (event.getTo().getFloorY() <= voidHeight) {
-                        event.setTo(player.getLevel().getSpawnLocation().getLocation());
-                    }
-                }
-            }
-        }
-
-        if (LevelEventPlusMain.experimental) {
-            Boolean bool2 = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Fly");
-            if (bool2 == null) {
-                return;
-            }
-
-            if (!bool2) {
-                Location location = player.getLocation();
-                boolean isFlying = true;
-                for (int i = 1; i <= 4; i++) {
-                    Block block = player.getLevel().getBlock(location.add(0, -i, 0));
-                    if (!(block instanceof BlockAir)) {
-                        isFlying = false;
-                    }
-                }
-                if (isFlying) {
-                    event.getPlayer().setMotion(new Vector3(0, -1, 0));
-                }
-            }
-        }
-    }
-
-
-    @EventHandler
     public void PlayerEatFoodEvent(PlayerEatFoodEvent event) {
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getPlayer().getLevel().getName(), "Player", "EatFood");
         if (bool == null) {

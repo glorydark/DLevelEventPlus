@@ -197,7 +197,7 @@ public class ConfigUtil {
                 }
             }
         }
-        return "";
+        return null;
     }
 
     public static Boolean getTemplateBooleanInit(String ConfigName, String key, String subKey) {
