@@ -46,7 +46,7 @@ public class CheckTask extends Task {
                     // If they are in contrast. Immobile -> movable
                     // This aims at reducing packet sending
                     if (player.isImmobile() == movable) {
-                        player.setImmobile(movable);
+                        player.setImmobile(!movable);
                     }
                 }
             }
