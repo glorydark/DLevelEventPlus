@@ -61,7 +61,7 @@
     <build>
 
         <defaultGoal>clean package</defaultGoal>
-        <finalName>${project.name}-MOT-${version}</finalName>
+        <finalName>${project.name}-${version}</finalName>
 
         <plugins>
             <plugin>
