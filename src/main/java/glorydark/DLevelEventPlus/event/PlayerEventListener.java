@@ -67,7 +67,7 @@ public class PlayerEventListener implements Listener {
                 }
             }
 
-            if (block.getId() == Block.CHEST) {
+            if (block.getId() == Block.CHEST || block.getId() == Block.ENDER_CHEST) {
                 Boolean bool = LevelEventPlusMain.getLevelBooleanInit(level.getName(), "Player", "AllowOpenChest");
                 if (bool != null && !bool) {
                     if (LevelEventPlusMain.getLevelStringListInit(level.getName(), "Player", "ChestTrustList") == null) {
