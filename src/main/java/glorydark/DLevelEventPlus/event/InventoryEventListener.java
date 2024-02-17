@@ -18,7 +18,7 @@ public class InventoryEventListener implements Listener {
     @EventHandler
     public void CraftingTableOpenEvent(CraftingTableOpenEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "CraftingTableOpen");
+        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Inventory", "CraftingTableOpen");
         if (bool == null) {
             return;
         }
