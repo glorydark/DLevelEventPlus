@@ -92,7 +92,9 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Block", "SignColorChange", "window_edit_label_block_signColorChange", true);
 
         // MOT dedicated entries
-        entries.addBooleanProtectionEntry("Player", "CraftingTableOpen", "window_edit_label_player_craftingTableOpen", true);
+        entries.addBooleanProtectionEntry("Inventory", "CraftingTableOpen", "window_edit_label_inventory_craftingTableOpen", true);
+        entries.addBooleanProtectionEntry("Inventory", "AnvilOpen", "window_edit_label_inventory_anvilOpen", true);
+
         entries.addBooleanProtectionEntry("Player", "Crawl", "window_edit_label_player_crawl", true);
         entries.addBooleanProtectionEntry("Player", "Emote", "window_edit_label_player_emote", true);
 
@@ -141,19 +143,21 @@ public class ProtectionEntryMain {
             Config config = new Config(file, Config.YAML);
             // add checks for deprecated keys
             for (String category : config.getKeys(false)) {
-                Object mapSection = config.get(category);
-                if (mapSection instanceof ConfigSection) {
-                    for (Map.Entry<String, Object> objectEntry : ((ConfigSection) mapSection).entrySet()) {
-                        String entryName = objectEntry.getKey();
-                        if (!ProtectionEntryMain.hasProtectionEntry(category, entryName) && !supplementListEntry.contains(category + "." + entryName)) {
-                            config.remove(category + "." + entryName);
+                ConfigSection mapSection = config.getSection(category);
+                for (Map.Entry<String, Object> objectEntry : mapSection.entrySet()) {
+                    String entryName = objectEntry.getKey();
+                    if (!ProtectionEntryMain.hasProtectionEntry(category, entryName) && !supplementListEntry.contains(category + "." + entryName)) {
+                        if (category.equals("Player") && entryName.equals("CraftingTableOpen")) { // v1.2.0.9 Update
+                            config.set("Inventory.CraftingTableOpen", objectEntry.getValue());
                         }
+                        config.remove(category + "." + entryName);
                     }
                 }
             }
             // add missing keys
             for (ProtectionRuleEntry protectionRuleEntry : getProtectionRuleEntries()) {
                 String key = protectionRuleEntry.getCategory() + "." + protectionRuleEntry.getEntryName();
+                LevelEventPlusMain.plugin.getLogger().warning(key);
                 if (!config.exists(key)) {
                     config.set(key, protectionRuleEntry.getDefaultValue());
                 }

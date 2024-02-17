@@ -468,24 +468,6 @@ public class PlayerEventListener implements Listener {
     }
 
     @EventHandler
-    public void CraftingTableOpenEvent(CraftingTableOpenEvent event) {
-        Player player = event.getPlayer();
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "CraftingTableOpen");
-        if (bool == null) {
-            return;
-        }
-        if (ConfigUtil.isAdmin(player)) {
-            return;
-        }
-        if (ConfigUtil.isOperator(player, player.getLevel())) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void PlayerAchievementAwardedEvent(PlayerAchievementAwardedEvent event) {
         Player player = event.getPlayer();
         Boolean bool = LevelEventPlusMain.getLevelBooleanInit(player.getLevel().getName(), "Player", "Achievement");
