@@ -28,6 +28,9 @@ public class ProtectionEntryMain {
             "Player.ClearItems");
 
     public static void loadDefaultEntries() {
+        entries.addBooleanProtectionEntry("Inventory", "CraftingTableOpen", "window_edit_label_inventory_craftingTableOpen", true);
+        entries.addBooleanProtectionEntry("Inventory", "AnvilOpen", "window_edit_label_inventory_anvilOpen", true);
+
         entries.addBooleanProtectionEntry("World", "FarmProtect", "window_edit_label_world_farmProtect", true);
         entries.addBooleanProtectionEntry("World", "AllExplodes", "window_edit_label_world_allExplodes", true);
         entries.addBooleanProtectionEntry("World", "TntExplodes", "window_edit_label_world_tntExplodes", true);
@@ -39,6 +42,7 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("World", "TimeFlow", "window_edit_label_world_timeFlow", true);
         entries.addDropdownProtectionEntry("World", "Weather", "window_edit_label_world_weather", List.of("", "clear", "thunder", "rain"), "");
         entries.addBooleanProtectionEntry("World", "LightningStrike", "window_edit_label_world_lightningStrike", true);
+        entries.addDropdownProtectionEntry("World", "ForceGameMode", "window_edit_label_world_forceGameMode", List.of("", "Survival", "Creative", "Adventure", "Spectator"), "");
 
         entries.addBooleanProtectionEntry("Player", "AllowOpenChest", "window_edit_label_player_openChest", true);
         entries.addBooleanProtectionEntry("Player", "CanUseFishingHook", "window_edit_label_player_useFishingHook", true);
@@ -92,9 +96,6 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Block", "SignColorChange", "window_edit_label_block_signColorChange", true);
 
         // MOT dedicated entries
-        entries.addBooleanProtectionEntry("Inventory", "CraftingTableOpen", "window_edit_label_inventory_craftingTableOpen", true);
-        entries.addBooleanProtectionEntry("Inventory", "AnvilOpen", "window_edit_label_inventory_anvilOpen", true);
-
         entries.addBooleanProtectionEntry("Player", "Crawl", "window_edit_label_player_crawl", true);
         entries.addBooleanProtectionEntry("Player", "Emote", "window_edit_label_player_emote", true);
 
@@ -143,6 +144,9 @@ public class ProtectionEntryMain {
             Config config = new Config(file, Config.YAML);
             // add checks for deprecated keys
             for (String category : config.getKeys(false)) {
+                if (category.equals("GameRule")) {
+                    continue;
+                }
                 ConfigSection mapSection = config.getSection(category);
                 for (Map.Entry<String, Object> objectEntry : mapSection.entrySet()) {
                     String entryName = objectEntry.getKey();

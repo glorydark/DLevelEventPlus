@@ -11,12 +11,14 @@ import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.utils.Config;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
+import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
+import glorydark.DLevelEventPlus.api.TemplateAPI;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.protection.rule.BooleanProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.DropdownProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.InputProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.ProtectionRuleEntry;
-import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.api.PermissionAPI;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -98,7 +100,7 @@ public class FormEventListener implements Listener {
                 if (!text.equals("")) {
                     if (!text.equals("返回")) {
                         String worldName = window.getResponse().getClickedButton().getText();
-                        if (LevelEventPlusMain.configCache.containsKey(text)) {
+                        if (LevelSettingsAPI.configCache.containsKey(text)) {
                             FormMain.showEditMenuV2(p, worldName);
                         } else {
                             FormMain.showSettingChooseTemplateMenu(p, FormType.Template_ChooseTemplateForNewConfig);
@@ -158,24 +160,24 @@ public class FormEventListener implements Listener {
                     LevelEventPlusMain.plugin.getLogger().warning("Error: Can not find " + p.getName() + "'s selected world.");
                     return;
                 }
-                if (!LevelEventPlusMain.configCache.containsKey(levelname)) {
-                    LevelEventPlusMain.configCache.put(levelname, new LinkedHashMap<>());
+                if (!LevelSettingsAPI.configCache.containsKey(levelname)) {
+                    LevelSettingsAPI.configCache.put(levelname, new LinkedHashMap<>());
                 }
                 int id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        LevelEventPlusMain.setLevelInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }
@@ -186,7 +188,7 @@ public class FormEventListener implements Listener {
                     id++;
                 }
                 Config config = new Config(LevelEventPlusMain.path + "/worlds/" + levelname + ".yml", Config.YAML);
-                config.setAll(LevelEventPlusMain.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
+                config.setAll(LevelSettingsAPI.configCache.getOrDefault(levelname, new LinkedHashMap<>()));
                 config.save();
                 FormMain.showReturnWindow(p, true, FormType.Return_toMainMenu);
                 break;
@@ -196,18 +198,18 @@ public class FormEventListener implements Listener {
                 id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        ConfigUtil.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }
@@ -218,17 +220,17 @@ public class FormEventListener implements Listener {
                     id++;
                 }
                 config = new Config(LevelEventPlusMain.path + "/templates/" + select + ".yml", Config.YAML);
-                config.setAll(ConfigUtil.templateCache.getOrDefault(select, new LinkedHashMap<>()));
+                config.setAll(TemplateAPI.templateCache.getOrDefault(select, new LinkedHashMap<>()));
                 config.save();
                 FormMain.showReturnWindow(p, true, FormType.Return_toMainMenu);
                 break;
             case Template_Add:
                 String text = responses.getInputResponse(0);
                 if (!text.replace(" ", "").equals("")) {
-                    if (!ConfigUtil.templateCache.containsKey(text)) {
+                    if (!TemplateAPI.templateCache.containsKey(text)) {
                         File file = new File(LevelEventPlusMain.path + "/templates/" + text + ".yml");
                         ProtectionEntryMain.createFile(file);
-                        ConfigUtil.templateCache.put(text, (LinkedHashMap<String, Object>) new Config(file, Config.YAML).getAll());
+                        TemplateAPI.templateCache.put(text, (LinkedHashMap<String, Object>) new Config(file, Config.YAML).getAll());
                         FormMain.showReturnWindow(p, true, FormType.Return_toMainMenu);
                     } else {
                         FormMain.showReturnWindow(p, false, FormType.Return_toMainMenu);
@@ -240,16 +242,23 @@ public class FormEventListener implements Listener {
                 select = responses.getDropdownResponse(0).getElementContent();
                 String player = responses.getInputResponse(1);
                 String world = responses.getInputResponse(2);
-                boolean b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
+                boolean isValidForOperatorOrWhitelist = !player.isEmpty() && !player.trim().equals("") && world != null && !world.trim().equals("");
                 switch (select) {
                     case "管理员":
-                        if (player != null && !player.replace(" ", "").equals("")) {
+                        if (!player.trim().equals("")) {
+                            PermissionAPI.adminList(p, PermissionAPI.OperatePermissionType.ADD, player);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.operatorList(p, PermissionAPI.OperatePermissionType.ADD, player, p.getLevel().getName());
+                            FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
+                        }
+                        break;
                     case "白名单":
-                        if (b) {
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.whiteList(p, PermissionAPI.OperatePermissionType.ADD, player, p.getLevel().getName());
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
@@ -260,23 +269,23 @@ public class FormEventListener implements Listener {
                 select = responses.getDropdownResponse(0).getElementContent();
                 player = responses.getInputResponse(1);
                 world = responses.getInputResponse(2);
-                b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
+                isValidForOperatorOrWhitelist = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
                 switch (select) {
                     case "管理员":
                         if (player != null && !player.replace(" ", "").equals("")) {
-                            ConfigUtil.adminList(p, 1, player);
+                            PermissionAPI.adminList(p, PermissionAPI.OperatePermissionType.REMOVE, player);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
-                        if (b) {
-                            ConfigUtil.operatorList(p, 1, player, world);
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.operatorList(p, PermissionAPI.OperatePermissionType.REMOVE, player, world);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "白名单":
-                        if (b) {
-                            ConfigUtil.whiteList(p, 1, player, world);
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.whiteList(p, PermissionAPI.OperatePermissionType.REMOVE, player, world);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
@@ -292,14 +301,14 @@ public class FormEventListener implements Listener {
         switch (formType) {
             case Return_toMainMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
-                    if (ConfigUtil.isAdmin(p)) {
+                    if (PermissionAPI.isAdmin(p)) {
                         FormMain.showMainMenu(p);
                     }
                 }
                 break;
             case Return_toPowerMenu:
                 if (window.getResponse().getClickedButtonId() == 0) {
-                    if (ConfigUtil.isAdmin(p)) {
+                    if (PermissionAPI.isAdmin(p)) {
                         FormMain.showPowerMainMenu(p);
                     }
                 }

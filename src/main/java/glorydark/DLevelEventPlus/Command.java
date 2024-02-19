@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import glorydark.DLevelEventPlus.gui.FormMain;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
-import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.api.PermissionAPI;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public class Command extends cn.nukkit.command.Command {
 
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
-        if (!(sender.isPlayer()) || (sender.isPlayer() && (ConfigUtil.isAdmin((Player) sender) || ConfigUtil.isOperator((Player) sender, ((Player) sender).getLevel())))) {
+        if (!(sender.isPlayer()) || (sender.isPlayer() && (PermissionAPI.isAdmin((Player) sender) || PermissionAPI.isOperator((Player) sender, ((Player) sender).getLevel())))) {
             switch (args.length) {
                 case 0:
                     if (sender.isPlayer()) {
@@ -26,7 +26,7 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     return true;
                 case 1:
-                    if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
+                    if (sender.isPlayer() && !PermissionAPI.isAdmin((Player) sender)) {
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
@@ -45,7 +45,7 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     break;
                 case 2:
-                    if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
+                    if (sender.isPlayer() && !PermissionAPI.isAdmin((Player) sender)) {
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
@@ -67,14 +67,14 @@ public class Command extends cn.nukkit.command.Command {
                         switch (args[1]) {
                             case "add":
                                 if (Server.getInstance().lookupName(args[2]).isPresent()) {
-                                    ConfigUtil.adminList(sender, 0, args[2]);
+                                    PermissionAPI.adminList(sender, PermissionAPI.OperatePermissionType.ADD, args[2]);
                                 } else {
                                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
                                 }
                                 return true;
                             case "del":
                                 if (Server.getInstance().lookupName(args[2]).isPresent()) {
-                                    ConfigUtil.adminList(sender, 1, args[2]);
+                                    PermissionAPI.adminList(sender, PermissionAPI.OperatePermissionType.REMOVE, args[2]);
                                 } else {
                                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
                                 }
@@ -83,7 +83,7 @@ public class Command extends cn.nukkit.command.Command {
                     }
                     break;
                 case 4:
-                    if (sender.isPlayer() && !ConfigUtil.isAdmin((Player) sender)) {
+                    if (sender.isPlayer() && !PermissionAPI.isAdmin((Player) sender)) {
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_noPermission"));
                         return false;
                     }
@@ -92,14 +92,14 @@ public class Command extends cn.nukkit.command.Command {
                             switch (args[1]) {
                                 case "add":
                                     if (Server.getInstance().lookupName(args[2]).isPresent()) {
-                                        ConfigUtil.operatorList(sender, 0, args[2], args[3]);
+                                        PermissionAPI.operatorList(sender, PermissionAPI.OperatePermissionType.ADD, args[2], args[3]);
                                     } else {
                                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
                                     }
                                     return true;
                                 case "del":
                                     if (Server.getInstance().lookupName(args[2]).isPresent()) {
-                                        ConfigUtil.operatorList(sender, 1, args[2], args[3]);
+                                        PermissionAPI.operatorList(sender, PermissionAPI.OperatePermissionType.REMOVE, args[2], args[3]);
                                     } else {
                                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_generic_playerNotFound"));
                                     }
@@ -108,10 +108,10 @@ public class Command extends cn.nukkit.command.Command {
                         case "whitelist":
                             switch (args[1]) {
                                 case "add":
-                                    ConfigUtil.whiteList(sender, 0, args[2], args[3]);
+                                    PermissionAPI.whiteList(sender, PermissionAPI.OperatePermissionType.ADD, args[2], args[3]);
                                     return true;
                                 case "del":
-                                    ConfigUtil.whiteList(sender, 1, args[2], args[3]);
+                                    PermissionAPI.whiteList(sender, PermissionAPI.OperatePermissionType.REMOVE, args[2], args[3]);
                                     return true;
                             }
                             break;
