@@ -29,6 +29,9 @@ public class ProtectionEntryMain {
             "Player.ClearItems");
 
     public static void loadDefaultEntries() {
+        entries.addBooleanProtectionEntry("Inventory", "CraftingTableOpen", "window_edit_label_inventory_craftingTableOpen", true);
+        entries.addBooleanProtectionEntry("Inventory", "AnvilOpen", "window_edit_label_inventory_anvilOpen", true);
+
         entries.addBooleanProtectionEntry("World", "FarmProtect", "window_edit_label_world_farmProtect", true);
         entries.addBooleanProtectionEntry("World", "AllExplodes", "window_edit_label_world_allExplodes", true);
         entries.addBooleanProtectionEntry("World", "TntExplodes", "window_edit_label_world_tntExplodes", true);
