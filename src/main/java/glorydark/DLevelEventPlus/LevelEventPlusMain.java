@@ -67,7 +67,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         this.getServer().getPluginManager().registerEvents(new WorldEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new InventoryEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new FormEventListener(), this);
-        this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckTask(), 20);
+        this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckTask(), config.getInt("refresh_ticks", 20));
         // Register Commands
         this.getServer().getCommandMap().register("", new Command("dwp"));
     }

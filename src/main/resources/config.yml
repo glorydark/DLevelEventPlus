@@ -1,3 +1,4 @@
 language: chs
 experimental: false
 auto_update_files: false
+refresh_ticks: 20

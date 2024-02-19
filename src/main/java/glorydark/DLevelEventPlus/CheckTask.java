@@ -66,7 +66,7 @@ public class CheckTask extends Task {
                         player.setImmobile(!movable);
                     }
                 }
-                if (forceGamemode != -1 && player.getGamemode() != forceGamemode) {
+                if (forceGamemode != -1) {
                     player.setGamemode(forceGamemode);
                 }
             }
