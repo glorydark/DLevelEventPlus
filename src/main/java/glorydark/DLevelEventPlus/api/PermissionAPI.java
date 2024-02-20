@@ -23,15 +23,6 @@ public class PermissionAPI {
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
                     if (player != null) {
-                        Level level = player.getLevel();
-                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
-                        int forceGamemode = -1;
-                        if (forceGameModeObj != null) {
-                            forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
-                        }
-                        if (player.getGamemode() == forceGamemode) {
-                            player.setGamemode(Server.getInstance().getDefaultGamemode());
-                        }
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success_receiver", playerName, levelname));
                     }
                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success", playerName, levelname));
@@ -111,6 +102,15 @@ public class PermissionAPI {
                     worldcfg.set(levelname, arrayList);
                     worldcfg.save();
                     if (player != null) {
+                        Level level = player.getLevel();
+                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                        int forceGamemode = -1;
+                        if (forceGameModeObj != null) {
+                            forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
+                        }
+                        if (player.getGamemode() == forceGamemode) {
+                            player.setGamemode(Server.getInstance().getDefaultGamemode());
+                        }
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success_receiver", playerName, levelname));
                     }
                     sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_add_success", playerName, levelname));

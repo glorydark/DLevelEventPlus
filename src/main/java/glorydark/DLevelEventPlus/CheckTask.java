@@ -38,14 +38,12 @@ public class CheckTask extends Task {
                     }
                 }
                 if (PermissionAPI.isAdmin(player)) {
-                    player.setGamemode(Server.getInstance().getDefaultGamemode());
                     if (player.isImmobile()) {
                         player.setImmobile(false);
                     }
                     return;
                 }
                 if (PermissionAPI.isOperator(player, player.getLevel())) {
-                    player.setGamemode(Server.getInstance().getDefaultGamemode());
                     if (player.isImmobile()) {
                         player.setImmobile(false);
                     }
@@ -68,9 +66,7 @@ public class CheckTask extends Task {
                         player.setImmobile(!movable);
                     }
                 }
-                if (forceGamemode != -1) {
-                    player.setGamemode(forceGamemode);
-                }
+                player.setGamemode(forceGamemode);
             }
         }
     }
