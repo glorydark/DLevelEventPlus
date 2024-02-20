@@ -27,7 +27,7 @@ public class TemplateAPI {
         }
     }
 
-    public static <T> T getTemplateSetting(String configName, String key, String subKey, T defaultValue) {
+    public static <T> T getTemplateObjectSetting(String configName, String key, String subKey, T defaultValue) {
         if (templateCache.containsKey(configName)) {
             Map<String, Object> templates = templateCache.get(configName);
             if (templates != null && templates.containsKey(key)) {
@@ -41,17 +41,17 @@ public class TemplateAPI {
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
-    public static Object getTemplateSetting(String configName, String key, String subKey) {
-        return getTemplateSetting(configName, key, subKey, "");
+    public static Object getTemplateObjectSetting(String configName, String key, String subKey) {
+        return getTemplateObjectSetting(configName, key, subKey, "");
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static Boolean getTemplateBooleanSetting(String configName, String key, String subKey) {
-        return getTemplateSetting(configName, key, subKey, false);
+        return getTemplateObjectSetting(configName, key, subKey, false);
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static List<String> getTemplateListSetting(String configName, String key, String subKey) {
-        return getTemplateSetting(configName, key, subKey, new ArrayList<>());
+        return getTemplateObjectSetting(configName, key, subKey, new ArrayList<>());
     }
 }

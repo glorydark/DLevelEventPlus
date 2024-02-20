@@ -141,10 +141,10 @@ public class FormMain {
             if (entry instanceof BooleanProtectionRuleEntry) {
                 formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), TemplateAPI.getTemplateBooleanSetting(templateName, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateSetting(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateSetting(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }
