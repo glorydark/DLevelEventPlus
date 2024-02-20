@@ -166,18 +166,18 @@ public class FormEventListener implements Listener {
                 int id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        LevelSettingsAPI.setLevelSettingInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        LevelSettingsAPI.setLevelSettingInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                LevelSettingsAPI.setLevelSettingInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        LevelSettingsAPI.setLevelSettingInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }
@@ -198,18 +198,18 @@ public class FormEventListener implements Listener {
                 id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }
@@ -242,16 +242,23 @@ public class FormEventListener implements Listener {
                 select = responses.getDropdownResponse(0).getElementContent();
                 String player = responses.getInputResponse(1);
                 String world = responses.getInputResponse(2);
-                boolean b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
+                boolean isValidForOperatorOrWhitelist = !player.isEmpty() && !player.trim().equals("") && world != null && !world.trim().equals("");
                 switch (select) {
                     case "管理员":
-                        if (player != null && !player.replace(" ", "").equals("")) {
+                        if (!player.trim().equals("")) {
+                            PermissionAPI.adminList(p, PermissionAPI.OperatePermissionType.ADD, player);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.operatorList(p, PermissionAPI.OperatePermissionType.ADD, player, p.getLevel().getName());
+                            FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
+                        }
+                        break;
                     case "白名单":
-                        if (b) {
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.whiteList(p, PermissionAPI.OperatePermissionType.ADD, player, p.getLevel().getName());
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
@@ -262,23 +269,23 @@ public class FormEventListener implements Listener {
                 select = responses.getDropdownResponse(0).getElementContent();
                 player = responses.getInputResponse(1);
                 world = responses.getInputResponse(2);
-                b = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
+                isValidForOperatorOrWhitelist = player != null && !player.replace(" ", "").equals("") && world != null && !world.replace(" ", "").equals("");
                 switch (select) {
                     case "管理员":
                         if (player != null && !player.replace(" ", "").equals("")) {
-                            PermissionAPI.adminList(p, 1, player);
+                            PermissionAPI.adminList(p, PermissionAPI.OperatePermissionType.REMOVE, player);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "操作员":
-                        if (b) {
-                            PermissionAPI.operatorList(p, 1, player, world);
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.operatorList(p, PermissionAPI.OperatePermissionType.REMOVE, player, world);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;
                     case "白名单":
-                        if (b) {
-                            PermissionAPI.whiteList(p, 1, player, world);
+                        if (isValidForOperatorOrWhitelist) {
+                            PermissionAPI.whiteList(p, PermissionAPI.OperatePermissionType.REMOVE, player, world);
                             FormMain.showReturnWindow(p, true, FormType.Return_toPowerMenu);
                         }
                         break;

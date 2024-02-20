@@ -26,7 +26,7 @@ public class InventoryEventListener implements Listener {
         Boolean bool;
         switch (inventory.getType()) {
             case WORKBENCH:
-                bool = LevelSettingsAPI.getLevelBooleanInit(player.getLevel().getName(), "Inventory", "CraftingTable");
+                bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "CraftingTable");
                 if (bool == null) {
                     return;
                 }
@@ -35,7 +35,7 @@ public class InventoryEventListener implements Listener {
                 }
                 break;
             case ANVIL:
-                bool = LevelSettingsAPI.getLevelBooleanInit(player.getLevel().getName(), "Inventory", "AnvilOpen");
+                bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "AnvilOpen");
                 if (bool == null) {
                     return;
                 }

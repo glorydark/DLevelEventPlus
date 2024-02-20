@@ -19,7 +19,7 @@ public class EntityEventListener implements Listener {
         //实体导致耕地踩踏
         Entity entity = event.getEntity();
         if (event.getBlock().getId() == Block.FARMLAND && !(entity instanceof Player)) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "FarmProtect");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "FarmProtect");
             if (bool != null && bool) {
                 event.setCancelled(true);
             }
@@ -27,10 +27,10 @@ public class EntityEventListener implements Listener {
 
 
         if (event.getBlock().getId() == Block.ITEM_FRAME_BLOCK && !(entity instanceof Player)) {
-            if (LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllowInteractFrameBlock") == null) {
+            if (LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllowInteractFrameBlock") == null) {
                 return;
             }
-            Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Player", "AllowInteractFrameBlock");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Player", "AllowInteractFrameBlock");
             if (bool != null && bool) {
                 event.setCancelled(true);
             }
@@ -41,9 +41,9 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityExplodeEvent(EntityExplodeEvent event) {
         Entity entity = event.getEntity();
-        Boolean bool1 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "TntExplodes");
-        Boolean bool2 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
-        Boolean bool3 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "Explosion");
+        Boolean bool1 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "TntExplodes");
+        Boolean bool2 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllExplodes");
+        Boolean bool3 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "Explosion");
         if (bool1 == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityExplosionPrimeEvent(EntityExplosionPrimeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllExplodes");
         if (bool == null) {
             return;
         }
@@ -84,7 +84,7 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityDamageEvent(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        Boolean antiVoid = LevelSettingsAPI.getLevelBooleanInit(entity.getLevel().getName(), "World", "AntiVoid");
+        Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "World", "AntiVoid");
         if (antiVoid != null) {
             if (antiVoid) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
@@ -93,7 +93,7 @@ public class EntityEventListener implements Listener {
                 }
             }
         }
-        Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanInit(entity.getLevel().getName(), "Player", "NoFallDamage");
+        Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "Player", "NoFallDamage");
         if (noFallDamage == null) {
             return;
         }
@@ -104,7 +104,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "PVP");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "PVP");
         if (bool == null) {
             return;
         }
@@ -125,7 +125,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityPortalEnterEvent(EntityPortalEnterEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "PortalEnter");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "PortalEnter");
         if (bool == null) {
             return;
         }
@@ -150,7 +150,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityVehicleEnterEvent(EntityVehicleEnterEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "VehicleEnter");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "VehicleEnter");
         if (bool == null) {
             return;
         }
@@ -191,7 +191,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityBlockChangeEvent(EntityBlockChangeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
         if (bool == null) {
             return;
         }
@@ -202,7 +202,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityCombustByBlockEvent(EntityCombustByBlockEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
         if (bool == null) {
             return;
         }
@@ -213,7 +213,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityCombustByEntityEvent(EntityCombustByEntityEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
         if (bool == null) {
             return;
         }
