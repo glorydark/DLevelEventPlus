@@ -32,7 +32,7 @@ public class LevelSettingsAPI {
         configCache.put(levelName, map);
     }
 
-    public static <T> T getLevelObjectSetting(String levelName, String key, String subKey, T defaultValue) {
+    public static <T> T getLevelSetting(String levelName, String key, String subKey, T defaultValue) {
         if (configCache.containsKey(levelName)) {
             Map<String, Object> map = configCache.get(levelName);
             Map<String, Object> keyMap = (Map<String, Object>) map.getOrDefault(key, new LinkedHashMap<>());
@@ -45,21 +45,16 @@ public class LevelSettingsAPI {
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static Boolean getLevelBooleanSetting(String levelName, String key, String subKey) {
-        return getLevelObjectSetting(levelName, key, subKey, null);
-    }
-
-    @InternalUse(description = "to avoid some problems caused by forcibly conversion")
-    public static Boolean getLevelSettingBooleanSetting(String levelName, String key, String subKey) {
-        return getLevelObjectSetting(levelName, key, subKey, false);
+        return getLevelSetting(levelName, key, subKey, false);
     }
     
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static Object getLevelObjectSetting(String levelName, String key, String subKey) {
-        return getLevelObjectSetting(levelName, key, subKey, null);
+        return getLevelSetting(levelName, key, subKey, null);
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static List<String> getLevelStringListSetting(String levelName, String key, String subKey) {
-        return getLevelObjectSetting(levelName, key, subKey, new ArrayList<>());
+        return getLevelSetting(levelName, key, subKey, new ArrayList<>());
     }
 }

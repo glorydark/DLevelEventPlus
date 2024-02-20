@@ -155,7 +155,7 @@ public class FormMain {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_chooseWorldTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelSettingBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
                 Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
