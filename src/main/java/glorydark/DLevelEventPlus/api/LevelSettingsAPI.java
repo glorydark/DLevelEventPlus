@@ -45,7 +45,7 @@ public class LevelSettingsAPI {
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
     public static Boolean getLevelBooleanSetting(String levelName, String key, String subKey) {
-        return getLevelSetting(levelName, key, subKey, false);
+        return getLevelSetting(levelName, key, subKey, null);
     }
     
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
