@@ -67,7 +67,14 @@ public class CheckTask extends Task {
                     }
                 }
                 if (forceGamemode != -1) {
-                    player.setGamemode(forceGamemode);
+                    if (player.getGamemode() != forceGamemode) {
+                        player.setGamemode(forceGamemode);
+                    }
+                } else {
+                    int defaultGamemode = Server.getInstance().getDefaultGamemode();
+                    if (player.getGamemode() != defaultGamemode) {
+                        player.setGamemode(defaultGamemode);
+                    }
                 }
             }
         }
