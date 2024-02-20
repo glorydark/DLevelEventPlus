@@ -70,8 +70,6 @@ public class CheckTask extends Task {
                 }
                 if (forceGamemode != -1) {
                     player.setGamemode(forceGamemode);
-                } else {
-                    player.setGamemode(Server.getInstance().getDefaultGamemode());
                 }
             }
         }
