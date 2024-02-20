@@ -18,7 +18,7 @@ public class InventoryEventListener implements Listener {
     @EventHandler
     public void CraftingTableOpenEvent(CraftingTableOpenEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(player.getLevel().getName(), "Inventory", "CraftingTableOpen");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "CraftingTableOpen");
         if (bool == null) {
             return;
         }
@@ -44,7 +44,7 @@ public class InventoryEventListener implements Listener {
         }
         Inventory inventory = event.getInventory();
         if (inventory instanceof AnvilInventory) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanInit(player.getLevel().getName(), "Inventory", "AnvilOpen");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "AnvilOpen");
             if (bool == null) {
                 return;
             }

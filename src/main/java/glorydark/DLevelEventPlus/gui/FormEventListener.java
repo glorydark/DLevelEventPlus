@@ -166,18 +166,18 @@ public class FormEventListener implements Listener {
                 int id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        LevelSettingsAPI.setLevelSettingsInit(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }
@@ -198,18 +198,18 @@ public class FormEventListener implements Listener {
                 id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
                     if (entry instanceof BooleanProtectionRuleEntry) {
-                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
+                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
-                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
+                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getDropdownResponse(id).getElementContent());
                     } else if (entry instanceof InputProtectionRuleEntry) {
                         switch (((InputProtectionRuleEntry) entry).getSaveType()) {
                             case STRING:
-                                TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
+                                TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getInputResponse(id));
                                 break;
                             case INTEGER:
                                 if (!responses.getInputResponse(id).isEmpty()) {
                                     try {
-                                        TemplateAPI.setTemplateInit(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
+                                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), Integer.parseInt(responses.getInputResponse(id)));
                                     } catch (NumberFormatException e) {
                                         p.sendMessage("Wrong Number Format in the entry " + entry.getEntryName() + "in the category " + entry.getCategory());
                                     }

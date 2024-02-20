@@ -139,12 +139,12 @@ public class FormMain {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_templateTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), TemplateAPI.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), TemplateAPI.getTemplateBooleanSetting(templateName, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }
@@ -155,12 +155,12 @@ public class FormMain {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_chooseWorldTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelSettingBooleanInit(level, entry.getCategory(), entry.getEntryName())));
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = LevelSettingsAPI.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = LevelSettingsAPI.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }

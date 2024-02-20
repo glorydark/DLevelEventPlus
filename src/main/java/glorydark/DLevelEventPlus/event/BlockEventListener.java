@@ -19,7 +19,7 @@ public class BlockEventListener implements Listener {
     //方块放置
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "AllowPlaceBlock");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "AllowPlaceBlock");
         if (bool == null) {
             return;
         }
@@ -34,8 +34,8 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         } else {
             Block block = event.getBlock();
-            List<String> antiPlaceBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListInit(block.getLevel().getName(), "Block", "AntiPlaceBlocks"));
-            List<String> canPlaceBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListInit(block.getLevel().getName(), "Block", "CanPlaceBlocks"));
+            List<String> antiPlaceBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListSetting(block.getLevel().getName(), "Block", "AntiPlaceBlocks"));
+            List<String> canPlaceBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListSetting(block.getLevel().getName(), "Block", "CanPlaceBlocks"));
             if (antiPlaceBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canPlaceBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
                 event.setCancelled(true);
             }
@@ -45,7 +45,7 @@ public class BlockEventListener implements Listener {
     //方块破坏
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "AllowBreakBlock");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "AllowBreakBlock");
         if (bool == null) {
             return;
         }
@@ -59,8 +59,8 @@ public class BlockEventListener implements Listener {
             event.setCancelled(true);
         } else {
             Block block = event.getBlock();
-            List<String> antiBreakBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListInit(block.getLevel().getName(), "Block", "AntiBreakBlocks"));
-            List<String> canBreakBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListInit(block.getLevel().getName(), "Block", "CanBreakBlocks"));
+            List<String> antiBreakBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListSetting(block.getLevel().getName(), "Block", "AntiBreakBlocks"));
+            List<String> canBreakBlockStrings = new ArrayList<>(LevelSettingsAPI.getLevelStringListSetting(block.getLevel().getName(), "Block", "CanBreakBlocks"));
             if (antiBreakBlockStrings.stream().anyMatch(s -> ItemUtils.isEqual(s, block)) && canBreakBlockStrings.stream().noneMatch(s -> ItemUtils.isEqual(s, block))) {
                 event.setCancelled(true);
             } else {
@@ -75,24 +75,24 @@ public class BlockEventListener implements Listener {
     }
 
     public boolean isDropItem(Level level, Block block) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(level.getName(), "Block", "DropItem");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Block", "DropItem");
         if (bool != null && !bool) {
-            return LevelSettingsAPI.getLevelStringListInit(level.getName(), "Block", "DropItemBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block));
+            return LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Block", "DropItemBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block));
         }
         return true;
     }
 
     public boolean isDropExp(Level level, Block block) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(level.getName(), "Block", "DropExp");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Block", "DropExp");
         if (bool != null && !bool) {
-            return LevelSettingsAPI.getLevelStringListInit(level.getName(), "Block", "DropExpBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block));
+            return LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Block", "DropExpBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block));
         }
         return true;
     }
 
     @EventHandler
     public void BlockBurnEvent(BlockBurnEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Burn");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Burn");
         if (bool == null) {
             return;
         }
@@ -103,7 +103,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockIgniteEvent(BlockIgniteEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Ignite");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Ignite");
         if (bool == null) {
             return;
         }
@@ -114,7 +114,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockFallEvent(BlockFallEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Fall");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Fall");
         if (bool == null) {
             return;
         }
@@ -125,7 +125,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockGrowEvent(BlockGrowEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Grow");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Grow");
         if (bool == null) {
             return;
         }
@@ -136,7 +136,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockSpreadEvent(BlockSpreadEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Spread");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Spread");
         if (bool == null) {
             return;
         }
@@ -147,7 +147,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockFormEvent(BlockFormEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Form");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Form");
         if (bool == null) {
             return;
         }
@@ -158,7 +158,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void LeavesDecayEvent(LeavesDecayEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LeavesDecay");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "LeavesDecay");
         if (bool == null) {
             return;
         }
@@ -169,7 +169,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void LiquidFlowEvent(LiquidFlowEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LiquidFlow");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "LiquidFlow");
         if (bool == null) {
             return;
         }
@@ -181,7 +181,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void RedstoneUpdateEvent(BlockUpdateEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BlockRedstone");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "BlockRedstone");
         if (bool == null) {
             return;
         }
@@ -194,7 +194,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void ItemFrameDropItemEvent(ItemFrameUseEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "ItemFrameDropItem");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "ItemFrameDropItem");
         if (bool == null) {
             return;
         }
@@ -212,7 +212,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void SignChangeEvent(SignChangeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "SignChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "SignChange");
         if (bool == null) {
             return;
         }
@@ -230,7 +230,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockUpdateEvent(BlockUpdateEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Update");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Update");
         if (bool == null) {
             return;
         }
@@ -241,7 +241,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockFadeEvent(BlockFadeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "Fade");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "Fade");
         if (bool == null) {
             return;
         }
@@ -252,7 +252,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockPistonChangeEvent(BlockPistonEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "PistonChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "PistonChange");
         if (bool == null) {
             return;
         }
@@ -263,7 +263,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockFromToEvent(BlockFromToEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "FromToEvent");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "FromToEvent");
         if (bool == null) {
             return;
         }
@@ -283,7 +283,7 @@ public class BlockEventListener implements Listener {
                 return;
             }
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BellRing");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "BellRing");
         if (bool == null) {
             return;
         }
@@ -294,8 +294,8 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void BlockExplosionPrimeEvent(BlockExplosionPrimeEvent event) {
-        Boolean allExplode = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "World", "AllExplodes");
-        Boolean blockExplode = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "BlockExplode");
+        Boolean allExplode = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "World", "AllExplodes");
+        Boolean blockExplode = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "BlockExplode");
         if (allExplode != null && allExplode) {
             event.setCancelled(true);
             return;
@@ -317,7 +317,7 @@ public class BlockEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternDropBook");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "LecternDropBook");
         if (bool == null) {
             return;
         }
@@ -335,7 +335,7 @@ public class BlockEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "LecternPageChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "LecternPageChange");
         if (bool == null) {
             return;
         }
@@ -353,7 +353,7 @@ public class BlockEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "SignColorChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "SignColorChange");
         if (bool == null) {
             return;
         }
@@ -364,7 +364,7 @@ public class BlockEventListener implements Listener {
 
     @EventHandler
     public void WaterFrostEvent(WaterFrostEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Block", "WaterFrost");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Block", "WaterFrost");
         if (bool == null) {
             return;
         }

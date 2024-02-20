@@ -17,7 +17,7 @@ public class WorldEventListener implements Listener {
     public void WeatherChangeEvent(WeatherChangeEvent event) {
         Level level = event.getLevel();
         String levelName = level.getName();
-        Object weather = LevelSettingsAPI.getLevelSettingInit(levelName, "World", "Weather");
+        Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, "World", "Weather");
         if (weather != null && !String.valueOf(weather).equals("")) {
             event.setCancelled(true);
         }
@@ -25,7 +25,7 @@ public class WorldEventListener implements Listener {
 
     @EventHandler
     public void LightningStrikeEvent(LightningStrikeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getLevel().getName(), "World", "LightningStrike");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getLevel().getName(), "World", "LightningStrike");
         if (bool == null) {
             return;
         }

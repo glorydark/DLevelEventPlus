@@ -11,7 +11,7 @@ import java.util.*;
 public class TemplateAPI {
     public static HashMap<String, LinkedHashMap<String, Object>> templateCache = new HashMap<>();
 
-    public static void setTemplateInit(String configName, String key, String subKey, Object value) {
+    public static void setTemplateSetting(String configName, String key, String subKey, Object value) {
         if (templateCache.containsKey(configName)) {
             LinkedHashMap<String, Object> keyMap = templateCache.get(configName);
             if (keyMap != null && keyMap.containsKey(key)) {
@@ -27,7 +27,7 @@ public class TemplateAPI {
         }
     }
 
-    public static <T> T getTemplateInit(String configName, String key, String subKey, T defaultValue) {
+    public static <T> T getTemplateSetting(String configName, String key, String subKey, T defaultValue) {
         if (templateCache.containsKey(configName)) {
             Map<String, Object> templates = templateCache.get(configName);
             if (templates != null && templates.containsKey(key)) {
@@ -41,17 +41,17 @@ public class TemplateAPI {
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
-    public static Object getTemplateInit(String configName, String key, String subKey) {
-        return getTemplateInit(configName, key, subKey, "");
+    public static Object getTemplateObjectSetting(String configName, String key, String subKey) {
+        return getTemplateSetting(configName, key, subKey, "");
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
-    public static Boolean getTemplateBooleanInit(String configName, String key, String subKey) {
-        return getTemplateInit(configName, key, subKey, false);
+    public static Boolean getTemplateBooleanSetting(String configName, String key, String subKey) {
+        return getTemplateSetting(configName, key, subKey, false);
     }
 
     @InternalUse(description = "to avoid some problems caused by forcibly conversion")
-    public static List<String> getTemplateListInit(String configName, String key, String subKey) {
-        return getTemplateInit(configName, key, subKey, new ArrayList<>());
+    public static List<String> getTemplateListSetting(String configName, String key, String subKey) {
+        return getTemplateSetting(configName, key, subKey, new ArrayList<>());
     }
 }

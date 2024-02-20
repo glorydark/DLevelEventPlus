@@ -17,19 +17,19 @@ public class CheckTask extends Task {
     @Override
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
-            List<String> clearItems = LevelSettingsAPI.getLevelStringListInit(level.getName(), "Player", "ClearItems");
-            Boolean movable = LevelSettingsAPI.getLevelBooleanInit(level.getName(), "World", "Move");
-            Object forceGameModeObj = LevelSettingsAPI.getLevelSettingInit(level.getName(), "World", "ForceGameMode");
+            List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "ClearItems");
+            Boolean movable = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "World", "Move");
+            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
             int forceGamemode = -1;
             if (forceGameModeObj != null) {
                 forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
             }
             for (Player player : level.getPlayers().values()) {
                 // anti void
-                Boolean antiVoid = LevelSettingsAPI.getLevelBooleanInit(player.getLevel().getName(), "World", "AntiVoid");
+                Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "World", "AntiVoid");
                 if (antiVoid != null) {
                     if (antiVoid) {
-                        Object voidHeight = LevelSettingsAPI.getLevelSettingInit(player.getLevel().getName(), "World", "VoidHeight");
+                        Object voidHeight = LevelSettingsAPI.getLevelObjectSetting(player.getLevel().getName(), "World", "VoidHeight");
                         if (voidHeight != null) {
                             if (player.getFloorY() <= Integer.parseInt(voidHeight.toString())) {
                                 player.teleport(player.getLevel().getSpawnLocation().getLocation());
