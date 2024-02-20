@@ -12,12 +12,14 @@ import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.level.Level;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
+import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
+import glorydark.DLevelEventPlus.api.PermissionAPI;
+import glorydark.DLevelEventPlus.api.TemplateAPI;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.protection.rule.BooleanProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.DropdownProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.InputProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.ProtectionRuleEntry;
-import glorydark.DLevelEventPlus.utils.ConfigUtil;
 
 import java.util.HashMap;
 
@@ -41,7 +43,7 @@ public class FormMain {
 
     //权限设置主页面
     public static void showPowerMainMenu(Player player) {
-        if (ConfigUtil.isAdmin(player)) {
+        if (PermissionAPI.isAdmin(player)) {
             FormWindowSimple window = new FormWindowSimple(LevelEventPlusMain.language.translateString("window_powerMain_title"), "");
             window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_powerMain_button_addPower")));
             window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_powerMain_button_removePower")));
@@ -52,7 +54,7 @@ public class FormMain {
 
     //主页面
     public static void showMainMenu(Player player) {
-        if (ConfigUtil.isAdmin(player)) {
+        if (PermissionAPI.isAdmin(player)) {
             FormWindowSimple window = new FormWindowSimple(LevelEventPlusMain.language.translateString("window_main_title"), LevelEventPlusMain.language.translateString("window_main_content"));
             window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_main_button_manageWorld")));
             window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_main_button_managePower")));
@@ -61,7 +63,7 @@ public class FormMain {
             window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_main_button_manageTemplate")));
             showFormWindow(player, window, FormType.Admin_Main);
         }
-        if (ConfigUtil.isOperator(player, player.getLevel())) {
+        if (PermissionAPI.isOperator(player, player.getLevel())) {
             showEditMenuV2(player, player.getLevel().getName());
         }
     }
@@ -119,7 +121,7 @@ public class FormMain {
     //设置选择模板 -> 两类 ①选择模板创建世界 ②设置模板
     public static void showSettingChooseTemplateMenu(Player player, FormType type) {
         FormWindowSimple window = new FormWindowSimple(LevelEventPlusMain.language.translateString("window_chooseTemplate_button_title"), LevelEventPlusMain.language.translateString("window_chooseTemplate_button_content"));
-        for (String buttonTitle : ConfigUtil.templateCache.keySet()) {
+        for (String buttonTitle : TemplateAPI.templateCache.keySet()) {
             window.addButton(new ElementButton(buttonTitle));
         }
         window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_general_button_returnButton")));
@@ -137,12 +139,12 @@ public class FormMain {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_templateTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), ConfigUtil.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), TemplateAPI.getTemplateBooleanInit(templateName, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = ConfigUtil.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
+                Object object = TemplateAPI.getTemplateInit(templateName, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }
@@ -153,12 +155,12 @@ public class FormMain {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_chooseWorldTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelEventPlusMain.getLevelSettingBooleanInit(level, entry.getCategory(), entry.getEntryName())));
+                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelSettingBooleanInit(level, entry.getCategory(), entry.getEntryName())));
             } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = LevelEventPlusMain.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                Object object = LevelSettingsAPI.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
             } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = LevelEventPlusMain.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
+                Object object = LevelSettingsAPI.getLevelSettingInit(level, entry.getCategory(), entry.getEntryName());
                 formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
             }
         }

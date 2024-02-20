@@ -5,7 +5,7 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.level.Level;
-import glorydark.DLevelEventPlus.LevelEventPlusMain;
+import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
 
 /**
  * @author glorydark
@@ -17,7 +17,7 @@ public class WorldEventListener implements Listener {
     public void WeatherChangeEvent(WeatherChangeEvent event) {
         Level level = event.getLevel();
         String levelName = level.getName();
-        Object weather = LevelEventPlusMain.getLevelSettingInit(levelName, "World", "Weather");
+        Object weather = LevelSettingsAPI.getLevelSettingInit(levelName, "World", "Weather");
         if (weather != null && !String.valueOf(weather).equals("")) {
             event.setCancelled(true);
         }
@@ -25,7 +25,7 @@ public class WorldEventListener implements Listener {
 
     @EventHandler
     public void LightningStrikeEvent(LightningStrikeEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getLevel().getName(), "World", "LightningStrike");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getLevel().getName(), "World", "LightningStrike");
         if (bool == null) {
             return;
         }

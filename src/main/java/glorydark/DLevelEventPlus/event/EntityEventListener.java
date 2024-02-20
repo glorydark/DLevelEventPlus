@@ -9,8 +9,8 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.level.Level;
-import glorydark.DLevelEventPlus.LevelEventPlusMain;
-import glorydark.DLevelEventPlus.utils.ConfigUtil;
+import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
+import glorydark.DLevelEventPlus.api.PermissionAPI;
 
 public class EntityEventListener implements Listener {
     //Entity
@@ -19,7 +19,7 @@ public class EntityEventListener implements Listener {
         //实体导致耕地踩踏
         Entity entity = event.getEntity();
         if (event.getBlock().getId() == Block.FARMLAND && !(entity instanceof Player)) {
-            Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "FarmProtect");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "FarmProtect");
             if (bool != null && bool) {
                 event.setCancelled(true);
             }
@@ -27,10 +27,10 @@ public class EntityEventListener implements Listener {
 
 
         if (event.getBlock().getId() == Block.ITEM_FRAME_BLOCK && !(entity instanceof Player)) {
-            if (LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllowInteractFrameBlock") == null) {
+            if (LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllowInteractFrameBlock") == null) {
                 return;
             }
-            Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Player", "AllowInteractFrameBlock");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getBlock().getLevel().getName(), "Player", "AllowInteractFrameBlock");
             if (bool != null && bool) {
                 event.setCancelled(true);
             }
@@ -41,9 +41,9 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityExplodeEvent(EntityExplodeEvent event) {
         Entity entity = event.getEntity();
-        Boolean bool1 = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "TntExplodes");
-        Boolean bool2 = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
-        Boolean bool3 = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "Explosion");
+        Boolean bool1 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "TntExplodes");
+        Boolean bool2 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
+        Boolean bool3 = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "Explosion");
         if (bool1 == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityExplosionPrimeEvent(EntityExplosionPrimeEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "AllExplodes");
         if (bool == null) {
             return;
         }
@@ -84,7 +84,7 @@ public class EntityEventListener implements Listener {
     @EventHandler
     public void EntityDamageEvent(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        Boolean antiVoid = LevelEventPlusMain.getLevelBooleanInit(entity.getLevel().getName(), "World", "AntiVoid");
+        Boolean antiVoid = LevelSettingsAPI.getLevelBooleanInit(entity.getLevel().getName(), "World", "AntiVoid");
         if (antiVoid != null) {
             if (antiVoid) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
@@ -93,7 +93,7 @@ public class EntityEventListener implements Listener {
                 }
             }
         }
-        Boolean noFallDamage = LevelEventPlusMain.getLevelBooleanInit(entity.getLevel().getName(), "Player", "NoFallDamage");
+        Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanInit(entity.getLevel().getName(), "Player", "NoFallDamage");
         if (noFallDamage == null) {
             return;
         }
@@ -104,17 +104,17 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "PVP");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "World", "PVP");
         if (bool == null) {
             return;
         }
         Entity entity = event.getEntity();
         if (entity instanceof Player && event.getDamager() instanceof Player) {
             Player p = (Player) event.getDamager();
-            if (ConfigUtil.isAdmin(p)) {
+            if (PermissionAPI.isAdmin(p)) {
                 return;
             }
-            if (ConfigUtil.isOperator(p, event.getEntity().getLevel())) {
+            if (PermissionAPI.isOperator(p, event.getEntity().getLevel())) {
                 return;
             }
             if (!bool) {
@@ -125,17 +125,17 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityPortalEnterEvent(EntityPortalEnterEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "PortalEnter");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "PortalEnter");
         if (bool == null) {
             return;
         }
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             Player p = (Player) event.getEntity();
-            if (ConfigUtil.isAdmin(p)) {
+            if (PermissionAPI.isAdmin(p)) {
                 return;
             }
-            if (ConfigUtil.isOperator(p, p.getLevel())) {
+            if (PermissionAPI.isOperator(p, p.getLevel())) {
                 return;
             }
             if (!bool) {
@@ -150,17 +150,17 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityVehicleEnterEvent(EntityVehicleEnterEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "VehicleEnter");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "VehicleEnter");
         if (bool == null) {
             return;
         }
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             Player p = (Player) event.getEntity();
-            if (ConfigUtil.isAdmin(p)) {
+            if (PermissionAPI.isAdmin(p)) {
                 return;
             }
-            if (ConfigUtil.isOperator(p, p.getLevel())) {
+            if (PermissionAPI.isOperator(p, p.getLevel())) {
                 return;
             }
             if (!bool) {
@@ -176,13 +176,13 @@ public class EntityEventListener implements Listener {
         }
         Player p = ((Player) event.getEntity()).getPlayer();
         Level level = event.getTarget();
-        if (ConfigUtil.isAdmin(p)) {
+        if (PermissionAPI.isAdmin(p)) {
             return;
         }
-        if (ConfigUtil.isOperator(p, level)) {
+        if (PermissionAPI.isOperator(p, level)) {
             return;
         }
-        boolean bool = ConfigUtil.isWhiteListed(p, level);
+        boolean bool = PermissionAPI.isWhiteListed(p, level);
         if (bool) {
             return;
         }
@@ -191,7 +191,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityBlockChangeEvent(EntityBlockChangeEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
         if (bool == null) {
             return;
         }
@@ -202,7 +202,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityCombustByBlockEvent(EntityCombustByBlockEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
         if (bool == null) {
             return;
         }
@@ -213,7 +213,7 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void EntityCombustByEntityEvent(EntityCombustByEntityEvent event) {
-        Boolean bool = LevelEventPlusMain.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanInit(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
         if (bool == null) {
             return;
         }

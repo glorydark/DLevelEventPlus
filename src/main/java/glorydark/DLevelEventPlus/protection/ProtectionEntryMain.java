@@ -43,6 +43,7 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("World", "TimeFlow", "window_edit_label_world_timeFlow", true);
         entries.addDropdownProtectionEntry("World", "Weather", "window_edit_label_world_weather", Arrays.asList("", "clear", "thunder", "rain"), "");
         entries.addBooleanProtectionEntry("World", "LightningStrike", "window_edit_label_world_lightningStrike", true);
+        entries.addDropdownProtectionEntry("World", "ForceGameMode", "window_edit_label_world_forceGameMode", Arrays.asList("", "Survival", "Creative", "Adventure", "Spectator"), "");
 
         entries.addBooleanProtectionEntry("Player", "AllowOpenChest", "window_edit_label_player_openChest", true);
         entries.addBooleanProtectionEntry("Player", "CanUseFishingHook", "window_edit_label_player_useFishingHook", true);
