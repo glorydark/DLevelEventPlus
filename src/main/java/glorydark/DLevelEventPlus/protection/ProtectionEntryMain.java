@@ -161,7 +161,6 @@ public class ProtectionEntryMain {
             // add missing keys
             for (ProtectionRuleEntry protectionRuleEntry : getProtectionRuleEntries()) {
                 String key = protectionRuleEntry.getCategory() + "." + protectionRuleEntry.getEntryName();
-                LevelEventPlusMain.plugin.getLogger().warning(key);
                 if (!config.exists(key)) {
                     config.set(key, protectionRuleEntry.getDefaultValue());
                 }
