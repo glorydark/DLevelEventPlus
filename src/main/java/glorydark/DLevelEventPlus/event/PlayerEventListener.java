@@ -245,7 +245,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isAdmin(player)) {
             return;
         }
-        if (PermissionAPI.isOperator(player, player.getLevel())) {
+        if (PermissionAPI.isOperator(player, level)) {
             return;
         }
         if (!bool) {
