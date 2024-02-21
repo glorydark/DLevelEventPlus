@@ -80,6 +80,13 @@ public class PermissionAPI {
                         worldcfg.set("list", arrayList);
                         worldcfg.save();
                         if (player != null) {
+                            Level level = player.getLevel();
+                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                            int forceGamemode = -1;
+                            if (forceGameModeObj != null) {
+                                forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
+                            }
+                            player.setGamemode(forceGamemode);
                             player.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success_receiver", playerName));
                         }
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_admin_del_success", playerName));
@@ -125,6 +132,13 @@ public class PermissionAPI {
                         worldcfg.set(levelname, arrayList);
                         worldcfg.save();
                         if (player != null) {
+                            Level level = player.getLevel();
+                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                            int forceGamemode = -1;
+                            if (forceGameModeObj != null) {
+                                forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
+                            }
+                            player.setGamemode(forceGamemode);
                             player.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success_receiver", playerName, levelname));
                         }
                         sender.sendMessage(LevelEventPlusMain.language.translateString("tip_operator_del_success", playerName, levelname));

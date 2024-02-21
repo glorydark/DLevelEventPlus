@@ -232,14 +232,20 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "GameModeChange");
+        Player player = event.getPlayer();
+        Level level = player.getLevel();
+        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+        if (forceGameModeObj != null) {
+            return; // 防止腐竹重复设置同种功能，强制游戏模式开启无需禁用模式改变
+        }
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "GameModeChange");
         if (bool == null) {
             return;
         }
-        if (PermissionAPI.isAdmin(event.getPlayer())) {
+        if (PermissionAPI.isAdmin(player)) {
             return;
         }
-        if (PermissionAPI.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
         if (!bool) {
