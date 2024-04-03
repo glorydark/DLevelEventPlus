@@ -94,11 +94,10 @@ public class EntityEventListener implements Listener {
             }
         }
         Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "Player", "NoFallDamage");
-        if (noFallDamage == null) {
-            return;
-        }
-        if (event.getEntity() instanceof Player && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-            event.setCancelled(noFallDamage);
+        if (noFallDamage != null) {
+            if (event.getEntity() instanceof Player && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
+                event.setCancelled(noFallDamage);
+            }
         }
     }
 
