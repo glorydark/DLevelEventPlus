@@ -6,22 +6,31 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
 
 import java.io.File;
 import java.util.*;
 
 public class PermissionAPI {
+
+    public static ConfigSection admins;
+
+    public static ConfigSection operators;
+
+    public static ConfigSection whitelists;
+
     public static void whiteList(CommandSender sender, OperatePermissionType type, String playerName, String levelname) {
-        Config worldcfg = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
-        List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+        Config whitelistsConfig = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
+        List<String> arrayList = new ArrayList<>(whitelistsConfig.getStringList(levelname));
         Player player = Server.getInstance().getPlayer(playerName);
         switch (type) {
             case ADD:
                 if (!arrayList.contains(playerName)) {
                     arrayList.add(playerName);
-                    worldcfg.set(levelname, arrayList);
-                    worldcfg.save();
+                    whitelistsConfig.set(levelname, arrayList);
+                    whitelistsConfig.save();
+                    whitelists = whitelistsConfig.getRootSection();
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success_receiver", playerName, levelname));
                     }
@@ -33,8 +42,9 @@ public class PermissionAPI {
             case REMOVE:
                 if (arrayList.contains(playerName)) {
                     arrayList.remove(playerName);
-                    worldcfg.set(levelname, arrayList);
-                    worldcfg.save();
+                    whitelistsConfig.set(levelname, arrayList);
+                    whitelistsConfig.save();
+                    whitelists = whitelistsConfig.getRootSection();
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_del_success_receiver", playerName, levelname));
                     }
@@ -47,15 +57,16 @@ public class PermissionAPI {
     }
 
     public static void adminList(CommandSender sender, OperatePermissionType type, String playerName) {
-        Config worldcfg = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML);
+        Config adminConfig = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML);
         Player player = Server.getInstance().getPlayer(playerName);
-        List<String> arrayList = new ArrayList<>(worldcfg.getStringList("list"));
+        List<String> arrayList = new ArrayList<>(adminConfig.getStringList("list"));
         switch (type) {
             case ADD:
                 if (!arrayList.contains(playerName)) {
                     arrayList.add(playerName);
-                    worldcfg.set("list", arrayList);
-                    worldcfg.save();
+                    adminConfig.set("list", arrayList);
+                    adminConfig.save();
+                    admins = adminConfig.getRootSection();
                     if (player != null) {
                         Level level = player.getLevel();
                         Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
@@ -74,11 +85,12 @@ public class PermissionAPI {
                 }
                 break;
             case REMOVE:
-                if (worldcfg.exists("list")) {
+                if (adminConfig.exists("list")) {
                     if (arrayList.contains(playerName)) {
                         arrayList.remove(playerName);
-                        worldcfg.set("list", arrayList);
-                        worldcfg.save();
+                        adminConfig.set("list", arrayList);
+                        adminConfig.save();
+                        admins = adminConfig.getRootSection();
                         if (player != null) {
                             Level level = player.getLevel();
                             Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
@@ -100,14 +112,15 @@ public class PermissionAPI {
 
     public static void operatorList(CommandSender sender, OperatePermissionType type, String playerName, String levelname) {
         Player player = Server.getInstance().getPlayer(playerName);
-        Config worldcfg = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML);
-        List<String> arrayList = new ArrayList<>(worldcfg.getStringList(levelname));
+        Config operatorConfig = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML);
+        List<String> arrayList = new ArrayList<>(operatorConfig.getStringList(levelname));
         switch (type) {
             case ADD:
                 if (!arrayList.contains(playerName)) {
                     arrayList.add(playerName);
-                    worldcfg.set(levelname, arrayList);
-                    worldcfg.save();
+                    operatorConfig.set(levelname, arrayList);
+                    operatorConfig.save();
+                    operators = operatorConfig.getRootSection();
                     if (player != null) {
                         Level level = player.getLevel();
                         Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
@@ -126,11 +139,12 @@ public class PermissionAPI {
                 }
                 break;
             case REMOVE:
-                if (worldcfg.exists(levelname)) {
+                if (operatorConfig.exists(levelname)) {
                     if (arrayList.contains(playerName)) {
                         arrayList.remove(playerName);
-                        worldcfg.set(levelname, arrayList);
-                        worldcfg.save();
+                        operatorConfig.set(levelname, arrayList);
+                        operatorConfig.save();
+                        operators = operatorConfig.getRootSection();
                         if (player != null) {
                             Level level = player.getLevel();
                             Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
@@ -154,14 +168,7 @@ public class PermissionAPI {
         if (p == null) {
             return false;
         }
-        File file = new File(LevelEventPlusMain.path + "/admins.yml");
-        if (file.exists()) {
-            Config worldcfg = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML);
-            if (worldcfg.exists("list")) {
-                return worldcfg.getStringList("list").contains(p.getName());
-            }
-        }
-        return false;
+        return new ArrayList<>(admins.getStringList("list")).contains(p.getName());
     }
 
     public static boolean isOperator(Player p, Level level) {
@@ -171,34 +178,14 @@ public class PermissionAPI {
         if (level == null) {
             return false;
         }
-        File file = new File(LevelEventPlusMain.path + "/operators.yml");
-        if (file.exists()) {
-            Config worldcfg = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML);
-            if (worldcfg.get(level.getName()) != null) {
-                return worldcfg.getStringList(level.getName()).contains(p.getName());
-            }
-        }
-        return false;
+        return new ArrayList<>(operators.getStringList(level.getName())).contains(p.getName());
     }
 
     public static boolean isWhiteListed(Player p, Level level) {
         if (p == null) {
             return false;
         }
-        if (level == null) {
-            return false;
-        }
-        File file = new File(LevelEventPlusMain.path + "/whitelists.yml");
-        if (file.exists()) {
-            Config worldcfg = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
-            if (worldcfg.exists(level.getName())) {
-                return worldcfg.getStringList(level.getName()).contains(p.getName());
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
+        return new ArrayList<>(whitelists.getStringList(level.getName())).contains(p.getName());
     }
 
     public enum OperatePermissionType{

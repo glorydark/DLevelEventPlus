@@ -7,7 +7,9 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
+import glorydark.DLevelEventPlus.api.PermissionAPI;
 import glorydark.DLevelEventPlus.api.TemplateAPI;
 import glorydark.DLevelEventPlus.event.*;
 import glorydark.DLevelEventPlus.gui.FormEventListener;
@@ -44,6 +46,13 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         template_folder.mkdir();
 
         Config config = new Config(path + "/config.yml", Config.YAML);
+        PermissionAPI.whitelists = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML).getRootSection();
+        PermissionAPI.operators = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML).getRootSection();
+        PermissionAPI.admins = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML, new ConfigSection() {
+            {
+                this.put("list", new ArrayList<>());
+            }
+        }).getRootSection();
         String defaultLang = config.getString("language", Server.getInstance().getLanguage().getLang());
         if (!enabledLanguage.contains(defaultLang)) {
             defaultLang = "eng";
