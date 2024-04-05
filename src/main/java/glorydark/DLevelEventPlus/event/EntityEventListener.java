@@ -137,13 +137,9 @@ public class EntityEventListener implements Listener {
             if (PermissionAPI.isOperator(p, p.getLevel())) {
                 return;
             }
-            if (!bool) {
-                event.setCancelled(true);
-            }
-        } else {
-            if (!bool) {
-                event.setCancelled(true);
-            }
+        }
+        if (!bool) {
+            event.setCancelled(true);
         }
     }
 
