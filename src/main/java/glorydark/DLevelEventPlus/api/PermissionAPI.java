@@ -185,7 +185,8 @@ public class PermissionAPI {
         if (p == null) {
             return false;
         }
-        return new ArrayList<>(whitelists.getStringList(level.getName())).contains(p.getName());
+        List<String> list = new ArrayList<>(whitelists.getStringList(level.getName()));
+        return list.size() == 0 || list.contains(p.getName());
     }
 
     public enum OperatePermissionType{
