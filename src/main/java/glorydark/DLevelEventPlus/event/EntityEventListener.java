@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartTNT;
 import cn.nukkit.entity.item.EntityPrimedTNT;
+import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.*;
@@ -214,6 +215,20 @@ public class EntityEventListener implements Listener {
         }
         if (!bool) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void EntitySpawnEvent(EntitySpawnEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof EntityLightning) {
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "Entity", "LightningOnFire");
+            if (bool == null) {
+                return;
+            }
+            if (!bool) {
+                ((EntityLightning) entity).setEffect(false);
+            }
         }
     }
 }
