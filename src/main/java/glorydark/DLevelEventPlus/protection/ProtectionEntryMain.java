@@ -73,6 +73,7 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Entity", "BlockChange", "window_edit_label_entity_blockChange", true);
         entries.addBooleanProtectionEntry("Entity", "CombustByBlock", "window_edit_label_entity_combustByBlock", true);
         entries.addBooleanProtectionEntry("Entity", "CombustByEntity", "window_edit_label_entity_combustByEntity", true);
+        entries.addBooleanProtectionEntry("Entity", "LightningOnFire", "window_edit_label_entity_lightning_on_fire", true);
 
         entries.addBooleanProtectionEntry("Block", "AllowPlaceBlock", "window_edit_label_block_placeBlock", true);
         entries.addBooleanProtectionEntry("Block", "AllowBreakBlock", "window_edit_label_block_breakBlock", true);
