@@ -68,6 +68,7 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry("Player", "Achievement", "window_edit_label_player_achievement", true);
         entries.addBooleanProtectionEntry("Player", "BucketFill", "window_edit_label_player_bucketFill", true);
         entries.addBooleanProtectionEntry("Player", "BucketEmpty", "window_edit_label_player_bucketEmpty", true);
+        entries.addBooleanProtectionEntry("Player", "HungerChange", "window_edit_label_player_hungerChange", true);
 
         entries.addBooleanProtectionEntry("Entity", "Explosion", "window_edit_label_entity_entityExplosion", true);
         entries.addBooleanProtectionEntry("Entity", "PortalEnter", "window_edit_label_entity_portalEnter", true);
