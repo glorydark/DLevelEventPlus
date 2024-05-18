@@ -276,12 +276,6 @@ public class PlayerEventListener implements Listener {
         if (bool == null) {
             return;
         }
-        if (PermissionAPI.isAdmin(event.getPlayer())) {
-            return;
-        }
-        if (PermissionAPI.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
-            return;
-        }
         if (!bool) {
             event.getPlayer().getFoodData().reset();
         }
