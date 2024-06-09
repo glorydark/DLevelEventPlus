@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.scheduler.Task;
 import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
 import glorydark.DLevelEventPlus.api.PermissionAPI;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 import glorydark.DLevelEventPlus.utils.ItemUtils;
 
 import java.util.List;
@@ -17,19 +18,19 @@ public class CheckTask extends Task {
     @Override
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
-            List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "ClearItems");
-            Boolean movable = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "World", "Move");
-            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+            List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CLEAR_ITEMS);
+            Boolean movable = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_PLAYER_MOVE);
+            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FORCE_GAMEMODE);
             int forceGamemode = -1;
             if (forceGameModeObj != null) {
                 forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
             }
             for (Player player : level.getPlayers().values()) {
                 // anti void
-                Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "World", "AntiVoid");
+                Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ANTI_VOID);
                 if (antiVoid != null) {
                     if (antiVoid) {
-                        Object voidHeight = LevelSettingsAPI.getLevelObjectSetting(player.getLevel().getName(), "World", "VoidHeight");
+                        Object voidHeight = LevelSettingsAPI.getLevelObjectSetting(player.getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_VOID_HEIGHT);
                         if (voidHeight != null) {
                             if (player.getFloorY() <= Integer.parseInt(voidHeight.toString())) {
                                 player.teleport(player.getLevel().getSpawnLocation().getLocation());

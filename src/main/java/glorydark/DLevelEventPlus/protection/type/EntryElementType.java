@@ -8,6 +8,7 @@ public enum EntryElementType {
 
     TOGGLE,
     INPUT,
-    DROPDOWN
+    DROPDOWN,
+    UNEDITABLE
 
 }

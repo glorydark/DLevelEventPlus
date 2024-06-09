@@ -12,232 +12,202 @@ import cn.nukkit.event.entity.*;
 import cn.nukkit.level.Level;
 import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
 import glorydark.DLevelEventPlus.api.PermissionAPI;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 
 public class EntityEventListener implements Listener {
-    //Entity
+
+    // Entity interactions
     @EventHandler
-    public void EntityInteractEvent(EntityInteractEvent event) {
-        //实体导致耕地踩踏
+    public void onEntityInteract(EntityInteractEvent event) {
         Entity entity = event.getEntity();
-        if (event.getBlock().getId() == Block.FARMLAND && !(entity instanceof Player)) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "FarmProtect");
-            if (bool != null && bool) {
+        Block block = event.getBlock();
+
+        // Prevent non-players from trampling farmland
+        if (block.getId() == Block.FARMLAND && !(entity instanceof Player)) {
+            Boolean protectFarm = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FARM_PROTECT);
+            if (protectFarm != null && protectFarm) {
                 event.setCancelled(true);
             }
         }
 
-
-        if (event.getBlock().getId() == Block.ITEM_FRAME_BLOCK && !(entity instanceof Player)) {
-            if (LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllowInteractFrameBlock") == null) {
-                return;
-            }
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), "Player", "AllowInteractFrameBlock");
-            if (bool != null && bool) {
+        // Prevent non-players from interacting with item frames
+        if (block.getId() == Block.ITEM_FRAME_BLOCK && !(entity instanceof Player)) {
+            Boolean allowInteractFrame = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_INTERACT_FRAME_BLOCK);
+            if (allowInteractFrame != null && allowInteractFrame) {
                 event.setCancelled(true);
             }
         }
     }
 
-    //TNT爆炸
+    // TNT explosion events
     @EventHandler
-    public void EntityExplodeEvent(EntityExplodeEvent event) {
+    public void onEntityExplode(EntityExplodeEvent event) {
         Entity entity = event.getEntity();
-        Boolean bool1 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "TntExplodes");
-        Boolean bool2 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllExplodes");
-        Boolean bool3 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "Explosion");
-        if (bool1 == null) {
+        Level level = entity.getLevel();
+
+        Boolean tntExplodes = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_TNT_EXPLODES);
+        Boolean allExplodes = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ALL_EXPLODES);
+        Boolean entityExplosion = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_EXPLOSION);
+
+        if (tntExplodes == null || allExplodes == null || entityExplosion == null) {
             return;
         }
-        if (bool2 == null) {
-            return;
-        }
-        if (bool3 == null) {
-            return;
-        }
+
         if (entity instanceof EntityMinecartTNT || entity instanceof EntityPrimedTNT) {
-            if (!bool1) {
+            if (!tntExplodes) {
                 entity.despawnFromAll();
                 event.setCancelled(true);
             }
         }
-        if (!bool3) {
-            entity.despawnFromAll();
-            event.setCancelled(true);
-            return;
-        }
-        if (!bool2) {
+
+        if (!entityExplosion || !allExplodes) {
             entity.despawnFromAll();
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityExplosionPrimeEvent(EntityExplosionPrimeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "AllExplodes");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
+    public void onEntityExplosionPrime(EntityExplosionPrimeEvent event) {
+        Boolean allExplodes = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ALL_EXPLODES);
+        if (allExplodes != null && !allExplodes) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityDamageEvent(EntityDamageEvent event) {
+    public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "World", "AntiVoid");
-        if (antiVoid != null) {
-            if (antiVoid) {
-                if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
-                    entity.teleport(entity.getLevel().getSpawnLocation().getLocation());
-                    event.setCancelled(true);
-                }
-            }
+        Level level = entity.getLevel();
+
+        Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ANTI_VOID);
+        if (antiVoid != null && antiVoid && event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+            entity.teleport(level.getSpawnLocation().getLocation());
+            event.setCancelled(true);
         }
-        Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "Player", "NoFallDamage");
-        if (noFallDamage != null) {
-            if (event.getEntity() instanceof Player && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-                event.setCancelled(noFallDamage);
-            }
+
+        Boolean noFallDamage = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_NO_FALL_DAMAGE);
+        if (noFallDamage != null && noFallDamage && entity instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "PVP");
-        if (bool == null) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        Boolean pvp = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_PVP);
+        if (pvp == null) {
             return;
         }
+
         Entity entity = event.getEntity();
-        if (entity instanceof Player && event.getDamager() instanceof Player) {
-            Player p = (Player) event.getDamager();
-            if (PermissionAPI.isAdmin(p)) {
+        Entity damager = event.getDamager();
+
+        if (entity instanceof Player && damager instanceof Player) {
+            Player playerDamager = (Player) damager;
+            if (PermissionAPI.isAdmin(playerDamager) || PermissionAPI.isOperator(playerDamager, entity.getLevel())) {
                 return;
             }
-            if (PermissionAPI.isOperator(p, event.getEntity().getLevel())) {
-                return;
-            }
-            if (!bool) {
+
+            if (!pvp) {
                 event.setCancelled();
             }
         }
     }
 
     @EventHandler
-    public void EntityPortalEnterEvent(EntityPortalEnterEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "PortalEnter");
-        if (bool == null) {
+    public void onEntityPortalEnter(EntityPortalEnterEvent event) {
+        Boolean portalEnter = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_PORTAL_ENTER);
+        if (portalEnter == null) {
             return;
         }
+
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
-            Player p = (Player) event.getEntity();
-            if (PermissionAPI.isAdmin(p)) {
-                return;
-            }
-            if (PermissionAPI.isOperator(p, p.getLevel())) {
+            Player player = (Player) entity;
+            if (PermissionAPI.isAdmin(player) || PermissionAPI.isOperator(player, player.getLevel())) {
                 return;
             }
         }
-        if (!bool) {
+
+        if (!portalEnter) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityVehicleEnterEvent(EntityVehicleEnterEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "VehicleEnter");
-        if (bool == null) {
+    public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
+        Boolean vehicleEnter = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_VEHICLE_ENTER);
+        if (vehicleEnter == null) {
             return;
         }
+
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
-            Player p = (Player) event.getEntity();
-            if (PermissionAPI.isAdmin(p)) {
+            Player player = (Player) entity;
+            if (PermissionAPI.isAdmin(player) || PermissionAPI.isOperator(player, player.getLevel())) {
                 return;
             }
-            if (PermissionAPI.isOperator(p, p.getLevel())) {
-                return;
-            }
-            if (!bool) {
+            if (!vehicleEnter) {
                 event.setCancelled(true);
             }
         }
     }
 
     @EventHandler
-    public void EntityLevelChangeEvent(EntityLevelChangeEvent event) {
+    public void onEntityLevelChange(EntityLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
-        Player p = ((Player) event.getEntity()).getPlayer();
-        Level level = event.getTarget();
-        if (PermissionAPI.isAdmin(p)) {
-            return;
-        }
-        if (PermissionAPI.isOperator(p, level)) {
-            return;
-        }
-        boolean bool = PermissionAPI.isWhiteListed(p, level);
-        if (bool) {
-            return;
-        }
-        event.setCancelled(true);
-    }
 
-    @EventHandler
-    public void EntityBlockChangeEvent(EntityBlockChangeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "Entity", "BlockChange");
-        if (bool == null) {
+        Player player = (Player) event.getEntity();
+        Level targetLevel = event.getTarget();
+
+        if (PermissionAPI.isAdmin(player) || PermissionAPI.isOperator(player, targetLevel)) {
             return;
         }
-        if (!bool) {
+
+        if (!PermissionAPI.isWhiteListed(player, targetLevel)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityCombustByBlockEvent(EntityCombustByBlockEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), "Entity", "CombustByBlock");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
+    public void onEntityBlockChange(EntityBlockChangeEvent event) {
+        Boolean blockChange = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_BLOCK_CHANGE);
+        if (blockChange != null && !blockChange) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityCombustByEntityEvent(EntityCombustByEntityEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), "Entity", "CombustByEntity");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
+    public void onEntityCombustByBlock(EntityCombustByBlockEvent event) {
+        Boolean combustByBlock = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_COMBUST_BY_BLOCK);
+        if (combustByBlock !=null && !combustByBlock) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntityDamageBlockedEvent(EntityDamageBlockedEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getAttacker().getLevel().getName(), "Entity", "DamageBlocked");
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
+    public void onEntityCombustByEntity(EntityCombustByEntityEvent event) {
+        Boolean combustByEntity = LevelSettingsAPI.getLevelBooleanSetting(event.getCombuster().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_COMBUST_BY_ENTITY);
+        if (combustByEntity != null && !combustByEntity) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void EntitySpawnEvent(EntitySpawnEvent event) {
+    public void onEntityDamageBlocked(EntityDamageBlockedEvent event) {
+        Boolean damageBlocked = LevelSettingsAPI.getLevelBooleanSetting(event.getAttacker().getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_DAMAGE_BLOCKED);
+        if (damageBlocked != null && !damageBlocked) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof EntityLightning) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), "Entity", "LightningOnFire");
-            if (bool == null) {
-                return;
-            }
-            if (!bool) {
+            Boolean lightningOnFire = LevelSettingsAPI.getLevelBooleanSetting(entity.getLevel().getName(), NameMapping.CATEGORY_ENTITY, NameMapping.ENTRY_ENTITY_LIGHTNING_ON_FIRE);
+            if (lightningOnFire != null && !lightningOnFire) {
                 ((EntityLightning) entity).setEffect(false);
             }
         }

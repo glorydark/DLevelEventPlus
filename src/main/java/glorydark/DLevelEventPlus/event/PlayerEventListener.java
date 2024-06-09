@@ -10,7 +10,6 @@ import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFishingRod;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
@@ -18,6 +17,7 @@ import cn.nukkit.network.protocol.EmotePacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
 import glorydark.DLevelEventPlus.api.PermissionAPI;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 import glorydark.DLevelEventPlus.utils.ItemUtils;
 import glorydark.DLevelEventPlus.utils.LiquidItem;
 
@@ -41,37 +41,46 @@ public class PlayerEventListener implements Listener {
         Level level = player.getLevel();
         Block block = event.getBlock();
         Item item = player.getInventory().getItemInHand();
-        Boolean interact = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "Interact");
+        // 如果全局禁止，若Allowed列表存在对应的方块/物品，则不cancel，继续进行判断
+        boolean singleItemAllowed = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOWED_USE_ITEMS).stream().anyMatch(s -> ItemUtils.isEqual(s, item));
+        boolean singleBlockAllowed = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOWED_INTERACT_BLOCKS).stream().anyMatch(s -> ItemUtils.isEqual(s, block));
+        Boolean interact = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_INTERACT);
         if (interact != null && !interact) {
-            event.setCancelled(true);
-            return;
+            if (!singleBlockAllowed && !singleItemAllowed) {
+                event.setCancelled(true);
+                return;
+            }
         }
 
         if (block != null) {
+            // 展示框
             if (block.getId() == 389 || block.getId() == -339) {
-                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "AllowInteractFrameBlock");
+                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_INTERACT_FRAME_BLOCK);
                 if (bool != null && !bool) {
                     event.setCancelled(true);
+                    return;
                 }
             }
 
-            //玩家导致耕地踩踏
+            // 玩家导致耕地踩踏
             if (block.getId() == Block.FARMLAND) {
-                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "World", "FarmProtect");
+                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FARM_PROTECT);
                 if (bool != null && event.getAction() == PlayerInteractEvent.Action.PHYSICAL) {
                     if (bool) {
                         event.setCancelled(true);
+                        return;
                     }
                 }
             }
 
+            // 箱子
             if (block.getId() == Block.CHEST || block.getId() == Block.ENDER_CHEST) {
-                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "AllowOpenChest");
+                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_OPEN_CHEST);
                 if (bool != null && !bool) {
-                    if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "ChestTrustList") == null) {
+                    if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_PLAYER_CHEST_TRUST_LIST) == null) {
                         return;
                     }
-                    List<String> list = LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "ChestTrustList");
+                    List<String> list = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CHEST_TRUST_LIST);
                     List<Position> positionArrayList = new ArrayList<>();
                     for (String str : Objects.requireNonNull(list)) {
                         List<String> strspl = Arrays.asList(str.split(":"));
@@ -81,52 +90,43 @@ public class PlayerEventListener implements Listener {
                     }
                     if (!positionArrayList.contains(block.getLocation())) {
                         event.setCancelled(true);
+                        return;
                     }
                 }
             }
 
-            if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "BannedInteractBlocks").stream().anyMatch(s -> ItemUtils.isEqual(s, block))) {
+            // 禁止交互方块
+            if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_BANNED_INTERACT_BLOCKS).stream().anyMatch(s -> ItemUtils.isEqual(s, block))) {
                 event.setCancelled(true);
-            }
-
-            if (LiquidItem.isLiquidItem(item)) {
-                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(block.getLevel().getName(), "Block", "AllowPlaceBlock");
-                if (bool == null) {
-                    return;
-                }
-                if (bool) {
-                    return;
-                }
-                event.setCancelled(true);
+                return;
             }
         }
 
-        if (item != null) {
-            if (item instanceof ItemFishingRod) {
-                Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "CanUseFishingHook");
-                if (bool != null && !bool) {
-                    event.setCancelled(true);
-                }
-            }
-
-            List<String> strings = LevelSettingsAPI.getLevelStringListSetting(level.getName(), "Player", "BannedUseItems");
-            if (strings.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
+        if (LiquidItem.isLiquidItem(item)) {
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_ALLOW_PLACE_BLOCK);
+            if (bool != null && !bool) {
                 event.setCancelled(true);
+                return;
             }
+        }
+
+        if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_BANNED_USE_ITEMS).stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
+            event.setCancelled(true);
         }
     }
+
 
     @EventHandler
     public void PlayerTeleportEvent(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "AntiTeleport");
-        if (bool == null) {
-            return;
-        }
         if (PermissionAPI.isAdmin(player)) {
             return;
         }
         if (PermissionAPI.isOperator(player, player.getLevel())) {
+            return;
+        }
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ANTI_TELEPORT);
+        if (bool == null) {
             return;
         }
         Level toLevel = event.getTo().getLevel();
@@ -142,13 +142,14 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerBlockPickEvent(PlayerBlockPickEvent event) {
-        if (PermissionAPI.isAdmin(event.getPlayer())) {
+        Player player = event.getPlayer();
+        if (PermissionAPI.isAdmin(player)) {
             return;
         }
-        if (PermissionAPI.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
+        if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "Pick");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_PICK);
         if (bool == null) {
             return;
         }
@@ -160,7 +161,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void InventoryPickupItemEvent(InventoryPickupItemEvent event) {
         for (Player p : event.getViewers()) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(p.getLevel().getName(), "Player", "Pick");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(p.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_PICK);
             if (bool == null) {
                 return;
             }
@@ -184,7 +185,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(event.getPlayer(), event.getPlayer().getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "ConsumeItem");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CONSUME_ITEM);
         if (bool == null) {
             return;
         }
@@ -195,7 +196,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerBedEnterEvent(PlayerBedEnterEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "BedEnter");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_BED_ENTER);
         if (bool == null) {
             return;
         }
@@ -212,7 +213,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "CommandPreprocess");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_COMMAND_PREPROCESS);
         if (bool == null) {
             return;
         }
@@ -234,11 +235,11 @@ public class PlayerEventListener implements Listener {
     public void PlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         Level level = player.getLevel();
-        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FORCE_GAMEMODE);
         if (forceGameModeObj != null) {
             return; // 防止腐竹重复设置同种功能，强制游戏模式开启无需禁用模式改变
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), "Player", "GameModeChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_GAME_MODE_CHANGE);
         if (bool == null) {
             return;
         }
@@ -255,7 +256,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerEatFoodEvent(PlayerEatFoodEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "EatFood");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_EAT_FOOD);
         if (bool == null) {
             return;
         }
@@ -272,7 +273,7 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerFoodLevelChangeEvent(PlayerFoodLevelChangeEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "HungerChange");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_HUNGER_CHANGE);
         if (bool == null) {
             return;
         }
@@ -283,8 +284,8 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void PlayerDeathEvent(PlayerDeathEvent event) {
-        Boolean bool1 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "KeepXp");
-        Boolean bool2 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), "World", "KeepInventory");
+        Boolean bool1 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_KEEP_XP);
+        Boolean bool2 = LevelSettingsAPI.getLevelBooleanSetting(event.getEntity().getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_KEEP_INVENTORY);
         if (bool1 != null) {
             event.setKeepExperience(bool1);
         }
@@ -298,7 +299,7 @@ public class PlayerEventListener implements Listener {
         Entity entity = event.getEntity().shootingEntity;
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "ConsumeItem");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CONSUME_ITEM);
             if (bool == null) {
                 return;
             }
@@ -323,7 +324,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Fly");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_FLY);
         if (bool == null) {
             return;
         }
@@ -348,7 +349,7 @@ public class PlayerEventListener implements Listener {
             PlayerActionPacket pk = (PlayerActionPacket) event.getPacket();
             if (pk.action == PlayerActionPacket.ACTION_JUMP) {
                 if (event.getPlayer().getGamemode() != 1 && event.getPlayer().getGamemode() != 3) {
-                    Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "Jump");
+                    Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_JUMP);
                     if (bool == null) {
                         return;
                     }
@@ -362,7 +363,7 @@ public class PlayerEventListener implements Listener {
         }
 
         if (event.getPacket() instanceof EmotePacket) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), "Player", "Emote");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getPlayer().getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_EMOTE);
             if (bool == null) {
                 return;
             }
@@ -382,7 +383,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "DropItem");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_DROP_ITEM);
         if (bool == null) {
             return;
         }
@@ -400,7 +401,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Glide");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_GLIDE);
         if (bool == null) {
             return;
         }
@@ -419,7 +420,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Swim");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_SWIM);
         if (bool == null) {
             return;
         }
@@ -438,7 +439,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Sneak");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_SNEAK);
         if (bool == null) {
             return;
         }
@@ -457,7 +458,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Sprint");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_SPRINT);
         if (bool == null) {
             return;
         }
@@ -470,7 +471,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerAchievementAwardedEvent(PlayerAchievementAwardedEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Achievement");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ACHIEVEMENT);
         if (bool == null) {
             return;
         }
@@ -488,7 +489,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerBucketFillEvent(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "BucketFill");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_BUCKET_FILL);
         if (bool == null) {
             return;
         }
@@ -506,7 +507,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerBucketEmptyEvent(PlayerBucketEmptyEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "BucketEmpty");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_BUCKET_EMPTY);
         if (bool == null) {
             return;
         }
@@ -524,7 +525,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void PlayerToggleCrawlEvent(PlayerToggleCrawlEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Player", "Crawl");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CRAWL);
         if (bool == null) {
             return;
         }
@@ -549,7 +550,7 @@ public class PlayerEventListener implements Listener {
         if (PermissionAPI.isOperator(player, player.getLevel())) {
             return;
         }
-        List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(player.getLevel().getName(), "Player", "ClearItems");
+        List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(player.getLevel().getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CLEAR_ITEMS);
         if (clearItems.stream().anyMatch(s -> ItemUtils.isEqual(s, item))) {
             player.getInventory().remove(item);
         }

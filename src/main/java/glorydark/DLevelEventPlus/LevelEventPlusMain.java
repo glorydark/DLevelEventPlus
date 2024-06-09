@@ -13,6 +13,7 @@ import glorydark.DLevelEventPlus.api.PermissionAPI;
 import glorydark.DLevelEventPlus.api.TemplateAPI;
 import glorydark.DLevelEventPlus.event.*;
 import glorydark.DLevelEventPlus.gui.FormEventListener;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 import glorydark.DLevelEventPlus.protection.ProtectionEntryMain;
 import glorydark.DLevelEventPlus.utils.Language;
 
@@ -45,13 +46,23 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
         File template_folder = new File(path + "/templates/");
         template_folder.mkdir();
         // Read config.yml
-        PermissionAPI.whitelists = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML).getRootSection();
-        PermissionAPI.operators = new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML).getRootSection();
-        PermissionAPI.admins = new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML, new ConfigSection() {
+        PermissionAPI.admins = new ArrayList<>(new Config(LevelEventPlusMain.path + "/admins.yml", Config.YAML, new ConfigSection() {
             {
                 this.put("list", new ArrayList<>());
             }
-        }).getRootSection();
+        }).getStringList("list"));
+        PermissionAPI.whitelists.clear();
+        PermissionAPI.operators.clear();
+        for (Map.Entry<String, Object> entry : new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML).getAll().entrySet()) {
+            if (entry.getValue() instanceof List) {
+                PermissionAPI.whitelists.put(entry.getKey(), (List<String>) entry.getValue());
+            }
+        }
+        for (Map.Entry<String, Object> entry : new Config(LevelEventPlusMain.path + "/operators.yml", Config.YAML).getAll().entrySet()) {
+            if (entry.getValue() instanceof List) {
+                PermissionAPI.operators.put(entry.getKey(), (List<String>) entry.getValue());
+            }
+        }
         Config config = new Config(path + "/config.yml", Config.YAML);
         String defaultLang = config.getString("language", Server.getInstance().getLanguage().getLang());
         if (!enabledLanguage.contains(defaultLang)) {
@@ -107,10 +118,10 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                 }
                 plugin.getLogger().info(language.translateString("tip_loading_gameRule", level.getName()));
                 LevelSettingsAPI.configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
-                if (!LevelSettingsAPI.getLevelBooleanSetting(levelName, "World", "TimeFlow")) {
+                if (!LevelSettingsAPI.getLevelBooleanSetting(levelName, NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_TIME_FLOW)) {
                     level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 }
-                Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, "World", "Weather");
+                Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, NameMapping.CATEGORY_WORLD, "Weather");
                 if (weather != null) {
                     switch (String.valueOf(weather).toLowerCase()) {
                         case "clear":
@@ -130,7 +141,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                             break;
                     }
                 }
-                LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) LevelSettingsAPI.configCache.get(levelName).getOrDefault("GameRule", new LinkedHashMap<>());
+                LinkedHashMap<String, Object> gamerules = (LinkedHashMap<String, Object>) LevelSettingsAPI.configCache.get(levelName).getOrDefault(NameMapping.CATEGORY_GAMERULE, new LinkedHashMap<>());
                 int loadedGameRule = 0;
                 if (gamerules.size() > 0) {
                     for (String item : gamerules.keySet()) {

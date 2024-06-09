@@ -138,14 +138,16 @@ public class FormMain {
     public static void showTemplateSettingMenuV2(Player player, String templateName, FormType type) {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_templateTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
-            if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), TemplateAPI.getTemplateBooleanSetting(templateName, entry.getCategory(), entry.getEntryName())));
-            } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
-                formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
-            } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
-                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
+            if (entry.isEditableInGame()) {
+                if (entry instanceof BooleanProtectionRuleEntry) {
+                    formWindowCustom.addElement(new ElementToggle(entry.getTranslationKeyName(), TemplateAPI.getTemplateBooleanSetting(templateName, entry.getCategory(), entry.getEntryName())));
+                } else if (entry instanceof DropdownProtectionRuleEntry) {
+                    Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
+                    formWindowCustom.addElement(new ElementDropdown(entry.getTranslationKeyName(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
+                } else if (entry instanceof InputProtectionRuleEntry) {
+                    Object object = TemplateAPI.getTemplateObjectSetting(templateName, entry.getCategory(), entry.getEntryName());
+                    formWindowCustom.addElement(new ElementInput(entry.getTranslationKeyName(), object == null ? "" : object.toString()));
+                }
             }
         }
         showFormWindow(player, formWindowCustom, type);
@@ -154,14 +156,16 @@ public class FormMain {
     public static void showEditMenuV2(Player player, String level) {
         FormWindowCustom formWindowCustom = new FormWindowCustom(LevelEventPlusMain.language.translateString("window_edit_chooseWorldTitle"));
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
-            if (entry instanceof BooleanProtectionRuleEntry) {
-                formWindowCustom.addElement(new ElementToggle(entry.getTranslation(), LevelSettingsAPI.getLevelBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
-            } else if (entry instanceof DropdownProtectionRuleEntry) {
-                Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
-                formWindowCustom.addElement(new ElementDropdown(entry.getTranslation(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
-            } else if (entry instanceof InputProtectionRuleEntry) {
-                Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
-                formWindowCustom.addElement(new ElementInput(entry.getTranslation(), object == null? "" : object.toString()));
+            if (entry.isEditableInGame()) {
+                if (entry instanceof BooleanProtectionRuleEntry) {
+                    formWindowCustom.addElement(new ElementToggle(entry.getTranslationKeyName(), LevelSettingsAPI.getLevelBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
+                } else if (entry instanceof DropdownProtectionRuleEntry) {
+                    Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
+                    formWindowCustom.addElement(new ElementDropdown(entry.getTranslationKeyName(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
+                } else if (entry instanceof InputProtectionRuleEntry) {
+                    Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
+                    formWindowCustom.addElement(new ElementInput(entry.getTranslationKeyName(), object == null ? "" : object.toString()));
+                }
             }
         }
         showFormWindow(player, formWindowCustom, FormType.Edit_Process);
