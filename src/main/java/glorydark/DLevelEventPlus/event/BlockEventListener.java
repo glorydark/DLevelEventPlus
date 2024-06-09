@@ -276,7 +276,7 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockExplosionEvent(BlockExplodeEvent event) {
+    public void BlockExplosionEvent(BlockExplosionPrimeEvent event) {
         Boolean allExplode = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ALL_EXPLODES);
         Boolean blockExplode = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_BLOCK_EXPLODE);
         if (allExplode != null && allExplode) {
