@@ -164,23 +164,32 @@ public class ProtectionEntryMain {
                                 config.set(NameMapping.CATEGORY_INVENTORY + ".CraftingTableOpen", objectEntry.getValue());
                             }
                             if (entryName.equals("CanUseFishingHook")) {
-                                boolean bool = config.getBoolean(NameMapping.CATEGORY_PLAYER + ".CanUseFishingHook");
+                                boolean bool = mapSection.getBoolean("CanUseFishingHook");
                                 String id = "minecraft:fishing_rod";
                                 if (bool) {
-                                    List<String> allowedItems = new ArrayList<>(config.getStringList(category + "." + NameMapping.ENTRY_PLAYER_ALLOWED_USE_ITEMS));
+                                    List<String> allowedItems = new ArrayList<>(mapSection.getStringList(NameMapping.ENTRY_PLAYER_ALLOWED_USE_ITEMS));
                                     if (!allowedItems.contains(id)) {
                                         allowedItems.add(id);
                                     }
                                     mapSection.set(NameMapping.ENTRY_PLAYER_ALLOWED_USE_ITEMS, allowedItems);
                                 } else {
-                                    List<String> bannedItems = new ArrayList<>(config.getStringList(category + "." + NameMapping.ENTRY_PLAYER_BANNED_USE_ITEMS));
+                                    List<String> bannedItems = new ArrayList<>(mapSection.getStringList(NameMapping.ENTRY_PLAYER_BANNED_USE_ITEMS));
                                     if (!bannedItems.contains(id)) {
                                         bannedItems.add(id);
                                     }
                                     mapSection.set(NameMapping.ENTRY_PLAYER_BANNED_USE_ITEMS, bannedItems);
                                 }
-                                config.set(category, mapSection);
                             }
+                            if (entryName.equals("AllowPlaceBlocks")) {
+                                mapSection.set(NameMapping.ENTRY_BLOCK_ALLOWED_PLACE_BLOCKS, mapSection.get(entryName));
+                            }
+                            if (entryName.equals("AllowBreakBlocks")) {
+                                mapSection.set(NameMapping.ENTRY_BLOCK_ALLOWED_BREAK_BLOCKS, mapSection.get(entryName));
+                            }
+                            if (entryName.equals("AllowInteractBlocks")) {
+                                mapSection.set(NameMapping.ENTRY_PLAYER_ALLOWED_INTERACT_BLOCKS, mapSection.get(entryName));
+                            }
+                            config.set(category, mapSection);
                         }
 
                         config.remove(category + "." + entryName);
