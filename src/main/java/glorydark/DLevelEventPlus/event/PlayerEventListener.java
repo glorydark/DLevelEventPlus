@@ -77,10 +77,10 @@ public class PlayerEventListener implements Listener {
             if (block.getId() == Block.CHEST || block.getId() == Block.ENDER_CHEST) {
                 Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_OPEN_CHEST);
                 if (bool != null && !bool) {
-                    if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_PLAYER_CHEST_TRUST_LIST) == null) {
+                    if (LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_CHEST_TRUST_LIST) == null) {
                         return;
                     }
-                    List<String> list = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CHEST_TRUST_LIST);
+                    List<String> list = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_WORLD_CHEST_TRUST_LIST);
                     List<Position> positionArrayList = new ArrayList<>();
                     for (String str : Objects.requireNonNull(list)) {
                         List<String> strspl = Arrays.asList(str.split(":"));

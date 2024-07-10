@@ -30,7 +30,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
 
     public static boolean experimental; // Currently not at work
 
-    public final List<String> enabledLanguage = List.of(new String[]{"chs", "eng"});
+    public final List<String> enabledLanguage = new ArrayList<>(Arrays.asList("chs", "eng"));
 
     @Override
     public void onEnable() {

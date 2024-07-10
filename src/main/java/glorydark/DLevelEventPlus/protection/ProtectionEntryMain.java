@@ -9,6 +9,7 @@ import glorydark.DLevelEventPlus.protection.type.InputSaveType;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +34,10 @@ public class ProtectionEntryMain {
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ANTI_VOID, "window_edit_label_world_antiVoid", false);
         entries.addInputProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_VOID_HEIGHT, "window_edit_label_world_voidHeight", InputSaveType.INTEGER, 0);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_TIME_FLOW, "window_edit_label_world_timeFlow", true);
-        entries.addDropdownProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_WEATHER, "window_edit_label_world_weather", List.of("", "clear", "thunder", "rain"), "");
+        entries.addDropdownProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_WEATHER, "window_edit_label_world_weather", Arrays.asList("", "clear", "thunder", "rain"), "");
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_LIGHTNING_STRIKE, "window_edit_label_world_lightningStrike", true);
-        entries.addDropdownProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FORCE_GAMEMODE, "window_edit_label_world_forceGameMode", List.of("", "Survival", "Creative", "Adventure", "Spectator"), "");
-        entries.addCustomProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_PLAYER_CHEST_TRUST_LIST, "", new ArrayList<>());
+        entries.addDropdownProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FORCE_GAMEMODE, "window_edit_label_world_forceGameMode", Arrays.asList("", "Survival", "Creative", "Adventure", "Spectator"), "");
+        entries.addCustomProtectionEntry(NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_CHEST_TRUST_LIST, "", new ArrayList<>());
 
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_OPEN_CHEST, "window_edit_label_player_openChest", true);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_ALLOW_INTERACT_FRAME_BLOCK, "window_edit_label_player_interactFrameBlock", true);

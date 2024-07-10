@@ -34,7 +34,7 @@ public class NameMapping {
     public static final String ENTRY_WORLD_WEATHER = "Weather";
     public static final String ENTRY_WORLD_LIGHTNING_STRIKE = "LightningStrike";
     public static final String ENTRY_WORLD_FORCE_GAMEMODE = "ForceGameMode";
-    public static final String ENTRY_PLAYER_CHEST_TRUST_LIST = "ChestTrustList";
+    public static final String ENTRY_WORLD_CHEST_TRUST_LIST = "ChestTrustList";
 
     // Player
     public static final String ENTRY_PLAYER_ALLOW_OPEN_CHEST = "AllowOpenChest";
