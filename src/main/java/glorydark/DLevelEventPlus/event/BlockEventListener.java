@@ -76,17 +76,6 @@ public class BlockEventListener implements Listener {
     }
 
     @EventHandler
-    public void BlockBurnEvent(BlockBurnEvent event) {
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_BURN);
-        if (bool == null) {
-            return;
-        }
-        if (!bool) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void BlockIgniteEvent(BlockIgniteEvent event) {
         Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(event.getBlock().getLevel().getName(), NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_IGNITE);
         if (bool == null) {

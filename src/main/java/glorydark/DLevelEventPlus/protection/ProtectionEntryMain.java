@@ -78,7 +78,6 @@ public class ProtectionEntryMain {
 
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_ALLOW_PLACE_BLOCK, "window_edit_label_block_placeBlock", true);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_ALLOW_BREAK_BLOCK, "window_edit_label_block_breakBlock", true);
-        entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_BURN, "window_edit_label_block_blockBurn", true);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_IGNITE, "window_edit_label_block_blockIgnite", true);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_FALL, "window_edit_label_block_blockFall", true);
         entries.addBooleanProtectionEntry(NameMapping.CATEGORY_BLOCK, NameMapping.ENTRY_BLOCK_GROW, "window_edit_label_block_blockGrow", true);
