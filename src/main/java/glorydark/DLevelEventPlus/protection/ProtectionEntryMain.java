@@ -155,7 +155,7 @@ public class ProtectionEntryMain {
                     continue;
                 }
                 ConfigSection mapSection = config.getSection(category);
-                for (Map.Entry<String, Object> objectEntry : mapSection.entrySet()) {
+                for (Map.Entry<String, Object> objectEntry : new ArrayList<>(mapSection.entrySet())) {
                     String entryName = objectEntry.getKey();
                     if (!ProtectionEntryMain.hasProtectionEntry(category, entryName)) {
                         // 删除前保存部分有效信息
