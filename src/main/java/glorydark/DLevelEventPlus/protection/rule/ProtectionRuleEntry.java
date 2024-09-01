@@ -1,46 +1,37 @@
 package glorydark.DLevelEventPlus.protection.rule;
 
 import glorydark.DLevelEventPlus.protection.type.EntryElementType;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * @author glorydark
  * @date {2023/12/20} {10:31}
  */
-@AllArgsConstructor
+@Data
 public class ProtectionRuleEntry {
 
     private String category;
 
     private String entryName;
 
-    private String translation;
+    private String translationKeyName;
 
     private EntryElementType type;
 
     private Object defaultValue;
 
-    public EntryElementType getType() {
-        return type;
+    private boolean editableInGame;
+
+    public ProtectionRuleEntry(String category, String entryName, String translationKeyName, EntryElementType type, Object defaultValue) {
+        this(category, entryName, translationKeyName, type, defaultValue, true);
     }
 
-    public void setType(EntryElementType type) {
+    public ProtectionRuleEntry(String category, String entryName, String translationKeyName, EntryElementType type, Object defaultValue, boolean editableInGame) {
+        this.category = category;
+        this.entryName = entryName;
+        this.translationKeyName = translationKeyName;
         this.type = type;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getTranslation() {
-        return translation;
-    }
-
-    public String getEntryName() {
-        return entryName;
-    }
-
-    public Object getDefaultValue() {
-        return defaultValue;
+        this.defaultValue = defaultValue;
+        this.editableInGame = editableInGame;
     }
 }

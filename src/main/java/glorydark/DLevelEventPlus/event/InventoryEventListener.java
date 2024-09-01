@@ -9,6 +9,7 @@ import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.Inventory;
 import glorydark.DLevelEventPlus.api.LevelSettingsAPI;
 import glorydark.DLevelEventPlus.api.PermissionAPI;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 
 /**
  * @author glorydark
@@ -18,7 +19,7 @@ public class InventoryEventListener implements Listener {
     @EventHandler
     public void CraftingTableOpenEvent(CraftingTableOpenEvent event) {
         Player player = event.getPlayer();
-        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "CraftingTableOpen");
+        Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_INVENTORY, NameMapping.ENTRY_INVENTORY_CRAFTING_TABLE_OPEN);
         if (bool == null) {
             return;
         }
@@ -44,7 +45,7 @@ public class InventoryEventListener implements Listener {
         }
         Inventory inventory = event.getInventory();
         if (inventory instanceof AnvilInventory) {
-            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), "Inventory", "AnvilOpen");
+            Boolean bool = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_INVENTORY, NameMapping.ENTRY_INVENTORY_ANVIL_OPEN);
             if (bool == null) {
                 return;
             }

@@ -6,19 +6,21 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.ConfigSection;
 import glorydark.DLevelEventPlus.LevelEventPlusMain;
+import glorydark.DLevelEventPlus.protection.NameMapping;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PermissionAPI {
 
-    public static ConfigSection admins;
+    public static List<String> admins = new ArrayList<>();
 
-    public static ConfigSection operators;
+    public static LinkedHashMap<String, List<String>> operators = new LinkedHashMap<>();
 
-    public static ConfigSection whitelists;
+    public static LinkedHashMap<String, List<String>> whitelists = new LinkedHashMap<>();
 
     public static void whiteList(CommandSender sender, OperatePermissionType type, String playerName, String levelname) {
         Config whitelistsConfig = new Config(LevelEventPlusMain.path + "/whitelists.yml", Config.YAML);
@@ -30,7 +32,11 @@ public class PermissionAPI {
                     arrayList.add(playerName);
                     whitelistsConfig.set(levelname, arrayList);
                     whitelistsConfig.save();
-                    whitelists = whitelistsConfig.getRootSection();
+                    for (Map.Entry<String, Object> entry : whitelistsConfig.getAll().entrySet()) {
+                        if (entry.getValue() instanceof List) {
+                            PermissionAPI.whitelists.put(entry.getKey(), (List<String>) entry.getValue());
+                        }
+                    }
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_add_success_receiver", playerName, levelname));
                     }
@@ -44,7 +50,11 @@ public class PermissionAPI {
                     arrayList.remove(playerName);
                     whitelistsConfig.set(levelname, arrayList);
                     whitelistsConfig.save();
-                    whitelists = whitelistsConfig.getRootSection();
+                    for (Map.Entry<String, Object> entry : whitelistsConfig.getAll().entrySet()) {
+                        if (entry.getValue() instanceof List) {
+                            PermissionAPI.whitelists.put(entry.getKey(), (List<String>) entry.getValue());
+                        }
+                    }
                     if (player != null) {
                         player.sendMessage(LevelEventPlusMain.language.translateString("tip_whitelist_del_success_receiver", playerName, levelname));
                     }
@@ -66,10 +76,10 @@ public class PermissionAPI {
                     arrayList.add(playerName);
                     adminConfig.set("list", arrayList);
                     adminConfig.save();
-                    admins = adminConfig.getRootSection();
+                    admins = new ArrayList<>(adminConfig.getStringList("list"));
                     if (player != null) {
                         Level level = player.getLevel();
-                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, "ForceGameMode");
                         int forceGamemode = -1;
                         if (forceGameModeObj != null) {
                             forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
@@ -90,10 +100,10 @@ public class PermissionAPI {
                         arrayList.remove(playerName);
                         adminConfig.set("list", arrayList);
                         adminConfig.save();
-                        admins = adminConfig.getRootSection();
+                        admins = new ArrayList<>(adminConfig.getStringList("list"));
                         if (player != null) {
                             Level level = player.getLevel();
-                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, "ForceGameMode");
                             int forceGamemode = -1;
                             if (forceGameModeObj != null) {
                                 forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
@@ -120,10 +130,14 @@ public class PermissionAPI {
                     arrayList.add(playerName);
                     operatorConfig.set(levelname, arrayList);
                     operatorConfig.save();
-                    operators = operatorConfig.getRootSection();
+                    for (Map.Entry<String, Object> entry : operatorConfig.getAll().entrySet()) {
+                        if (entry.getValue() instanceof List) {
+                            PermissionAPI.operators.put(entry.getKey(), (List<String>) entry.getValue());
+                        }
+                    }
                     if (player != null) {
                         Level level = player.getLevel();
-                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                        Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, "ForceGameMode");
                         int forceGamemode = -1;
                         if (forceGameModeObj != null) {
                             forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
@@ -144,10 +158,14 @@ public class PermissionAPI {
                         arrayList.remove(playerName);
                         operatorConfig.set(levelname, arrayList);
                         operatorConfig.save();
-                        operators = operatorConfig.getRootSection();
+                        for (Map.Entry<String, Object> entry : operatorConfig.getAll().entrySet()) {
+                            if (entry.getValue() instanceof List) {
+                                PermissionAPI.operators.put(entry.getKey(), (List<String>) entry.getValue());
+                            }
+                        }
                         if (player != null) {
                             Level level = player.getLevel();
-                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), "World", "ForceGameMode");
+                            Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, "ForceGameMode");
                             int forceGamemode = -1;
                             if (forceGameModeObj != null) {
                                 forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
@@ -168,7 +186,7 @@ public class PermissionAPI {
         if (p == null) {
             return false;
         }
-        return new ArrayList<>(admins.getStringList("list")).contains(p.getName());
+        return admins.contains(p.getName());
     }
 
     public static boolean isOperator(Player p, Level level) {
@@ -178,14 +196,14 @@ public class PermissionAPI {
         if (level == null) {
             return false;
         }
-        return new ArrayList<>(operators.getStringList(level.getName())).contains(p.getName());
+        return operators.getOrDefault(level.getName(), new ArrayList<>()).contains(p.getName());
     }
 
     public static boolean isWhiteListed(Player p, Level level) {
         if (p == null) {
             return false;
         }
-        List<String> list = new ArrayList<>(whitelists.getStringList(level.getName()));
+        List<String> list = new ArrayList<>(whitelists.getOrDefault(level.getName(), new ArrayList<>()));
         return list.size() == 0 || list.contains(p.getName());
     }
 

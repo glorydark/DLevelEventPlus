@@ -26,6 +26,10 @@ public class ProtectionRuleEntries {
         entries.add(new DropdownProtectionRuleEntry(category, entryName, LevelEventPlusMain.language.translateString(translation), options, defaultValue));
     }
 
+    public void addCustomProtectionEntry(String category, String entryName, String translation, Object defaultValue) {
+        entries.add(new UneditableProtectionRuleEntry(category, entryName, LevelEventPlusMain.language.translateString(translation), InputSaveType.UNDEFINED, defaultValue));
+    }
+
     public void addInputProtectionEntry(String category, String entryName, String translation, InputSaveType type, Object defaultValue) {
         entries.add(new InputProtectionRuleEntry(category, entryName, LevelEventPlusMain.language.translateString(translation), type, defaultValue));
     }

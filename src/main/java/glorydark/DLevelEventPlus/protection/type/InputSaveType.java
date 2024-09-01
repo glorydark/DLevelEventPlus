@@ -7,6 +7,7 @@ package glorydark.DLevelEventPlus.protection.type;
 public enum InputSaveType {
 
     INTEGER,
-    STRING
+    STRING,
+    UNDEFINED
 
 }

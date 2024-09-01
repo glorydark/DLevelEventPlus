@@ -165,6 +165,9 @@ public class FormEventListener implements Listener {
                 }
                 int id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
+                    if (!entry.isEditableInGame()) {
+                        continue;
+                    }
                     if (entry instanceof BooleanProtectionRuleEntry) {
                         LevelSettingsAPI.setLevelSetting(levelname, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
@@ -197,6 +200,10 @@ public class FormEventListener implements Listener {
                 String select = LevelEventPlusMain.selectCache.get(p);
                 id = 0;
                 for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
+                    if (!entry.isEditableInGame()) {
+                        TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), entry.getDefaultValue());
+                        continue;
+                    }
                     if (entry instanceof BooleanProtectionRuleEntry) {
                         TemplateAPI.setTemplateSetting(select, entry.getCategory(), entry.getEntryName(), responses.getToggleResponse(id));
                     } else if (entry instanceof DropdownProtectionRuleEntry) {
