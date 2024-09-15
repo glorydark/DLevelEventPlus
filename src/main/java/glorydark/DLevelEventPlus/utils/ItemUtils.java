@@ -21,7 +21,15 @@ public class ItemUtils {
         }
         return itemString.equals(item.getNamespaceId())
                 || ("minecraft:" + itemString).equals(item.getNamespaceId())
-                || Item.fromString(itemString).equals(item);
+                || isEqualToNumberId(item, itemString);
+    }
+
+    public static boolean isEqualToNumberId(Item item, String comparedString) {
+        return item.getId() != 255 && (String.valueOf(item.getId()).equals(comparedString) || (item.getId() + ":" + item.getDamage()).equals(comparedString));
+    }
+
+    public static boolean isEqualToNumberId(Block block, String comparedString) {
+        return String.valueOf(block.getId()).equals(comparedString) || (block.getId() + ":" + block.getDamage()).equals(comparedString);
     }
 
     public static boolean isEqual(String itemString, Block block) {
@@ -31,6 +39,6 @@ public class ItemUtils {
         Item item = block.toItem();
         return itemString.equals(item.getNamespaceId())
                 || ("minecraft:" + itemString).equals(item.getNamespaceId())
-                || Item.fromString(itemString).equals(item);
+                || isEqualToNumberId(block, itemString);
     }
 }
