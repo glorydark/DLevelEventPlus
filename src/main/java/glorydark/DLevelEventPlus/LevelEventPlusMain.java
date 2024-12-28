@@ -118,7 +118,7 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
                 }
                 plugin.getLogger().info(language.translateString("tip_loading_gameRule", level.getName()));
                 LevelSettingsAPI.configCache.put(levelName, (LinkedHashMap<String, Object>) config.getAll());
-                if (!LevelSettingsAPI.getLevelBooleanSetting(levelName, NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_TIME_FLOW)) {
+                if (!LevelSettingsAPI.getLevelSetting(levelName, NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_TIME_FLOW, true)) {
                     level.getGameRules().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 }
                 Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, NameMapping.CATEGORY_WORLD, "Weather");
