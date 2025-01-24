@@ -1,5 +1,6 @@
 package glorydark.DLevelEventPlus.event;
 
+import cn.nukkit.Server;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.level.WeatherChangeEvent;
@@ -13,16 +14,6 @@ import glorydark.DLevelEventPlus.protection.NameMapping;
  * @date {2023/8/11} {11:41}
  */
 public class WorldEventListener implements Listener {
-
-    @EventHandler
-    public void WeatherChangeEvent(WeatherChangeEvent event) {
-        Level level = event.getLevel();
-        String levelName = level.getName();
-        Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_WEATHER);
-        if (weather != null && !String.valueOf(weather).equals("")) {
-            event.setCancelled(true);
-        }
-    }
 
     @EventHandler
     public void LightningStrikeEvent(LightningStrikeEvent event) {

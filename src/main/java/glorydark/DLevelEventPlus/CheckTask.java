@@ -18,6 +18,34 @@ public class CheckTask extends Task {
     @Override
     public void onRun(int i) {
         for (Level level : Server.getInstance().getLevels().values()) {
+            String levelName = level.getName();
+            Object weather = LevelSettingsAPI.getLevelObjectSetting(levelName, NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_WEATHER);
+            if (weather != null && !String.valueOf(weather).isEmpty()) {
+                switch (weather.toString()) {
+                    case "clear":
+                        if (level.isRaining() || level.isThundering()) {
+                            level.setRaining(false);
+                            level.setThundering(false);
+                            level.sendWeather(level.getPlayers().values());
+                        }
+                        break;
+                    case "thunder":
+                        if (!level.isThundering()) {
+                            level.setRaining(true);
+                            level.setThundering(true);
+                            level.sendWeather(level.getPlayers().values());
+                        }
+                        break;
+                    case "rain":
+                        if (!level.isRaining()) {
+                            level.setRaining(true);
+                            level.setThundering(false);
+                            level.sendWeather(level.getPlayers().values());
+                        }
+                        break;
+                }
+            }
+
             List<String> clearItems = LevelSettingsAPI.getLevelStringListSetting(level.getName(), NameMapping.CATEGORY_PLAYER, NameMapping.ENTRY_PLAYER_CLEAR_ITEMS);
             Boolean movable = LevelSettingsAPI.getLevelBooleanSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_PLAYER_MOVE);
             Object forceGameModeObj = LevelSettingsAPI.getLevelObjectSetting(level.getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_FORCE_GAMEMODE);
