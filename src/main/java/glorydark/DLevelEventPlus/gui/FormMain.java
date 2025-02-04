@@ -158,7 +158,7 @@ public class FormMain {
         for (ProtectionRuleEntry entry : ProtectionEntryMain.getProtectionRuleEntries()) {
             if (entry.isEditableInGame()) {
                 if (entry instanceof BooleanProtectionRuleEntry) {
-                    formWindowCustom.addElement(new ElementToggle(entry.getTranslationKeyName(), LevelSettingsAPI.getLevelBooleanSetting(level, entry.getCategory(), entry.getEntryName())));
+                    formWindowCustom.addElement(new ElementToggle(entry.getTranslationKeyName(), LevelSettingsAPI.getLevelSetting(level, entry.getCategory(), entry.getEntryName(), true)));
                 } else if (entry instanceof DropdownProtectionRuleEntry) {
                     Object object = LevelSettingsAPI.getLevelObjectSetting(level, entry.getCategory(), entry.getEntryName());
                     formWindowCustom.addElement(new ElementDropdown(entry.getTranslationKeyName(), ((DropdownProtectionRuleEntry) entry).getOptions(), object == null ? 0 : Math.max(((DropdownProtectionRuleEntry) entry).getOptions().indexOf(object.toString()), 0)));
