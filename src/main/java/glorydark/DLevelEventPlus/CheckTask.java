@@ -2,6 +2,7 @@ package glorydark.DLevelEventPlus;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.scheduler.Task;
@@ -53,6 +54,7 @@ public class CheckTask extends Task {
             if (forceGameModeObj != null) {
                 forceGamemode = Server.getGamemodeFromString(forceGameModeObj.toString());
             }
+
             for (Player player : level.getPlayers().values()) {
                 // anti void
                 Boolean antiVoid = LevelSettingsAPI.getLevelBooleanSetting(player.getLevel().getName(), NameMapping.CATEGORY_WORLD, NameMapping.ENTRY_WORLD_ANTI_VOID);
@@ -81,12 +83,16 @@ public class CheckTask extends Task {
                 // force gamemode
 
                 // check invalid items
-                for (Map.Entry<Integer, Item> entry : player.getInventory().getContents().entrySet()) {
-                    Item check = entry.getValue();
-                    if (clearItems.stream().anyMatch(s -> ItemUtils.isEqual(s, check))) {
-                        player.getInventory().remove(check);
+                Inventory inventory = player.getInventory();
+                if (player.isOnline() && inventory != null) {
+                    for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
+                        Item check = entry.getValue();
+                        if (clearItems.stream().anyMatch(s -> ItemUtils.isEqual(s, check))) {
+                            inventory.remove(check);
+                        }
                     }
                 }
+
                 // check moveable
                 if (movable != null) {
                     // If they are in contrast. Immobile -> movable
