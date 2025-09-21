@@ -21,7 +21,10 @@ import glorydark.DLevelEventPlus.protection.rule.InputProtectionRuleEntry;
 import glorydark.DLevelEventPlus.protection.rule.ProtectionRuleEntry;
 import glorydark.DLevelEventPlus.api.PermissionAPI;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class FormMain {
 
@@ -34,8 +37,32 @@ public class FormMain {
     //设置选择世界
     public static void showSettingChooseWorldMenu(Player player) {
         FormWindowSimple window = new FormWindowSimple(LevelEventPlusMain.language.translateString("window_chooseWorld_title"), LevelEventPlusMain.language.translateString("window_chooseWorld_content"));
-        for (Level level : Server.getInstance().getLevels().values()) {
-            window.addButton(new ElementButton(level.getName()));
+        List<Level> levels = new ArrayList<>(Server.getInstance().getLevels().values());
+
+        // 创建比较器：先按是否是指定级别排序（指定级别在前），然后按名称降序排序
+        levels.sort((level1, level2) -> {
+            boolean isLevel1Target = level1.getName().equals(player.getLevelName());
+            boolean isLevel2Target = level2.getName().equals(player.getLevelName());
+
+            // 如果一个是目标级别，另一个不是，目标级别排在前面
+            if (isLevel1Target && !isLevel2Target) {
+                return -1;
+            }
+            if (!isLevel1Target && isLevel2Target) {
+                return 1;
+            }
+
+            // 如果都是目标级别或都不是，按名称降序排序
+            return -level2.getName().toLowerCase(Locale.ENGLISH).compareTo(level1.getName().toLowerCase(Locale.ENGLISH));
+        });
+
+        for (Level level : levels) {
+            if (level == player.getLevel()) {
+                window.addButton(new ElementButton(level.getName()
+                        + "\n>" + LevelEventPlusMain.language.translateString("window_chooseWorld_currentWorld_mark") + "<"));
+            } else {
+                window.addButton(new ElementButton(level.getName()));
+            }
         }
         window.addButton(new ElementButton(LevelEventPlusMain.language.translateString("window_general_button_returnButton")));
         showFormWindow(player, window, FormType.Edit_ChooseWorld);

@@ -97,10 +97,10 @@ public class FormEventListener implements Listener {
                 break;
             case Edit_ChooseWorld:
                 String text = window.getResponse().getClickedButton().getText();
-                if (!text.equals("")) {
+                if (!text.isEmpty()) {
                     if (!text.equals("返回")) {
-                        String worldName = window.getResponse().getClickedButton().getText();
-                        if (LevelSettingsAPI.configCache.containsKey(text)) {
+                        String worldName = window.getResponse().getClickedButton().getText().split("\n")[0];
+                        if (LevelSettingsAPI.configCache.containsKey(worldName)) {
                             FormMain.showEditMenuV2(p, worldName);
                         } else {
                             FormMain.showSettingChooseTemplateMenu(p, FormType.Template_ChooseTemplateForNewConfig);
