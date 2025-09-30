@@ -105,7 +105,7 @@ public class FormEventListener implements Listener {
                         } else {
                             FormMain.showSettingChooseTemplateMenu(p, FormType.Template_ChooseTemplateForNewConfig);
                         }
-                        LevelEventPlusMain.selectCache.put(p, text);
+                        LevelEventPlusMain.selectCache.put(p, worldName);
                     } else {
                         FormMain.showMainMenu(p);
                     }
@@ -113,7 +113,7 @@ public class FormEventListener implements Listener {
                 break;
             case Template_ChooseTemplateForEdit:
                 text = window.getResponse().getClickedButton().getText();
-                if (!text.equals("")) {
+                if (!text.isEmpty()) {
                     if (!text.equals("返回")) {
                         FormMain.showTemplateSettingMenuV2(p, text, FormType.Template_EditProcess);
                         LevelEventPlusMain.selectCache.put(p, text);
@@ -124,7 +124,7 @@ public class FormEventListener implements Listener {
                 break;
             case Template_ChooseTemplateForNewConfig:
                 text = window.getResponse().getClickedButton().getText();
-                if (!text.equals("")) {
+                if (!text.isEmpty()) {
                     if (!text.equals("返回")) {
                         FormMain.showTemplateSettingMenuV2(p, text, FormType.Edit_Process);
                     } else {
