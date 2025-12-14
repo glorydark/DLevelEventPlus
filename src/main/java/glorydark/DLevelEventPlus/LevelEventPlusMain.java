@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.Listener;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
@@ -191,6 +192,21 @@ public class LevelEventPlusMain extends PluginBase implements Listener {
             Config config = new Config(path + "/worlds/" + s + ".yml", Config.YAML);
             config.setAll(LevelSettingsAPI.configCache.get(s));
             config.save();
+            Level level = Server.getInstance().getLevelByName(s);
+            if (level != null) {
+                try {
+                    LevelProvider levelProvider = level.requireProvider();
+                    levelProvider.setTime(level.getTime());
+                    levelProvider.setRaining(level.isRaining());
+                    levelProvider.setRainTime(level.getRainTime());
+                    levelProvider.setThundering(level.isThundering());
+                    levelProvider.setThunderTime(level.getThunderTime());
+                    levelProvider.setCurrentTick(level.getCurrentTick());
+                    levelProvider.setGameRules(level.getGameRules());
+                } catch (Throwable t) {
+                    plugin.getLogger().info("Fail to save world gamerule data, world name: " + s + ", cause: " + t.getCause());
+                }
+            }
             plugin.getLogger().info(language.translateString("tip_save_config_success", s));
         }
         plugin.getLogger().info(language.translateString("tip_save_all_templates_start"));
